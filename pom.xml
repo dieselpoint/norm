@@ -6,7 +6,7 @@
 	<groupId>com.dieselpoint</groupId>
 	<artifactId>norm</artifactId>
 	<name>norm</name>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.5</version>
 
 	<prerequisites>
 		<maven>3.0.4</maven>
@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.16</version>
+			<version>5.1.22</version>
 		</dependency>
 		
 		<dependency>

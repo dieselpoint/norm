@@ -38,6 +38,10 @@ public class Test {
 			System.out.println(acct1.toString());
 		}
 		
+		List<Entity> list1 = (new Entity()).sql("select lastname, sum(amount) from account, transaction where account.accountId = transaction.accountId where date > ?", "2000-01-01").results();
+		
+		
+		
 	}
 
 }
