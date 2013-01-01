@@ -1,23 +1,22 @@
-Norm
-====
+#Norm
 
 A simpler way to access a database. Norm stands for "Not Object-Relational Mapping", although it kind of is.
 
-#Overview
+##Overview
 
 Norm is an extremely lightweight layer over JDBC. It gets rid of large amounts of boilerplate JDBC code
-without all the overhead of [Hibernate](www.hibernate.org), [JPA](http://en.wikipedia.org/wiki/Java_Persistence_API)
+without all the overhead of [Hibernate](http://www.hibernate.org), [JPA](http://en.wikipedia.org/wiki/Java_Persistence_API)
  or other [ORM](http://en.wikipedia.org/wiki/Object-relational_mapping) solutions. It steals some ideas from
 [ActiveJDBC](http://code.google.com/p/activejdbc/), which is a very nice system, but requires some very ugly 
 instrumentation / byte code rewriting.
 
 Norm uses:
-*No annotations
-*No instrumentation
-*No byte code games
-*No reflection
+* No annotations
+* No instrumentation
+* No byte code games
+* No reflection
 
-#Why?
+##Why?
 
 Sometimes the most important thing about writing software is knowing when to stop. A solution that gets
 you 90% of the way is often good enough, because the other 90% isn't worth the hassle. In this case, 
@@ -28,7 +27,7 @@ Norm returns results as a List of Maps, where each Map is a record of name/value
 and values are Java primitives. This is a really nice structure because it maps directly to JSON and
 similar data structures.
 
-#Sample Code
+##Sample Code
 
 If you have a table named "account", create a class named "Account" to access it:
 
@@ -70,7 +69,9 @@ for (Account acct1: list) {
 When you need more than this, just use straight SQL:
 
 ```Java
-List<Entity> list1 = (new Entity()).sql("select lastname, sum(amount) from account, transaction where account.accountId = transaction.accountId where date > ?", "2000-01-01").results();
+List<Entity> list1 = (new Entity()).sql(
+    "select lastname, sum(amount) from account, transaction " + 
+    "where account.accountId = transaction.accountId where date > ?", "2000-01-01").results();
 ```
 
 Note that you don't have to subclass Entity, you can use it directly. Subclassing is useful for telling the system what the table name and
@@ -108,6 +109,8 @@ System.setProperty("norm.password", "rootpassword");
 This isn't very secure, though, because all classes in your app will have access to the password. For a more
 secure method, override `Entity.getDataSource()` and supply your own DataSource using whatever method your
 app prefers. Take a look in the source code for `DataSourceFactory` for an example of how to do it.
+
+That's about it. Post any bugs or feature requests to the issue tracker.
 
 
 
