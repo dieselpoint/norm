@@ -39,7 +39,9 @@ public class Test {
 		}
 		
 		List<Entity> list1 = (new Entity()).sql("select lastname, sum(amount) from account, transaction where account.accountId = transaction.accountId where date > ?", "2000-01-01").results();
-		
+		for (Entity acct1: list1) {
+			System.out.println(acct1.toString());
+		}
 		
 		
 	}

@@ -23,9 +23,9 @@ you 90% of the way is often good enough, because the other 90% isn't worth the h
 Norm gives you a fast and convenient way to do select, insert, update and delete, and when you need
 more, you just drop into straight SQL.
 
-Norm returns results as a List of Maps, where each Map is a record of name/value pairs. Names are Strings 
-and values are Java primitives. This is a really nice structure because it maps directly to JSON and
-similar data structures.
+Norm returns results as a List of Entity objects, where each Entity is a small wrapper around a Map, and the Map is a 
+record of name/value pairs. Names (columns) are Strings and values are Java primitives. This is a really nice structure because it 
+maps directly to JSON and similar data structures.
 
 ###Sample Code
 
@@ -86,7 +86,7 @@ Internally, an Entity stores the column/value pairs in a Map. The map is availab
 
 ###Configuration
 
-To use Norm in your project, add this Maven dependency:
+To use Norm in your project, add this Maven dependency (COMING SOON, NOT YET IN MAVEN CENTRAL):
 
 ```
 <dependency>

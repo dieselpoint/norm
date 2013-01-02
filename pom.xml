@@ -5,8 +5,25 @@
 
 	<groupId>com.dieselpoint</groupId>
 	<artifactId>norm</artifactId>
-	<name>norm</name>
+	<name>Norm</name>
 	<version>0.5</version>
+	<packaging>jar</packaging>
+
+	<description>An extremely lightweight layer over JDBC</description>
+	<url>https://github.com/dieselpoint/norm</url>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>https://github.com/dieselpoint/norm</url>
+		<connection>scm:git:https://github.com/dieselpoint/norm.git</connection>
+	</scm>
 
 	<prerequisites>
 		<maven>3.0.4</maven>
@@ -31,13 +48,13 @@
 	</build>
 
 	<dependencies>
-		
+
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.22</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
