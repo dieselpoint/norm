@@ -3,6 +3,8 @@ package com.dieselpoint.norm;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 public class Test {
 
 	public static void main(String[] args) throws SQLException {
@@ -38,7 +40,7 @@ public class Test {
 			System.out.println(acct1.toString());
 		}
 		
-		List<Entity> list1 = (new Entity()).sql("select lastname, sum(amount) from account, transaction where account.accountId = transaction.accountId where date > ?", "2000-01-01").results();
+		List<Entity> list1 = (new Entity()).sql("select lastname, sum(amount) from account, transaction where account.accountId = transaction.accountId and date > ?", "2000-01-01").results();
 		for (Entity acct1: list1) {
 			System.out.println(acct1.toString());
 		}
@@ -46,4 +48,13 @@ public class Test {
 		
 	}
 
+	class MyEntity extends Entity {
+
+		@Override
+		protected DataSource getDataSource() throws SQLException {
+			// return your own DataSource from a pool or someplace else
+			return null;
+		}
+	}
+	
 }

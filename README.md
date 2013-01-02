@@ -1,6 +1,6 @@
 #Norm
 
-A simpler way to access a database. Norm stands for "Not Object-Relational Mapping", although it kind of is.
+A simpler way to access a database. Norm stands for "Not Object-Relational Mapping", although it kind-of is.
 
 ###Overview
 
@@ -8,7 +8,7 @@ Norm is an extremely lightweight layer over JDBC. It gets rid of large amounts o
 without all the overhead of [Hibernate](http://www.hibernate.org), [JPA](http://en.wikipedia.org/wiki/Java_Persistence_API)
  or other [ORM](http://en.wikipedia.org/wiki/Object-relational_mapping) solutions. It steals some ideas from
 [ActiveJDBC](http://code.google.com/p/activejdbc/), which is a very nice system, but requires some very ugly 
-instrumentation / byte code rewriting.
+instrumentation / byte code rewriting. [Lots of people think that complex ORMs are a bad idea.](http://stackoverflow.com/questions/398134/what-are-the-advantages-of-using-an-orm/398182)
 
 Norm uses:
 * No annotations
@@ -36,8 +36,7 @@ public class Account extends Entity {
 }  
 ```
    
-Account extends Entity, which contains all of the system's functionality. Use code like this
-to access the database:
+Account extends Entity, which contains all of the system's functionality. To access the database:
 
 ```Java
 Account acct = new Account();
@@ -71,7 +70,7 @@ When you need more than this, just use straight SQL:
 ```Java
 List<Entity> list1 = (new Entity()).sql(
     "select lastname, sum(amount) from account, transaction " + 
-    "where account.accountId = transaction.accountId where date > ?", "2000-01-01").results();
+    "where account.accountId = transaction.accountId and date > ?", "2000-01-01").results();
 ```
 
 Note that you don't have to subclass Entity; you can use it directly. Subclassing is useful for telling the system 
@@ -96,7 +95,7 @@ To use Norm in your project, add this Maven dependency (COMING SOON, NOT YET IN 
 </dependency>
 ```  
 
-To specific the database connection parameters, you can do this:
+To specify the database connection parameters, you can do this:
 
 ```Java
 System.setProperty("norm.driver", "com.mysql.jdbc.Driver");
@@ -108,7 +107,23 @@ System.setProperty("norm.password", "rootpassword");
 
 This isn't very secure, though, because all classes in your app will have access to the password. For a more
 secure method, override `Entity.getDataSource()` and supply your own DataSource using whatever method your
-app prefers. Take a look in the source code for `DataSourceFactory` for an example of how to do it.
+app prefers. Then have all your actual entities classes subclass that one. For example:
+
+```Java
+class MyEntity extends Entity {
+
+    @Override
+    protected DataSource getDataSource() throws SQLException {
+        // return your own DataSource from a pool or someplace else
+        return aDataSource;
+    }
+}
+
+class Account extends MyEntity {
+}
+```
+
+Take a look in the source code for `DataSourceFactory` for an example of how to do it.
 
 That's about it. Post any bugs or feature requests to the issue tracker.
 

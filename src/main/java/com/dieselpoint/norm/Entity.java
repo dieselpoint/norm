@@ -53,7 +53,7 @@ public class Entity<E> {
 	}
 	
 
-	private DataSource getDataSource() throws SQLException {
+	protected DataSource getDataSource() throws SQLException {
 		String driver = System.getProperty("norm.driver");
 		String databaseName = System.getProperty("norm.databasename");
 		String url = System.getProperty("norm.url");
