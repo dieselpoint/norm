@@ -18,6 +18,12 @@ import javax.sql.DataSource;
  * Contains a row in a result set, and has several methods for performing queries and updates.
  */
 public class Entity<E> {
+	
+	/* TODO
+	 * figure out why firstResult() needs a cast
+	 * 
+	 */
+	
 
 	private static ConcurrentHashMap<String, Meta> entities = new ConcurrentHashMap();
 
@@ -53,6 +59,11 @@ public class Entity<E> {
 	}
 	
 
+	/**
+	 * Return a DataSource for this entity. Gets called once when this class is initialized.
+	 * @return a DataSource
+	 * @throws SQLException
+	 */
 	protected DataSource getDataSource() throws SQLException {
 		String driver = System.getProperty("norm.driver");
 		String databaseName = System.getProperty("norm.databasename");
@@ -120,6 +131,13 @@ public class Entity<E> {
 		executeUpdate(sql.toString(), values);
 	}
 	
+	/**
+	 * Deletes records in the table. This method uses the specified "where" clause
+	 * to limit the records it deletes. If there is none, it uses the current
+	 * primary key to delete a single record. If there is none, it throws an
+	 * exception. 
+	 * @throws SQLException
+	 */
 	public void delete() throws SQLException {
 		
 		Object pk = get(meta.primaryKeyName);
@@ -141,11 +159,29 @@ public class Entity<E> {
 		executeUpdate(sql.toString(), args);
 	}
 	
+	/**
+	 * Delete all records in the table.
+	 * @throws SQLException
+	 */
 	public void deleteAll() throws SQLException {
 		StringBuilder sql = new StringBuilder();
 		sql.append("delete from ");
 		sql.append(meta.tableName);
 		executeUpdate(sql.toString(), null);
+	}
+	
+
+	/**
+	 * Returns the first record in a result set. If the result set
+	 * is empty, returns null.
+	 * @throws SQLException
+	 */
+	public E firstResult() throws SQLException {
+		List<E> list = this.results();
+		if (list.size() == 0) {
+			return null;
+		}
+		return list.get(0);
 	}
 	
 	
@@ -285,7 +321,7 @@ public class Entity<E> {
 			while (rs.next()) {
 				Entity ent = this.getClass().newInstance();
 
-				Map map = ent.getRecord();
+				Map map = ent.getMap();
 				for (int i = 1; i <= colCount; i++) {
 					String colName = meta.getColumnName(i);
 					map.put(colName, rs.getString(i));
@@ -325,7 +361,10 @@ public class Entity<E> {
 		orderBy = null;
 	}
 	
-	
+	/**
+	 * NOT CURRENTLY USED
+	 * @return
+	 */
 	public String getDatabaseName() {
 		return "default";
 	}
@@ -338,7 +377,7 @@ public class Entity<E> {
 		return getTableName() + "Id";
 	}
 
-	public Map getRecord() {
+	public Map getMap() {
 		return record;
 	}
 	
@@ -348,12 +387,27 @@ public class Entity<E> {
 		return this;
 	}
 	
+	/**
+	 * Get the value of a column as an Object. The object will
+	 * be a Java primitive, for example, String, Integer, etc.
+	 * @param column column name
+	 * @return an Object, or null if the column doesn't exist
+	 */
 	public Object get(String column) {
 		return record.get(column);
 	}
 
+	/**
+	 * Get the value of a column as a String.
+	 * @param column column name
+	 * @return a String, or null if the column doesn't exist
+	 */
 	public String getString(String column) {
-		return (String) get(column);
+		Object val = get(column);
+		if (val != null) {
+			return val.toString();
+		}
+		return null;
 	}
 	
 	public String toString() {

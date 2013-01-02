@@ -60,8 +60,8 @@ acct.put("lastname", "Superstar");
 acct.update();
 		
 List<Account> list = acct.where("firstname=?", "Joe").orderBy("lastname").results();
-for (Account acct1: list) {
-	System.out.println(acct1.toString());
+for (Account a: list) {
+    System.out.println(a.getString("firstname") + " " + a.getString("lastname"));
 }
 ```
 
@@ -107,14 +107,14 @@ System.setProperty("norm.password", "rootpassword");
 
 This isn't very secure, though, because all classes in your app will have access to the password. For a more
 secure method, override `Entity.getDataSource()` and supply your own DataSource using whatever method your
-app prefers. Then have all your actual entities classes subclass that one. For example:
+app prefers, then have all your actual entities classes subclass that one. For example:
 
 ```Java
 class MyEntity extends Entity {
 
     @Override
     protected DataSource getDataSource() throws SQLException {
-        // return your own DataSource from a pool or someplace else
+        // return your own DataSource from a pool or some place else
         return aDataSource;
     }
 }

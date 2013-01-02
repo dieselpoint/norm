@@ -30,14 +30,14 @@ public class Test {
 		acct.where("accountId=?", 1).delete();
 		System.out.println("rows deleted:" + acct.getRowsAffected());
 		
-		acct.getRecord().clear();
+		acct.getMap().clear();
 		acct.put("accountId", 2);
 		acct.put("lastname", "Superstar");
 		acct.update();
 		
 		List<Account> list = acct.where("firstname=?", "Joe").orderBy("lastname").results();
-		for (Account acct1: list) {
-			System.out.println(acct1.toString());
+		for (Account a: list) {
+			System.out.println(a.getString("firstname") + " " + a.getString("lastname"));
 		}
 		
 		List<Entity> list1 = (new Entity()).sql("select lastname, sum(amount) from account, transaction where account.accountId = transaction.accountId and date > ?", "2000-01-01").results();
