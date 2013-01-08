@@ -25,6 +25,18 @@
 		<connection>scm:git:https://github.com/dieselpoint/norm.git</connection>
 	</scm>
 
+	<distributionManagement>
+		<repository>
+			<id>nexus</id>
+			<url>http://maven.dieselpoint.com/content/repositories/dieselpoint.public.releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus</id>
+			<url>http://maven.dieselpoint.com/content/repositories/dieselpoint.public.snapshots</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<prerequisites>
 		<maven>3.0.4</maven>
 	</prerequisites>
