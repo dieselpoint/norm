@@ -410,6 +410,19 @@ public class Entity<E> {
 		return null;
 	}
 	
+	/**
+	 * Get the value of a column as an int.
+	 * @param column column name
+	 * @return an int, or 0 if the column doesn't exist
+	 */
+	public int getInt(String column) {
+		Object val = get(column);
+		if (val != null) {
+			return Integer.parseInt(val.toString());
+		}
+		return 0;
+	}
+	
 	public String toString() {
 		return record.toString();
 	}
