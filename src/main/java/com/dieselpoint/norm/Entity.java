@@ -7,6 +7,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,7 +128,13 @@ public class Entity<E> {
 			sql.append(columns.get(i));
 			sql.append("=?");
 		}
-
+		
+		if(this.where != null){
+			sql.append(" where ");
+			sql.append(this.where);
+			Collections.addAll(values, this.args);
+		}
+		
 		executeUpdate(sql.toString(), values);
 	}
 	
