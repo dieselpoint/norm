@@ -128,9 +128,16 @@ public class Entity<E> {
 			sql.append(columns.get(i));
 			sql.append("=?");
 		}
+
+		sql.append(" where ");
 		
-		if(this.where != null){
-			sql.append(" where ");
+		// if there's no where clause, use the primary key
+		if (this.where == null) {
+			sql.append(meta.primaryKeyName);
+			sql.append("=?");
+			values.add(this.get(meta.primaryKeyName));
+		} else {
+			// else use the where clause and the associated args
 			sql.append(this.where);
 			Collections.addAll(values, this.args);
 		}
