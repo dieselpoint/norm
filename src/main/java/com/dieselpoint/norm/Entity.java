@@ -93,7 +93,12 @@ public class Entity<E> {
 	
 	
 	public void insert() throws SQLException {
-		
+		Connection con = getConnection();
+		insert(con);
+		con.close();
+	}
+
+	public void insert(Connection con) throws SQLException {
 		List columns = new ArrayList(record.keySet());
 		List values = new ArrayList(record.values());
 		
@@ -106,12 +111,25 @@ public class Entity<E> {
 		appendQuestionMarks(sql, values.size());
 		sql.append(")");
 
-		executeUpdate(sql.toString(), values);
+		executeUpdate(sql.toString(), values, con);
 	}
 
-	
+	public void insert(Transaction trans) throws SQLException {
+		insert(trans.getConnection());
+	}
 	
 	public void update() throws SQLException {
+		Connection con = getConnection();
+		update(con);
+		con.close();
+	}
+	
+	public void update(Transaction trans) throws SQLException {
+		update(trans.getConnection());
+	}
+	
+	
+	public void update(Connection con) throws SQLException {
 		List columns = new ArrayList(record.keySet());
 		List values = new ArrayList(record.values());
 		
@@ -142,7 +160,7 @@ public class Entity<E> {
 			Collections.addAll(values, this.args);
 		}
 		
-		executeUpdate(sql.toString(), values);
+		executeUpdate(sql.toString(), values, con);
 	}
 	
 	/**
@@ -153,6 +171,16 @@ public class Entity<E> {
 	 * @throws SQLException
 	 */
 	public void delete() throws SQLException {
+		Connection con = getConnection();
+		delete(con);
+		con.close();
+	}
+	
+	public void delete(Transaction trans) throws SQLException {
+		delete(trans.getConnection());
+	}
+	
+	public void delete(Connection con) throws SQLException {
 		
 		Object pk = get(meta.primaryKeyName);
 		
@@ -170,18 +198,29 @@ public class Entity<E> {
 		} else {
 			throw new SQLException("Delete statements require either a where clause or a value for the primary key in the current record. To delete all records in a table, call deleteAll()");
 		}
-		executeUpdate(sql.toString(), args);
+		executeUpdate(sql.toString(), args, con);
 	}
+	
 	
 	/**
 	 * Delete all records in the table.
 	 * @throws SQLException
 	 */
 	public void deleteAll() throws SQLException {
+		Connection con = getConnection();
+		deleteAll(con);
+		con.close();
+	}
+	
+	public void deleteAll(Transaction trans) throws SQLException {
+		deleteAll(trans.getConnection());
+	}
+	
+	public void deleteAll(Connection con) throws SQLException {
 		StringBuilder sql = new StringBuilder();
 		sql.append("delete from ");
 		sql.append(meta.tableName);
-		executeUpdate(sql.toString(), null);
+		executeUpdate(sql.toString(), null, con);
 	}
 	
 
@@ -242,16 +281,14 @@ public class Entity<E> {
 	
 	/**
 	 * Run an insert, update, or delete statement.
+	 * @param con 
 	 * @throws SQLException 
 	 */
-	public void executeUpdate(String sql, Object args) throws SQLException {
+	public void executeUpdate(String sql, Object args, Connection con) throws SQLException {
 		
-		Connection con = null;
 		PreparedStatement state = null;
-		//ResultSet generatedKeys = null;
 
 		try {
-			con = getConnection();
 			state = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			applyArgs(state, args);
 
@@ -273,13 +310,6 @@ public class Entity<E> {
 					// ok to ignore
 				}
 			}
-			if (con != null) {
-				try {
-					con.close();
-				} catch (SQLException e) {
-					// ok to ignore
-				}
-			}
 		}
 		clearQuery();
 	}
@@ -295,6 +325,19 @@ public class Entity<E> {
 		return meta.ds.getConnection();
 	}
 
+	/**
+	 * Start a database transaction. Pass the returned transaction
+	 * object to insert(), update(), and delete(), and then call
+	 * transaction.commit() or .rollback() to complete the process.
+	 * No need to close the transaction.
+	 * @return a transaction object
+	 */
+	public Transaction startTransaction() throws SQLException {
+		Transaction trans = new Transaction();
+		trans.setConnection(getConnection());
+		return trans;
+	}
+	
 	
 	/**
 	 * Return the results of a query previously specified with a where() or sql() call.
