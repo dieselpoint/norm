@@ -25,7 +25,7 @@ more, you just drop into straight SQL.
 
 Norm returns results as a List of Entity objects, where each Entity is a small wrapper around a Map, and the Map is a 
 record of name/value pairs. Names (columns) are Strings and values are Java primitives. This is a really nice structure because it 
-maps directly to JSON and similar data structures.
+maps directly to JSON.
 
 ###Sample Code
 
@@ -74,7 +74,7 @@ List<Entity> list1 = (new Entity()).sql(
 ```
 
 Note that you don't have to subclass Entity; you can use it directly. Subclassing is useful for telling the system 
-about the table name and the primary key, and for adding table-specific methods. 
+about the table name and the primary key and for adding table-specific methods. 
 
 By default, the table name is the lowercased class name, and the primary key is tablename + "Id". Override `.getTableName()` and `.getPrimaryKeyName()` to 
 specify custom names. 
@@ -82,6 +82,37 @@ specify custom names.
 A subclass doesn't have to correspond to a table. It could represent any result set.
 
 Internally, an Entity stores the column/value pairs in a Map. The map is available using `.getRecord()`. 
+
+###Transactions
+
+If you need multiple database operations to succeed or fail as a unit, use a transaction.
+
+```Java
+Transaction trans = null;
+		
+try {
+	MyEntity myEntity = new MyEntity();
+	trans = myEntity.startTransaction();
+		
+	// do inserts, updates, deletes here
+			
+	myEntity.insert(trans);
+	someOtherEntity.delete(trans);
+		
+	trans.commit();
+		
+} catch (Throwable t) {
+	if (trans != null) {
+		trans.rollback();
+	}
+} 
+
+```
+Transactions wrap SQLExceptions in unchecked RuntimeExceptions to eliminate a lot of
+boilerplate error-checking code. If this isn't your style, then you can implement your
+own transaction code by calling Entity.getConnection() directly and passing it around
+to the methods that need it. Transaction is a [pretty simple class](https://github.com/dieselpoint/norm/blob/master/src/main/java/com/dieselpoint/norm/Transaction.java).
+
 
 ###Configuration
 
@@ -106,8 +137,8 @@ System.setProperty("norm.password", "rootpassword");
 ```
 
 This isn't very secure, though, because all classes in your app will have access to the password. For a more
-secure method, override `Entity.getDataSource()` and supply your own DataSource using whatever method your
-app prefers, then have all your actual entities classes subclass that one. For example:
+secure method, override `Entity.getDataSource()` and supply your own DataSource using whatever method you 
+prefer, then have all your actual entities classes subclass that one. For example:
 
 ```Java
 class MyEntity extends Entity {
