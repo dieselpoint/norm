@@ -444,6 +444,11 @@ public class Entity<E> {
 		return this;
 	}
 	
+	public Entity<E> remove(String column) {
+		record.remove(column);
+		return this;
+	}
+	
 	/**
 	 * Get the value of a column as an Object. The object will
 	 * be a Java primitive, for example, String, Integer, etc.
