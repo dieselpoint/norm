@@ -111,7 +111,7 @@ public class Entity<E> {
 		appendQuestionMarks(sql, values.size());
 		sql.append(")");
 
-		executeUpdate(sql.toString(), values, con);
+		sql(sql.toString(), values).executeUpdate(con);
 	}
 
 	public void insert(Transaction trans) throws SQLException {
@@ -120,8 +120,11 @@ public class Entity<E> {
 	
 	public void update() throws SQLException {
 		Connection con = getConnection();
-		update(con);
-		con.close();
+		try {
+			update(con);
+		} finally {
+			con.close();
+		}
 	}
 	
 	public void update(Transaction trans) throws SQLException {
@@ -160,7 +163,7 @@ public class Entity<E> {
 			Collections.addAll(values, this.args);
 		}
 		
-		executeUpdate(sql.toString(), values, con);
+		sql(sql.toString(), values).executeUpdate(con);
 	}
 	
 	/**
@@ -172,8 +175,11 @@ public class Entity<E> {
 	 */
 	public void delete() throws SQLException {
 		Connection con = getConnection();
-		delete(con);
-		con.close();
+		try {
+			delete(con);
+		} finally {
+			con.close();
+		}
 	}
 	
 	public void delete(Transaction trans) throws SQLException {
@@ -198,7 +204,8 @@ public class Entity<E> {
 		} else {
 			throw new SQLException("Delete statements require either a where clause or a value for the primary key in the current record. To delete all records in a table, call deleteAll()");
 		}
-		executeUpdate(sql.toString(), args, con);
+		
+		sql(sql.toString(), args).executeUpdate(con);
 	}
 	
 	
@@ -208,8 +215,11 @@ public class Entity<E> {
 	 */
 	public void deleteAll() throws SQLException {
 		Connection con = getConnection();
-		deleteAll(con);
-		con.close();
+		try {
+			deleteAll(con);
+		} finally {
+			con.close();
+		}
 	}
 	
 	public void deleteAll(Transaction trans) throws SQLException {
@@ -220,7 +230,7 @@ public class Entity<E> {
 		StringBuilder sql = new StringBuilder();
 		sql.append("delete from ");
 		sql.append(meta.tableName);
-		executeUpdate(sql.toString(), null, con);
+		sql(sql.toString(), (Object [])null).executeUpdate(con);
 	}
 	
 
@@ -279,12 +289,30 @@ public class Entity<E> {
 	}
 	
 	
+	
+	
 	/**
-	 * Run an insert, update, or delete statement.
+	 * Run an insert, update, or delete statement. Specify the sql using
+	 * the sql() method. 
+	 * @throws SQLException 
+	 */
+	public void executeUpdate() throws SQLException {
+		Connection con = getConnection();
+		try {
+			executeUpdate(con);
+		} finally {
+			con.close();
+		}
+	}
+	
+	
+	/**
+	 * Run an insert, update, or delete statement. Specify the sql using
+	 * the sql() method. 
 	 * @param con 
 	 * @throws SQLException 
 	 */
-	public void executeUpdate(String sql, Object args, Connection con) throws SQLException {
+	public void executeUpdate(Connection con) throws SQLException {
 		
 		PreparedStatement state = null;
 
