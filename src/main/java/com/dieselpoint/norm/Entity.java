@@ -86,6 +86,12 @@ public class Entity<E> {
 		return this;
 	}
 	
+	public Entity sql(String sql, List args) {
+		this.sql = sql;
+		this.args = args.toArray();
+		return this;
+	}
+	
 	public Entity orderBy(String orderBy) {
 		this.orderBy = orderBy;
 		return this;
@@ -100,7 +106,7 @@ public class Entity<E> {
 
 	public void insert(Connection con) throws SQLException {
 		List columns = new ArrayList(record.keySet());
-		List values = new ArrayList(record.values());
+		Object [] values =  record.values().toArray();
 		
 		StringBuilder sql = new StringBuilder();
 		sql.append("insert into ");
@@ -108,7 +114,7 @@ public class Entity<E> {
 		sql.append(" (");
 		appendCommaSep(sql, columns);
 		sql.append(") values (");
-		appendQuestionMarks(sql, values.size());
+		appendQuestionMarks(sql, values.length);
 		sql.append(")");
 
 		sql(sql.toString(), values).executeUpdate(con);
