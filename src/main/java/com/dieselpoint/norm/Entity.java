@@ -472,6 +472,9 @@ public class Entity<E> {
 		return record;
 	}
 	
+	public void setMap(LinkedHashMap record) {
+		this.record = record;
+	}
 
 	public Entity<E> put(String column, Object value) {
 		record.put(column, value);
