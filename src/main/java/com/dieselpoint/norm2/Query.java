@@ -8,12 +8,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dieselpoint.norm2.annotations.Table;
+import com.dieselpoint.norm2.annotations.DbTable;
 
 public class Query {
 
 	private String sql;
-	private String tables;
+	private String table;
 	private String columns;
 	private String where;
 	private String orderBy;
@@ -115,10 +115,10 @@ public class Query {
 			return; // sql overrides everything
 		}
 		
-		if (tables == null) {
-			Table annot = (Table) clazz.getAnnotation(Table.class);
+		if (table == null) {
+			DbTable annot = (DbTable) clazz.getAnnotation(DbTable.class);
 			if (annot != null) {
-				tables = annot.value();
+				table = annot.value();
 			}
 		}
 		

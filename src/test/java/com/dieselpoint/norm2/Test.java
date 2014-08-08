@@ -3,7 +3,7 @@ package com.dieselpoint.norm2;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.dieselpoint.norm2.annotations.Table;
+import com.dieselpoint.norm2.annotations.DbTable;
 
 public class Test {
 	
@@ -32,7 +32,7 @@ public class Test {
 		
 	}
 
-	@Table("names")
+	@DbTable("names")
 	static public class Name {
 		public String firstName;
 		public String lastName;
