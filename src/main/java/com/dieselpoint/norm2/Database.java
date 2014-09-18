@@ -6,6 +6,9 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 
 public class Database {
 	
@@ -23,12 +26,14 @@ public class Database {
 	private DataSource ds;
 	
 	protected DataSource getDataSource() throws SQLException {
-		String driver = System.getProperty("norm.driver");
-		String databaseName = System.getProperty("norm.databasename");
-		String url = System.getProperty("norm.url");
-		String user = System.getProperty("norm.user");
-		String password = System.getProperty("norm.password");
-		return DataSourceFactory.getDataSource(driver, databaseName, url, user, password);
+		HikariConfig config = new HikariConfig();
+		config.setMaximumPoolSize(100);
+		config.setDataSourceClassName(System.getProperty("norm.dataSourceClassName"));
+		config.addDataSourceProperty("serverName", System.getProperty("norm.serverName"));
+		config.addDataSourceProperty("databaseName", System.getProperty("norm.databaseName"));
+		config.addDataSourceProperty("user", System.getProperty("norm.user"));
+		config.addDataSourceProperty("password", System.getProperty("norm.password"));
+		return new HikariDataSource(config);
 	}
 	
 	public Query sql(String sql, Object... args) {

@@ -80,20 +80,25 @@ public class Test {
 	@Table(name="names")
 	static public class Name {
 		
-		public Name() {} // must have 0-arg constructor
+		// must have 0-arg constructor
+		public Name() {} 
 		
+		// can also have convenience constructor
 		public Name(String firstName, String lastName) {
 			this.firstName = firstName;
 			this.lastName = lastName;
 		}
 		
+		// primary key, generated on the server side
 		@Id
 		@GeneratedValue 
 		public long id;
 		
-		public String firstName; // a public property
+		// a public property without getter or setter
+		public String firstName; 
 		
-		private String lastName; // a private property with getter and setter
+		// a private property with getter and setter below
+		private String lastName; 
 		
 		public String getLastName() {
 			return lastName;
@@ -116,5 +121,17 @@ public class Test {
 	        System.setProperty(name, value);
 	    }
 	}
+
+
+	/*
+	 * to bypass the hikari code, use this in Database.getDataSource():
+	com.mysql.jdbc.jdbc2.optional.MysqlDataSource ds = new com.mysql.jdbc.jdbc2.optional.MysqlDataSource();
+	ds.setServerName(System.getProperty("norm.serverName"));
+	ds.setDatabaseName(System.getProperty("norm.databaseName"));
+	ds.setUser(System.getProperty("norm.user"));
+	ds.setPassword(System.getProperty("norm.password"));
+	return ds;
+	*/
+	
 	
 }
