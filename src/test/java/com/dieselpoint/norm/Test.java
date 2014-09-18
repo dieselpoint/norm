@@ -12,6 +12,7 @@ import java.util.Properties;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 public class Test {
 	
@@ -40,7 +41,7 @@ public class Test {
 		
 		/* test delete single record */
 		db.delete(john);
-		List<Name> list1 = db.results(Name.class);
+		List<Name> list1 = db.orderBy("lastName").results(Name.class);
 		dump("bill only:", list1);
 		
 		/* test update single record */
@@ -65,7 +66,7 @@ public class Test {
 		List<Name> list3 = db.results(Name.class);
 		dump("fred only:", list3);
 		
-		db.sql("drop table names").execute();
+		//db.sql("drop table names").execute();
 	}
 	
 	
@@ -107,6 +108,9 @@ public class Test {
 		public void setLastName(String lastName) {
 			this.lastName = lastName;
 		}
+
+		@Transient
+		public String ignoreMe;
 		
 		public String toString() {
 			return id + " " + firstName + " " + lastName;

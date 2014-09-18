@@ -247,7 +247,7 @@ public class Query {
 			out.append(where);
 		}
 		if (orderBy != null) {
-			out.append(" orderBy ");
+			out.append(" order by ");
 			out.append(orderBy);
 		}
 		sql = out.toString();
