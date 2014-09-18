@@ -1,4 +1,4 @@
-package com.dieselpoint.norm2;
+package com.dieselpoint.norm;
 
 import java.beans.IntrospectionException;
 import java.util.concurrent.ConcurrentHashMap;

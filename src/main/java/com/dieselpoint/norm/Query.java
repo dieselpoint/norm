@@ -1,4 +1,4 @@
-package com.dieselpoint.norm2;
+package com.dieselpoint.norm;
 
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.dieselpoint.norm2.PojoInfo.Property;
+import com.dieselpoint.norm.PojoInfo.Property;
 
 public class Query {
 

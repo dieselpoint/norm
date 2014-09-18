@@ -1,4 +1,4 @@
-package com.dieselpoint.norm2;
+package com.dieselpoint.norm;
 
 @SuppressWarnings("serial")
 public class DbException extends RuntimeException {

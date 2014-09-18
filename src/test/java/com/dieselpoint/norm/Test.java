@@ -13,9 +13,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.dieselpoint.norm2.Database;
-import com.dieselpoint.norm2.Transaction;
-
 public class Test {
 	
 	static public void main(String [] args) throws SQLException, FileNotFoundException, IOException {
