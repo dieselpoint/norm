@@ -12,6 +12,11 @@
 	<description>An extremely lightweight layer over JDBC</description>
 	<url>https://github.com/dieselpoint/norm</url>
 
+	<organization>
+		<name>Dieselpoint, Inc.</name>
+		<url>https://github.com/dieselpoint</url>
+	</organization>
+
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
@@ -25,17 +30,16 @@
 		<connection>scm:git:https://github.com/dieselpoint/norm.git</connection>
 	</scm>
 
-	<distributionManagement>
-		<repository>
-			<id>nexus</id>
-			<url>http://maven.dieselpoint.com/content/repositories/dieselpoint.public.releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>nexus</id>
-			<url>http://maven.dieselpoint.com/content/repositories/dieselpoint.public.snapshots</url>
-			<uniqueVersion>false</uniqueVersion>
-		</snapshotRepository>
-	</distributionManagement>
+	<developers>
+		<developer>
+			<name>Chris Cleveland</name>
+		</developer>
+	</developers>
+
+	<!-- <distributionManagement> <repository> <id>nexus</id> <url>http://maven.dieselpoint.com/content/repositories/dieselpoint.public.releases</url> 
+		</repository> <snapshotRepository> <id>nexus</id> <url>http://maven.dieselpoint.com/content/repositories/dieselpoint.public.snapshots</url> 
+		<uniqueVersion>false</uniqueVersion> </snapshotRepository> </distributionManagement> -->
+
 
 	<prerequisites>
 		<maven>3.0.4</maven>
@@ -55,6 +59,23 @@
 					<source>1.7</source>
 					<target>1.7</target>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<configuration>
+					<attach>true</attach>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

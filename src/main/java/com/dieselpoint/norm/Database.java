@@ -9,22 +9,17 @@ import javax.sql.DataSource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-
+/**
+ * Provides methods to access a database.
+ */
 public class Database {
 	
-	/*
-	 * TODO
-	 * docs
-	 *   review datasources. document design pattern
-	 *   all annotations
-	 *   put test code in docs
-	 *   sample one-liners
-	 * put on maven central
-	 */
-	
-	
 	private DataSource ds;
-	
+
+	/**
+	 * Provides the DataSource used by this database. Override this method 
+	 * to change how the DataSource is created or configured.
+	 */
 	protected DataSource getDataSource() throws SQLException {
 		HikariConfig config = new HikariConfig();
 		config.setMaximumPoolSize(100);
@@ -35,19 +30,39 @@ public class Database {
 		config.addDataSourceProperty("password", System.getProperty("norm.password"));
 		return new HikariDataSource(config);
 	}
-	
+
+	/**
+	 * Create a query using straight SQL. Overrides any other methods
+	 * like .where(), .orderBy(), etc.
+	 * @param sql The SQL string to use, may include ? parameters.
+	 * @param args The parameter values to use in the query.
+	 */
 	public Query sql(String sql, Object... args) {
 		return new Query(this).sql(sql, args);
 	}
-	
+
+	/**
+	 * Create a query with the given where clause.
+	 * @param where Example: "name=?"
+	 * @param args The parameter values to use in the where, example: "Bob"
+	 */
 	public Query where(String where, Object... args) {
 		return new Query(this).where(where, args);
 	}
+
 	
+	/**
+	 * Create a query with the given "order by" clause.
+	 */
 	public Query orderBy(String orderBy) {
 		return new Query(this).orderBy(orderBy);
 	}
-	
+
+	/**
+	 * Returns a JDBC connection. Can be useful if you need to customize
+	 * how transactions work, but you shouldn't normally need to call this method. 
+	 * You must close the connection after you're done with it.
+	 */
 	public Connection getConnection() {
 		try {
 
@@ -61,32 +76,62 @@ public class Database {
 		}
 	}
 
+	/**
+	 * Simple, primitive method for creating a table based on a pojo. 
+	 * Does not add indexes or implement complex data types. Probably
+	 * not suitable for production use.
+	 */
 	public Query createTable(Class clazz) {
 		return new Query(this).createTable(clazz);
 	}
 
+	/**
+	 * Insert a row into a table. The row pojo can
+	 * have a @Table annotation to specify the table, 
+	 * or you can specify the table with the .table() method.
+	 */
 	public Query insert(Object row) {
 		return new Query(this).insert(row);
 	}
 
+	/**
+	 * Delete a row in a table. This method looks for an @Id annotation
+	 * to find the row to delete by primary key, and looks for a @Table
+	 * annotation to figure out which table to hit.
+	 */
 	public Query delete(Object row) {
 		return new Query(this).delete(row);
 	}
-	
+
+	/**
+	 * Execute a "select" query and get some results. The system will create
+	 * a new object of type "clazz" for each row in the result set and add
+	 * it to a List. It will also try to extract the table name from a @Table
+	 * annotation in the clazz.
+	 */
 	public <T> List<T> results(Class<T> clazz) {
 		return new Query(this).results(clazz);
 	}
 
+	/**
+	 * Update a row in a table. It will match an existing row based
+	 * on the primary key.
+	 */
 	public Query update(Object row) {
 		return new Query(this).update(row);
 	}
-	
+
+	/**
+	 * Create a query and specify which table it operates on.
+	 */
 	public Query table(String table) {
 		return new Query(this).table(table);
 	}
 	
 	/**
-	 * Start a database transaction. Perform database manipulations, then call
+	 * Start a database transaction. Pass the transaction object
+	 * to each query or command that should be part of the transaction
+	 * using the .transaction() method. Then call
 	 * transaction.commit() or .rollback() to complete the process.
 	 * No need to close the transaction.
 	 * @return a transaction object
@@ -97,6 +142,9 @@ public class Database {
 		return trans;
 	}
 
+	/**
+	 * Create a query that uses this transaction object.
+	 */
 	public Query transaction(Transaction trans) {
 		return new Query(this).transaction(trans);
 	}
