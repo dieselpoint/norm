@@ -1,13 +1,11 @@
 package com.dieselpoint.norm;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -18,7 +16,11 @@ public class Test {
 	
 	static public void main(String [] args) throws SQLException, FileNotFoundException, IOException {
 		
-		setSysProps();
+		System.setProperty("norm.dataSourceClassName", "com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+		System.setProperty("norm.serverName", "localhost");
+		System.setProperty("norm.databaseName", "mydb");
+		System.setProperty("norm.user", "root");
+		System.setProperty("norm.password", "rootpassword");
 		
 		Database db = new Database();
 		
@@ -116,26 +118,5 @@ public class Test {
 			return id + " " + firstName + " " + lastName;
 		}
 	}
-	
-	private static void setSysProps() throws FileNotFoundException, IOException {
-		Properties p = new Properties();
-	    p.load(new FileInputStream("./etc/dbproperties.txt"));
-	    for (String name : p.stringPropertyNames()) {
-	        String value = p.getProperty(name);
-	        System.setProperty(name, value);
-	    }
-	}
-
-
-	/*
-	 * to bypass the hikari code, use this in Database.getDataSource():
-	com.mysql.jdbc.jdbc2.optional.MysqlDataSource ds = new com.mysql.jdbc.jdbc2.optional.MysqlDataSource();
-	ds.setServerName(System.getProperty("norm.serverName"));
-	ds.setDatabaseName(System.getProperty("norm.databaseName"));
-	ds.setUser(System.getProperty("norm.user"));
-	ds.setPassword(System.getProperty("norm.password"));
-	return ds;
-	*/
-	
 	
 }

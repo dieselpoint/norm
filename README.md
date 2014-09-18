@@ -14,11 +14,11 @@ List<Person> people = db.where("name=?", "Bob").results(Person.class);
 
 [Configure your system](#configuration).
 
-[Start with this sample code](#sample code).
+[Start with this sample code](#sample-code).
 
 ###Overview
 
-Norm is an extremely lightweight layer over JDBC. It gets rid of large amounts of boilerplate JDBC code. It steals some ideas from [ActiveJDBC](http://code.google.com/p/activejdbc/), which is a very nice system, but requires some very ugly instrumentation / byte code rewriting. 
+Norm is an extremely lightweight layer over JDBC. It gets rid of large amounts of boilerplate JDBC code. It steals some ideas from [ActiveJDBC](hhttp://javalite.io/), which is a very nice system, but requires some very ugly instrumentation / byte code rewriting. 
 
 ###Why?
 
@@ -50,7 +50,7 @@ db.insert(joe);
 List<Person> people = db.where("lastname=?", "Biden").orderBy("lastName").results(Person.class);
 ```
 
-The very simple Person class:
+The very simple `Person` class:
 
 ```Java
 @Table(name="people")
