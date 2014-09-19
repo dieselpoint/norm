@@ -168,7 +168,15 @@ Internally, Norm uses the [Hikari](http://brettwooldridge.github.io/HikariCP/) c
 
 If you don't want to use system properties, or your DataSource needs some custom startup parameters, just subclass the [Database](https://github.com/dieselpoint/norm/blob/master/src/main/java/com/dieselpoint/norm/Database.java) class and override the .getDataSource() method. You can supply any DataSource you like.
 
-And, of course, you need to include your JDBC driver as a dependency.
+And, of course, you need to include your JDBC driver as a dependency. Here's a sample for MySQL:
+
+```
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>5.1.32</version>
+</dependency>
+```  
 
 ****
 
