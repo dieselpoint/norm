@@ -72,7 +72,7 @@ public class Query {
 	 * @param sql The SQL string to use, may include ? parameters.
 	 * @param args The parameter values to use in the query.
 	 */
-	public Query sql(String sql, List args) {
+	public Query sql(String sql, List<?> args) {
 		this.sql = sql;
 		this.args = args.toArray();
 		return this;
@@ -91,7 +91,7 @@ public class Query {
 	 * if a class that implements Map is specified.
 	 */
 	public <T> T first(Class<T> clazz) {
-		List list = results(clazz);
+		List<T> list = results(clazz);
 		if (list.size() > 0) {
 			return (T) list.get(0);
 		} else {
@@ -103,9 +103,9 @@ public class Query {
 	/**
 	 * Provides the results as a list of Map objects instead of a list of pojos.
 	 */
-	private List<Map> resultsMap(Class<Map> clazz) {
+	private List<Map> resultsMap(Class<Map<String, Object>> clazz) {
 
-		List<Map> out = new ArrayList();
+		List<Map> out = new ArrayList<Map>();
 		Connection con = null;
 		PreparedStatement state = null;
 
@@ -129,7 +129,7 @@ public class Query {
 			int colCount = meta.getColumnCount();
 
 			while (rs.next()) {
-				Map map = clazz.newInstance();
+				Map<String, Object> map = clazz.newInstance();
 
 				for (int i = 1; i <= colCount; i++) {
 					String colName = meta.getColumnName(i);
@@ -154,13 +154,14 @@ public class Query {
 	 * Execute a "select" query and return a list of results where each row
 	 * is an instance of clazz.
 	 */
+	@SuppressWarnings("unchecked")
 	public <T> List<T> results(Class<T> clazz) {
 		
 		if (Map.class.isAssignableFrom(clazz)) {
-			return (List<T>) resultsMap((Class<Map>) clazz);
+			return (List<T>) resultsMap((Class<Map<String, Object>>) clazz);
 		}
 
-		List<T> out = new ArrayList();
+		List<T> out = new ArrayList<T>();
 		Connection con = null;
 		PreparedStatement state = null;
 
@@ -185,7 +186,7 @@ public class Query {
 			int colCount = meta.getColumnCount();
 
 			while (rs.next()) {
-				Object row = clazz.newInstance();
+				T row = clazz.newInstance();
 
 				for (int i = 1; i <= colCount; i++) {
 					String colName = meta.getColumnName(i);
@@ -371,7 +372,7 @@ public class Query {
 	 * Does not add indexes or implement complex data types. Probably
 	 * not suitable for production use.
 	 */
-	public Query createTable(Class clazz) {
+	public Query createTable(Class<?> clazz) {
 		try {
 			StringBuilder buf = new StringBuilder();
 
@@ -389,7 +390,7 @@ public class Query {
 				needsComma = true;
 				
 				String colType = "varchar(512)";
-				Class dataType = prop.dataType;
+				Class<?> dataType = prop.dataType;
 				
 				if (dataType.equals(Integer.class) || dataType.equals(int.class)) {
 					colType = "integer";

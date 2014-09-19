@@ -26,7 +26,7 @@ public class PojoInfo {
 	 * annotations recognized: @ Id, @ GeneratedValue @ transient @ table
 	 */
 
-	private LinkedHashMap<String, Property> propertyMap = new LinkedHashMap();
+	private LinkedHashMap<String, Property> propertyMap = new LinkedHashMap<String, Property>();
 	private String table;
 	private String primaryKeyName;
 	private String generatedColumnName;
@@ -46,12 +46,12 @@ public class PojoInfo {
 		Method readMethod;
 		Method writeMethod;
 		Field field;
-		Class dataType;
+		Class<?> dataType;
 		boolean isGenerated;
 		boolean isPrimaryKey;
 	}
 
-	public PojoInfo(Class clazz) throws IntrospectionException {
+	public PojoInfo(Class<?> clazz) throws IntrospectionException {
 	    
 	    for (Field field: clazz.getFields()) {
 	    	if (Modifier.isPublic(field.getModifiers())) {
@@ -197,7 +197,7 @@ public class PojoInfo {
 
 	private void makeInsertSql() {
 		
-		ArrayList<String> cols = new ArrayList();
+		ArrayList<String> cols = new ArrayList<String>();
 		for (Property prop: propertyMap.values()) {
 			if (prop.isGenerated) {
 				continue;
@@ -221,7 +221,7 @@ public class PojoInfo {
 	
 	private void makeUpdateSql() {
 		
-		ArrayList<String> cols = new ArrayList();
+		ArrayList<String> cols = new ArrayList<String>();
 		for (Property prop: propertyMap.values()) {
 			
 			if (prop.isPrimaryKey) {
@@ -288,7 +288,7 @@ public class PojoInfo {
 	}
 
 	private void makeSelectColumns() {
-		ArrayList<String> cols = new ArrayList();
+		ArrayList<String> cols = new ArrayList<String>();
 		for (Property prop: propertyMap.values()) {
 			cols.add(prop.name);
 		}

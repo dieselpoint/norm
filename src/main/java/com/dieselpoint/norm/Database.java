@@ -28,6 +28,7 @@ public class Database {
 		config.addDataSourceProperty("databaseName", System.getProperty("norm.databaseName"));
 		config.addDataSourceProperty("user", System.getProperty("norm.user"));
 		config.addDataSourceProperty("password", System.getProperty("norm.password"));
+		config.setInitializationFailFast(true);
 		return new HikariDataSource(config);
 	}
 

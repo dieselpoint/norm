@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PojoCache {
 	
-	private static ConcurrentHashMap<Class, PojoInfo> map = new ConcurrentHashMap();
+	private static ConcurrentHashMap<Class, PojoInfo> map = new ConcurrentHashMap<Class, PojoInfo>();
 	
 	public static PojoInfo getPojoInfo(Class clazz) throws IntrospectionException {
 		PojoInfo pi = map.get(clazz);
