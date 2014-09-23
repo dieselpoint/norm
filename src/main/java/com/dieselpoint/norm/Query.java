@@ -110,7 +110,7 @@ public class Query {
 		PreparedStatement state = null;
 
 		try {
-			assembleSql();
+			assembleSelectSql();
 
 			Connection localCon;
 			if (transaction == null) {
@@ -167,7 +167,7 @@ public class Query {
 
 		try {
 			pojoInfo = PojoCache.getPojoInfo(clazz);
-			assembleSql();
+			assembleSelectSql();
 
 			Connection localCon;
 			if (transaction == null) {
@@ -228,7 +228,7 @@ public class Query {
 	}
 	
 
-	private void assembleSql() {
+	private void assembleSelectSql() {
 		if (sql != null) {
 			return;
 		}

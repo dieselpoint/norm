@@ -213,7 +213,7 @@ public class PojoInfo {
 		buf.append(" (");
 		buf.append(Util.join(insertColumnNames)); // comma sep list?
 		buf.append(") values (");
-		appendQuestionMarks(buf, insertSqlArgCount);
+		buf.append(Util.getQuestionMarks(insertSqlArgCount));
 		buf.append(")");
 		
 		insertSql = buf.toString();
@@ -252,16 +252,7 @@ public class PojoInfo {
 		
 		updateSql = buf.toString();
 	}
-	
-	
-	private void appendQuestionMarks(StringBuilder sb, int size) {
-		for (int i = 0; i < size; i++) {
-			if (i > 0) {
-				sb.append(',');
-			}
-			sb.append('?');
-		}
-	}
+
 
 	public Object[] getInsertArgs(Object row) throws NoSuchFieldException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Object [] args = new Object[insertSqlArgCount];

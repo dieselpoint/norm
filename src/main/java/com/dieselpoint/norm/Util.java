@@ -27,6 +27,17 @@ public class Util {
 		}
 		return buf.toString();
 	}
-
+	
+	public static String getQuestionMarks(int count) {
+		StringBuilder sb = new StringBuilder(count * 2);
+		for (int i = 0; i < count; i++) {
+			if (i > 0) {
+				sb.append(',');
+			}
+			sb.append('?');
+		}
+		return sb.toString();
+	}
+	
 	
 }
