@@ -123,7 +123,8 @@ public class Person {
 
 `@GeneratedValue` indicates that the field is marked AUTO_INCREMENT and will be generated on the server. This prevents the field from being inserted, and it fills in the value in the POJO after an insert.
 
-`@Transient` tells the system to ignore the field. It doesn't get persisted to the database.
+`@Transient` tells the system to ignore the field. It doesn't get persisted to the database. (Note that this is
+`javax.persistence.Transient`, not `java.beans.Transient`. Different annotations.)
 
 
 ###Transactions
