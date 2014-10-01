@@ -49,6 +49,8 @@ public class PojoInfo {
 		Class<?> dataType;
 		boolean isGenerated;
 		boolean isPrimaryKey;
+		boolean isEnumField;
+		Class<Enum> enumClass;
 	}
 
 	public PojoInfo(Class<?> clazz) throws IntrospectionException {
@@ -75,6 +77,11 @@ public class PojoInfo {
 	    			pair.isGenerated = true;
 	    		}
 	            
+	    		if (field.getType().isEnum()) {
+	    			pair.isEnumField = true;
+	    			pair.enumClass = (Class<Enum>) field.getType();
+	    		}
+	    		
 	            propertyMap.put(pair.name, pair);
 	    	}
 	    }
@@ -146,6 +153,16 @@ public class PojoInfo {
 			return prop.readMethod.invoke(pojo);
 		}
 		
+		if (prop.isEnumField) {
+			// convert all enums to string
+			Object o = prop.field.get(pojo);
+			if (o == null) {
+				return null;
+			} else {
+				return o.toString();
+			}
+		}
+		
 		if (prop.field != null) {
 			return prop.field.get(pojo);
 		}
@@ -165,10 +182,20 @@ public class PojoInfo {
 		}
 		
 		if (pair.field != null) {
-			pair.field.set(pojo, value);
+			Object val = value;
+			
+			if (pair.isEnumField) {
+				// convert to enum const
+				val = getEnumConst(pair.enumClass, value.toString());
+			}
+			
+			pair.field.set(pojo, val);
 			return;
 		}
-		
+	}
+
+	private <T extends Enum<T>> Object getEnumConst(Class<T> enumType, String o) {
+		return Enum.valueOf(enumType, o);
 	}
 
 	public String getTable() {
