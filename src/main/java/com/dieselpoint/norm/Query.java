@@ -348,8 +348,16 @@ public class Query {
 			if (insertRow != null) {
 				ResultSet generatedKeys = state.getGeneratedKeys();
 				if (generatedKeys.next()) {
-					long newKey = generatedKeys.getLong(1);
 					PojoInfo pi = PojoCache.getPojoInfo(insertRow.getClass());
+					Property prop = pojoInfo.getProperty(pojoInfo.getGeneratedColumnName());
+					
+					Object newKey;
+					if (prop.dataType.isAssignableFrom(int.class)) {
+						newKey = generatedKeys.getInt(1);
+					} else {
+						newKey = generatedKeys.getLong(1);
+					}
+					
 					pi.putValue(insertRow, pojoInfo.getGeneratedColumnName(), newKey);
 				}			
 			}

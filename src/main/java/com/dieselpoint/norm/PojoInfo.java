@@ -205,6 +205,10 @@ public class PojoInfo {
 	public Collection<Property> getProperties() {
 		return propertyMap.values();
 	}
+	
+	public Property getProperty(String columnName) {
+		return propertyMap.get(columnName);
+	}
 
 	public String getPrimaryKeyName() {
 		return primaryKeyName;
