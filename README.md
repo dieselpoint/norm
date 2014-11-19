@@ -1,10 +1,11 @@
 #Norm
 
-Norm is a crazy simple way to access a JDBC database, usually in one line of code. It purges your code of the devil's spawn that is [Hibernate](http://www.hibernate.org), [JPA](http://en.wikipedia.org/wiki/Java_Persistence_API), [ORM](http://en.wikipedia.org/wiki/Object-relational_mapping), and other very bad no-good software. 
+Norm is a simple way to access a JDBC database, usually in one line of code. It purges your code of 
+the complex mess that is [Hibernate](http://www.hibernate.org), [JPA](http://en.wikipedia.org/wiki/Java_Persistence_API), and [ORM](http://en.wikipedia.org/wiki/Object-relational_mapping). 
 
 [Lots of people think that complex ORMs are a bad idea.](http://stackoverflow.com/questions/398134/what-are-the-advantages-of-using-an-orm/398182)
 
-Let's get it on:
+Here it is:
 
 ```Java
 List<Person> people = db.where("name=?", "Bob").results(Person.class);
@@ -28,8 +29,8 @@ Norm returns results as a list of [POJOs](http://en.wikipedia.org/wiki/Plain_Old
 
 POJOs are fabulous, truly fabulous:
 
-* With the newer JVMs, populating them is really fast.
-* You can use them for declaratory data validation among other things.
+* Populating them is really fast with the newer JVMs.
+* You can use them for declaratory data validation.
 * Using [Jackson](https://github.com/FasterXML/jackson), you can serialize them to JSON.
 
 which means that, yes, you can use the same class to fetch a record from a database and then create JSON from it.
@@ -50,7 +51,7 @@ db.insert(joe);
 List<Person> people = db.where("lastname=?", "Biden").orderBy("lastName").results(Person.class);
 ```
 
-The very simple `Person` class:
+The `Person` class:
 
 ```Java
 @Table(name="people")
@@ -90,7 +91,7 @@ db.sql("drop table people").execute();
 
 ###Maps and Lists
 
-Don't want to create a new POJO class for every freakin' query? No problem, just use a Map:
+Don't want to create a new POJO class for every query? No problem, just use a Map:
 
 ```Java
 List<Map> list = db.sql("select * from people").results(HashMap.class);
