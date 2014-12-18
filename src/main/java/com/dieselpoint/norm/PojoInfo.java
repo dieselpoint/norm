@@ -56,7 +56,13 @@ public class PojoInfo {
 	public PojoInfo(Class<?> clazz) throws IntrospectionException {
 	    
 	    for (Field field: clazz.getFields()) {
-	    	if (Modifier.isPublic(field.getModifiers())) {
+	    	int modifiers = field.getModifiers();
+	    	
+	    	if (Modifier.isPublic(modifiers)) {
+	    		
+	    		if (Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers)) {
+	    			continue;
+	    		}
 	    		
 	    		if (field.getAnnotation(Transient.class) != null) {
 	    			continue;

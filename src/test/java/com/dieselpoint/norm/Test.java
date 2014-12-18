@@ -114,6 +114,8 @@ public class Test {
 		@Transient
 		public String ignoreMe;
 		
+		public static String ignoreThisToo;
+		
 		public String toString() {
 			return id + " " + firstName + " " + lastName;
 		}
