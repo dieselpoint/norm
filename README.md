@@ -170,7 +170,9 @@ Internally, Norm uses the [Hikari](http://brettwooldridge.github.io/HikariCP/) c
 
 If you don't want to use system properties, or your DataSource needs some custom startup parameters, just subclass the [Database](https://github.com/dieselpoint/norm/blob/master/src/main/java/com/dieselpoint/norm/Database.java) class and override the .getDataSource() method. You can supply any DataSource you like.
 
-And, of course, you need to include your JDBC driver as a dependency. Here's a sample for MySQL:
+In particular, you might want to override .getDataSource() to set the maximum number of connections that the connection pool opens. By default, it's set to 100, but that is really excessive if you have a large number of servers connecting to a single database. Hikari opens all the connections on startup and leaves them open. This can be a burden on your database server.
+
+Finally, you'll need to include your JDBC driver as a dependency. Here's a sample for MySQL:
 
 ```
 <dependency>
