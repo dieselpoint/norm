@@ -185,14 +185,24 @@ public class Query {
 			ResultSetMetaData meta = rs.getMetaData();
 			int colCount = meta.getColumnCount();
 
-			while (rs.next()) {
-				T row = clazz.newInstance();
-
-				for (int i = 1; i <= colCount; i++) {
-					String colName = meta.getColumnName(i);
-					pojoInfo.putValue(row, colName, rs.getObject(i));
+			if (clazz.isPrimitive() || clazz.isAssignableFrom(String.class)) {
+				// if the receiver class is a primitive just grab the first column and assign it
+				while (rs.next()) {
+					Object colValue = rs.getObject(1);
+					out.add((T) colValue);
 				}
-				out.add((T) row);
+				
+			} else {
+				while (rs.next()) {
+					T row = clazz.newInstance();
+
+					for (int i = 1; i <= colCount; i++) {
+						String colName = meta.getColumnName(i);
+						Object colValue = rs.getObject(i);
+						pojoInfo.putValue(row, colName, colValue);
+					}
+					out.add((T) row);
+				}
 			}
 
 		} catch (InstantiationException | IllegalAccessException
