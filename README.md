@@ -99,6 +99,16 @@ List<Map> list = db.sql("select * from people").results(HashMap.class);
 
 HashMap, LinkedHashMap or any class that implements the Map interface will work.
 
+###Primitives
+
+A single column result set can come back in the form of a list of primitives, or even as a single primitive. 
+
+```Java
+Long count = db.sql("select count(*) from people").results(Long.class);
+```
+
+It's sometimes really useful to get a `List<String>`.
+
 ###Annotations
 
 Tell the system what to do with your POJOs by using a few annotations. Norm implements a subset of the `javax.persistence` annotations, including [@Table](http://docs.oracle.com/javaee/7/api/javax/persistence/Table.html), [@Id](http://docs.oracle.com/javaee/7/api/javax/persistence/Id.html), [@GeneratedValue](http://docs.oracle.com/javaee/7/api/javax/persistence/GeneratedValue.html) and [@Transient](http://docs.oracle.com/javaee/7/api/javax/persistence/Transient.html). (I'll probably add [@Column](http://docs.oracle.com/javaee/7/api/javax/persistence/Column.html) soon.)
@@ -172,6 +182,11 @@ If you don't want to use system properties, or your DataSource needs some custom
 
 In particular, you might want to override .getDataSource() to set the maximum number of connections that the connection pool opens. By default, it's set to 100, but that is really excessive if you have a large number of servers connecting to a single database. Hikari opens all the connections on startup and leaves them open. This can be a burden on your database server.
 
+###Dependencies
+Norm needs javax.persistence, but that's just for annotations.
+
+It also has a dependency on HikariCP for connection pooling, but that's entirely optional. If you don't want it, add an `<exclude>`  to the Norm dependency in your project's pom. Then subclass Database and override the getDataSource() method. 
+
 Finally, you'll need to include your JDBC driver as a dependency. Here's a sample for MySQL:
 
 ```
@@ -184,7 +199,7 @@ Finally, you'll need to include your JDBC driver as a dependency. Here's a sampl
 
 ****
 
-That's about it. Post any bugs or feature requests to the issue tracker.
+That's about it. Post any bugs or feature requests to the issue tracker. Post any support requests to Stack Overflow.
 
 
 

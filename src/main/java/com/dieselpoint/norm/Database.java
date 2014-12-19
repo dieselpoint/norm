@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import com.dieselpoint.norm.sqlmakers.SqlMaker;
+import com.dieselpoint.norm.sqlmakers.StandardSqlMaker;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -14,8 +16,20 @@ import com.zaxxer.hikari.HikariDataSource;
  */
 public class Database {
 	
+	private SqlMaker sqlMaker = new StandardSqlMaker();
 	private DataSource ds;
 
+	/**
+	 * Set the maker object for the particular flavor of sql.
+	 */
+	public void setSqlMaker(SqlMaker sqlMaker) {
+		this.sqlMaker = sqlMaker;
+	}
+	
+	public SqlMaker getSqlMaker() {
+		return sqlMaker;
+	}
+	
 	/**
 	 * Provides the DataSource used by this database. Override this method 
 	 * to change how the DataSource is created or configured.

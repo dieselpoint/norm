@@ -52,12 +52,20 @@ public class Test {
 		List<Name> list2 = db.results(Name.class);
 		dump("bill is now joe, and rowsAffected=" + rowsAffected, list2);
 		
-		/* test delete with where clause */
-		db.table("names").where("firstName=?", "Joe").delete();
-		
 		/* test using a map for results instead of a pojo */
 		Map map = db.sql("select count(*) as count from names").first(HashMap.class);
-		System.out.println("Num records (should be 0):" + map.get("count"));
+		System.out.println("Num records (should be 1):" + map.get("count"));
+		
+		/* test using a primitive for results instead of a pojo */
+		Long count = db.sql("select count(*) as count from names").first(Long.class);
+		System.out.println("Num records (should be 1):" + count);
+		
+		/* test delete with where clause */
+		db.table("names").where("firstName=?", "Joe").delete();
+
+		/* make sure the delete happened */
+		count = db.sql("select count(*) as count from names").first(Long.class);
+		System.out.println("Num records (should be 0):" + count);
 		
 		/* test transactions */
 		db.insert(new Name("Fred", "Jones"));

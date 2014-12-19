@@ -1,7 +1,5 @@
 package com.dieselpoint.norm;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.dieselpoint.norm.PojoInfo.Property;
+import com.dieselpoint.norm.sqlmakers.SqlMaker;
 
 /**
  * Holds all of the information in a query. Create a query
@@ -22,7 +20,6 @@ import com.dieselpoint.norm.PojoInfo.Property;
  */
 public class Query {
 
-	private PojoInfo pojoInfo;
 	private Object insertRow;
 	
 	private String sql;
@@ -35,11 +32,13 @@ public class Query {
 	private int rowsAffected;
 
 	private Database db;
+	private SqlMaker sqlMaker;
 	
 	private Transaction transaction;
 
 	public Query(Database db) {
 		this.db = db;
+		this.sqlMaker = db.getSqlMaker();
 	}
 
 	/**
@@ -110,7 +109,9 @@ public class Query {
 		PreparedStatement state = null;
 
 		try {
-			assembleSelectSql();
+			if (sql == null) {
+				sql = sqlMaker.getSelectSql(this, clazz);
+			}
 
 			Connection localCon;
 			if (transaction == null) {
@@ -166,8 +167,9 @@ public class Query {
 		PreparedStatement state = null;
 
 		try {
-			pojoInfo = PojoCache.getPojoInfo(clazz);
-			assembleSelectSql();
+			if (sql == null) {
+				sql = sqlMaker.getSelectSql(this, clazz);
+			}
 
 			Connection localCon;
 			if (transaction == null) {
@@ -185,7 +187,7 @@ public class Query {
 			ResultSetMetaData meta = rs.getMetaData();
 			int colCount = meta.getColumnCount();
 
-			if (clazz.isPrimitive() || clazz.isAssignableFrom(String.class)) {
+			if (Util.isPrimitiveOrString(clazz)) {
 				// if the receiver class is a primitive just grab the first column and assign it
 				while (rs.next()) {
 					Object colValue = rs.getObject(1);
@@ -199,16 +201,17 @@ public class Query {
 					for (int i = 1; i <= colCount; i++) {
 						String colName = meta.getColumnName(i);
 						Object colValue = rs.getObject(i);
-						pojoInfo.putValue(row, colName, colValue);
+						
+						// TODO this may be a little slow
+						// must benchmark
+						sqlMaker.putValue(row, colName, colValue); 
 					}
 					out.add((T) row);
 				}
 			}
 
 		} catch (InstantiationException | IllegalAccessException
-				| InvocationTargetException | SQLException
-				| IntrospectionException | NoSuchFieldException
-				| IllegalArgumentException e) {
+				| SQLException	e) {
 			throw new DbException(e);
 		} finally {
 			close(state);
@@ -238,91 +241,36 @@ public class Query {
 	}
 	
 
-	private void assembleSelectSql() {
-		if (sql != null) {
-			return;
-		}
-		
-		String columns = "*";
-		if (pojoInfo != null) {
-			columns = pojoInfo.getSelectColumns();
-		}
-		
-		StringBuilder out = new StringBuilder();
-		out.append("select ");
-		out.append(columns);
-		out.append(" from ");
-		out.append(getTable());
-		if (where != null) {
-			out.append(" where ");
-			out.append(where);
-		}
-		if (orderBy != null) {
-			out.append(" order by ");
-			out.append(orderBy);
-		}
-		sql = out.toString();
-
-	}
-
-	private String getTable() {
-		if (table == null && pojoInfo != null) {
-			return pojoInfo.getTable();
-		}
-		return table;
-	}
-
 	
 	/**
-	 * Insert a row into a table. The row pojo can
-	 * have a @Table annotation to specify the table, 
-	 * or you can specify the table with the .table() method.
+	 * Insert a row into a table. The row pojo can have a @Table annotation to
+	 * specify the table, or you can specify the table with the .table() method.
 	 */
 	public Query insert(Object row) {
-		
-		try {
-			insertRow = row;
-			pojoInfo = PojoCache.getPojoInfo(row.getClass());
-			
-			sql = pojoInfo.getInsertSql();
-			args = pojoInfo.getInsertArgs(row);
-			
-			execute();
-			
-		} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | IntrospectionException e) {
-			throw new DbException(e);
-		}
+
+		insertRow = row;
+
+		sql = sqlMaker.getInsertSql(this, row);
+		args = sqlMaker.getInsertArgs(this, row);
+
+		execute();
 
 		return this;
 	}
-
+	
 	
 	/**
-	 * Update a row in a table. It will match an existing row based
-	 * on the primary key.
+	 * Update a row in a table. It will match an existing row based on the
+	 * primary key.
 	 */
 	public Query update(Object row) {
-		
-		try {
-			pojoInfo = PojoCache.getPojoInfo(row.getClass());
-			String primaryKey = pojoInfo.getPrimaryKeyName();
-			
-			if (primaryKey == null) {
-				throw new DbException("No primary key specified in the row. Use the @Id annotation.");
-			}
-			
-			sql = pojoInfo.getUpdateSql();
-			args = pojoInfo.getUpdateArgs(row);
-			
-			execute();
-			
-		} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | IntrospectionException e) {
-			throw new DbException(e);
-		}
 
+		sql = sqlMaker.getUpdateSql(this, row);
+		args = sqlMaker.getUpdateArgs(this, row);
+
+		execute();
 		return this;
 	}
-
 
 	/**
 	 * Execute a sql command that does not return a result set. The sql should previously have
@@ -358,24 +306,11 @@ public class Query {
 			if (insertRow != null) {
 				ResultSet generatedKeys = state.getGeneratedKeys();
 				if (generatedKeys.next()) {
-					PojoInfo pi = PojoCache.getPojoInfo(insertRow.getClass());
-					Property prop = pojoInfo.getProperty(pojoInfo.getGeneratedColumnName());
-					
-					Object newKey;
-					if (prop.dataType.isAssignableFrom(int.class)) {
-						newKey = generatedKeys.getInt(1);
-					} else {
-						newKey = generatedKeys.getLong(1);
-					}
-					
-					pi.putValue(insertRow, pojoInfo.getGeneratedColumnName(), newKey);
+					sqlMaker.populateGeneratedKey(generatedKeys, insertRow);
 				}			
 			}
 
-		} catch (IllegalAccessException
-				| InvocationTargetException | SQLException
-				| NoSuchFieldException
-				| IllegalArgumentException | IntrospectionException e) {
+		} catch (SQLException | IllegalArgumentException e) {
 			throw new DbException(e);
 		} finally {
 			close(state);
@@ -387,93 +322,25 @@ public class Query {
 
 	/**
 	 * Simple, primitive method for creating a table based on a pojo. 
-	 * Does not add indexes or implement complex data types. Probably
-	 * not suitable for production use.
 	 */
 	public Query createTable(Class<?> clazz) {
-		try {
-			StringBuilder buf = new StringBuilder();
-
-			pojoInfo = PojoCache.getPojoInfo(clazz);
-			buf.append("create table ");
-			buf.append(pojoInfo.getTable());
-			buf.append(" (");
-			
-			boolean needsComma = false;
-			for (Property prop : pojoInfo.getProperties()) {
-				
-				if (needsComma) {
-					buf.append(',');
-				}
-				needsComma = true;
-				
-				String colType = "varchar(512)";
-				Class<?> dataType = prop.dataType;
-				
-				if (dataType.equals(Integer.class) || dataType.equals(int.class)) {
-					colType = "integer";
-				} else if (dataType.equals(Long.class) || dataType.equals(long.class)) {
-					colType = "bigint";
-				} else if (dataType.equals(Double.class) || dataType.equals(double.class)) {
-					colType = "double";
-				} else if (dataType.equals(Float.class) || dataType.equals(float.class)) {
-					colType = "float";
-				}
-				
-				buf.append(prop.name);
-				buf.append(" ");
-				buf.append(colType);
-				
-				if (prop.isGenerated) {
-					buf.append(" auto_increment");
-				}
-				
-			}
-			
-			if (pojoInfo.getPrimaryKeyName() != null) {
-				buf.append(", primary key (");
-				buf.append(pojoInfo.getPrimaryKeyName());
-				buf.append(")");
-			}
-			
-			buf.append(")");
-
-			sql = buf.toString();
-			execute();
-			return this;
-
-		} catch (IntrospectionException e) {
-			throw new DbException(e);
-		}
+		sql = sqlMaker.getCreateTableSql(clazz);
+		execute();
+		return this;
 	}
 
 	
 	/**
-	 * Delete a row in a table. This method looks for an @Id annotation
-	 * to find the row to delete by primary key, and looks for a @Table
-	 * annotation to figure out which table to hit.
+	 * Delete a row in a table. This method looks for an @Id annotation to find
+	 * the row to delete by primary key, and looks for a @Table annotation to
+	 * figure out which table to hit.
 	 */
 	public Query delete(Object row) {
-		try {
-			pojoInfo = PojoCache.getPojoInfo(row.getClass());
-			
-			String table = getTable();
-			if (table == null) {
-				throw new DbException("You must specify a table name");
-			}
-			
-			String primaryKeyName = pojoInfo.getPrimaryKeyName();
-			Object primaryKeyValue = pojoInfo.getValue(row, primaryKeyName);
-			args = new Object[1];
-			args[0] = primaryKeyValue;
-			
-			sql = "delete from " + table + " where " + primaryKeyName + "=?";
-			
-			execute();
-			
-		} catch (IntrospectionException | NoSuchFieldException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			throw new DbException(e);
-		}
+
+		sql = sqlMaker.getDeleteSql(this, row);
+		args = sqlMaker.getDeleteArgs(this, row);
+
+		execute();
 		return this;
 	}
 
@@ -518,6 +385,18 @@ public class Query {
 	public Query transaction(Transaction trans) {
 		this.transaction = trans;
 		return this;
+	}
+
+	public String getOrderBy() {
+		return orderBy;
+	}
+
+	public String getWhere() {
+		return where;
+	}
+
+	public String getTable() {
+		return table;
 	}
 	
 }

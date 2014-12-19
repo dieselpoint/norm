@@ -39,5 +39,21 @@ public class Util {
 		return sb.toString();
 	}
 	
-	
+	public static boolean isPrimitiveOrString(Class c) {
+		if (c.isPrimitive()) {
+			return true;
+		} else if (c == Byte.class 
+				|| c == Short.class 
+				|| c == Integer.class
+				|| c == Long.class 
+				|| c == Float.class 
+				|| c == Double.class
+				|| c == Boolean.class 
+				|| c == Character.class
+				|| c == String.class) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
