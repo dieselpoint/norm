@@ -1,26 +1,24 @@
 package com.dieselpoint.norm.sqlmakers;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.dieselpoint.norm.DbException;
 import com.dieselpoint.norm.Query;
 import com.dieselpoint.norm.Util;
-import com.dieselpoint.norm.sqlmakers.PojoInfo.Property;
+import com.dieselpoint.norm.sqlmakers.StandardPojoInfo.Property;
 
 /**
  * Produces ANSI-standard SQL. Extend this class to handle different flavors of sql.
  */
 public class StandardSqlMaker implements SqlMaker {
 
-	private static ConcurrentHashMap<Class, PojoInfo> map = new ConcurrentHashMap<Class, PojoInfo>();
+	private static ConcurrentHashMap<Class, StandardPojoInfo> map = new ConcurrentHashMap<Class, StandardPojoInfo>();
 
-	private PojoInfo getPojoInfo(Class rowClass) {
-		PojoInfo pi = map.get(rowClass);
+	public StandardPojoInfo getPojoInfo(Class rowClass) {
+		StandardPojoInfo pi = map.get(rowClass);
 		if (pi == null) {
-			pi = new PojoInfo(rowClass);
+			pi = new StandardPojoInfo(rowClass);
 			map.put(rowClass, pi);
 			
 			makeInsertSql(pi);
@@ -33,13 +31,13 @@ public class StandardSqlMaker implements SqlMaker {
 	
 	@Override
 	public String getInsertSql(Query query, Object row) {
-		PojoInfo pojoInfo = getPojoInfo(row.getClass());
+		StandardPojoInfo pojoInfo = getPojoInfo(row.getClass());
 		return pojoInfo.insertSql;
 	}
 	
 	@Override
 	public Object[] getInsertArgs(Query query, Object row) {
-		PojoInfo pojoInfo = getPojoInfo(row.getClass());
+		StandardPojoInfo pojoInfo = getPojoInfo(row.getClass());
 		Object [] args = new Object[pojoInfo.insertSqlArgCount];
 		for (int i = 0; i < pojoInfo.insertSqlArgCount; i++) {
 			args[i] = pojoInfo.getValue(row, pojoInfo.insertColumnNames[i]);
@@ -49,7 +47,7 @@ public class StandardSqlMaker implements SqlMaker {
 	
 	@Override
 	public String getUpdateSql(Query query, Object row) {
-		PojoInfo pojoInfo = getPojoInfo(row.getClass());
+		StandardPojoInfo pojoInfo = getPojoInfo(row.getClass());
 		if (pojoInfo.primaryKeyName == null) {
 			throw new DbException("No primary key specified in the row. Use the @Id annotation.");
 		}
@@ -58,7 +56,7 @@ public class StandardSqlMaker implements SqlMaker {
 
 	@Override
 	public Object[] getUpdateArgs(Query query, Object row) {
-		PojoInfo pojoInfo = getPojoInfo(row.getClass());
+		StandardPojoInfo pojoInfo = getPojoInfo(row.getClass());
 		
 		Object [] args = new Object[pojoInfo.updateSqlArgCount];
 		for (int i = 0; i < pojoInfo.updateSqlArgCount - 1; i++) {
@@ -73,7 +71,7 @@ public class StandardSqlMaker implements SqlMaker {
 
 
 
-	protected void makeUpdateSql(PojoInfo pojoInfo) {
+	public void makeUpdateSql(StandardPojoInfo pojoInfo) {
 		
 		ArrayList<String> cols = new ArrayList<String>();
 		for (Property prop: pojoInfo.propertyMap.values()) {
@@ -109,7 +107,7 @@ public class StandardSqlMaker implements SqlMaker {
 	
 
 	
-	protected void makeInsertSql(PojoInfo pojoInfo) {
+	public void makeInsertSql(StandardPojoInfo pojoInfo) {
 		ArrayList<String> cols = new ArrayList<String>();
 		for (Property prop: pojoInfo.propertyMap.values()) {
 			if (prop.isGenerated) {
@@ -133,7 +131,7 @@ public class StandardSqlMaker implements SqlMaker {
 	}
 
 
-	private void makeSelectColumns(PojoInfo pojoInfo) {
+	private void makeSelectColumns(StandardPojoInfo pojoInfo) {
 		ArrayList<String> cols = new ArrayList<String>();
 		for (Property prop: pojoInfo.propertyMap.values()) {
 			cols.add(prop.name);
@@ -148,7 +146,7 @@ public class StandardSqlMaker implements SqlMaker {
 		// unlike insert and update, this needs to be done dynamically
 		// and can't be precalculated because of the where and order by
 		
-		PojoInfo pojoInfo = getPojoInfo(rowClass);
+		StandardPojoInfo pojoInfo = getPojoInfo(rowClass);
 		String columns = pojoInfo.selectColumns;
 		
 		String where = query.getWhere();
@@ -175,9 +173,10 @@ public class StandardSqlMaker implements SqlMaker {
 	}
 
 
+	/*
 	@Override
 	public void putValue(Object pojo, String name, Object value) {
-		PojoInfo pojoInfo = getPojoInfo(pojo.getClass());
+		StandardPojoInfo pojoInfo = getPojoInfo(pojo.getClass());
 		try {
 			pojoInfo.putValue(pojo, name, value);
 		} catch (NoSuchFieldException | IllegalAccessException
@@ -187,28 +186,8 @@ public class StandardSqlMaker implements SqlMaker {
 	}
 
 
-	@Override
-	public void populateGeneratedKey(ResultSet generatedKeys, Object insertRow) {
 
-		try {
-
-			PojoInfo pojoInfo = getPojoInfo(insertRow.getClass());
-			Property prop = pojoInfo.propertyMap
-					.get(pojoInfo.generatedColumnName);
-
-			Object newKey;
-			if (prop.dataType.isAssignableFrom(int.class)) {
-				newKey = generatedKeys.getInt(1);
-			} else {
-				newKey = generatedKeys.getLong(1);
-			}
-
-			pojoInfo.putValue(insertRow, pojoInfo.generatedColumnName, newKey);
-
-		} catch (Throwable t) {
-			throw new DbException(t);
-		}
-	}
+	*/
 
 
 	@Override
@@ -216,7 +195,7 @@ public class StandardSqlMaker implements SqlMaker {
 		
 		StringBuilder buf = new StringBuilder();
 
-		PojoInfo pojoInfo = getPojoInfo(clazz);
+		StandardPojoInfo pojoInfo = getPojoInfo(clazz);
 		buf.append("create table ");
 		buf.append(pojoInfo.table);
 		buf.append(" (");
@@ -268,7 +247,7 @@ public class StandardSqlMaker implements SqlMaker {
 	@Override
 	public String getDeleteSql(Query query, Object row) {
 		
-		PojoInfo pojoInfo = getPojoInfo(row.getClass());
+		StandardPojoInfo pojoInfo = getPojoInfo(row.getClass());
 		
 		String table = query.getTable();  
 		if (table == null) {
@@ -286,12 +265,27 @@ public class StandardSqlMaker implements SqlMaker {
 
 	@Override
 	public Object[] getDeleteArgs(Query query, Object row) {
-		PojoInfo pojoInfo = getPojoInfo(row.getClass());
+		StandardPojoInfo pojoInfo = getPojoInfo(row.getClass());
 		Object primaryKeyValue = pojoInfo.getValue(row, pojoInfo.primaryKeyName);
 		Object [] args = new Object[1];
 		args[0] = primaryKeyValue;
 		return args;
-	}	
+	}
+
+
+	@Override
+	public String getUpsertSql(Query query, Object row) {
+		String msg =
+				"There's no standard upsert implemention. There is one in the MySql driver, though,"
+				+ "so if you're using MySql, call Database.setSqlMaker(new MySqlMaker()); Or roll your own.";
+		throw new UnsupportedOperationException(msg);
+	}
+
+
+	@Override
+	public Object[] getUpsertArgs(Query query, Object row) {
+		throw new UnsupportedOperationException();
+	}
 
 
 }

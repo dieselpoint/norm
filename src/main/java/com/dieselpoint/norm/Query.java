@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.dieselpoint.norm.sqlmakers.PojoInfo;
 import com.dieselpoint.norm.sqlmakers.SqlMaker;
 
 /**
@@ -195,6 +196,7 @@ public class Query {
 				}
 				
 			} else {
+				PojoInfo pojoInfo = sqlMaker.getPojoInfo(clazz);
 				while (rs.next()) {
 					T row = clazz.newInstance();
 
@@ -202,9 +204,7 @@ public class Query {
 						String colName = meta.getColumnName(i);
 						Object colValue = rs.getObject(i);
 						
-						// TODO this may be a little slow
-						// must benchmark
-						sqlMaker.putValue(row, colName, colValue); 
+						pojoInfo.putValue(row, colName, colValue);
 					}
 					out.add((T) row);
 				}
@@ -252,6 +252,22 @@ public class Query {
 
 		sql = sqlMaker.getInsertSql(this, row);
 		args = sqlMaker.getInsertArgs(this, row);
+
+		execute();
+
+		return this;
+	}
+
+	/**
+	 * Upsert a row into a table.
+	 * See http://en.wikipedia.org/wiki/Merge_%28SQL%29
+	 */
+	public Query upsert(Object row) {
+
+		insertRow = row;
+
+		sql = sqlMaker.getUpsertSql(this, row);
+		args = sqlMaker.getUpsertArgs(this, row);
 
 		execute();
 
@@ -306,7 +322,9 @@ public class Query {
 			if (insertRow != null) {
 				ResultSet generatedKeys = state.getGeneratedKeys();
 				if (generatedKeys.next()) {
-					sqlMaker.populateGeneratedKey(generatedKeys, insertRow);
+					
+					PojoInfo pojoInfo = sqlMaker.getPojoInfo(insertRow.getClass());
+					pojoInfo.populateGeneratedKey(generatedKeys, insertRow);
 				}			
 			}
 
