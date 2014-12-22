@@ -1,7 +1,6 @@
 #Norm
 
-Norm is a simple way to access a JDBC database, usually in one line of code. It purges your code of 
-the complex mess that is [Hibernate](http://www.hibernate.org), [JPA](http://en.wikipedia.org/wiki/Java_Persistence_API), and [ORM](http://en.wikipedia.org/wiki/Object-relational_mapping). 
+Norm is a simple way to access a JDBC database, usually in one line of code. It purges your code of the complex mess that is [Hibernate](http://www.hibernate.org), [JPA](http://en.wikipedia.org/wiki/Java_Persistence_API), and [ORM](http://en.wikipedia.org/wiki/Object-relational_mapping). 
 
 [Lots of people think that complex ORMs are a bad idea.](http://stackoverflow.com/questions/398134/what-are-the-advantages-of-using-an-orm/398182)
 
@@ -107,11 +106,11 @@ A single column result set can come back in the form of a list of primitives, or
 Long count = db.sql("select count(*) from people").results(Long.class);
 ```
 
-It's sometimes really useful to get a `List<String>`.
+It's sometimes really useful to get a result in the form of a `List<String>`.
 
 ###Annotations
 
-Tell the system what to do with your POJOs by using a few annotations. Norm implements a subset of the `javax.persistence` annotations, including [@Table](http://docs.oracle.com/javaee/7/api/javax/persistence/Table.html), [@Id](http://docs.oracle.com/javaee/7/api/javax/persistence/Id.html), [@GeneratedValue](http://docs.oracle.com/javaee/7/api/javax/persistence/GeneratedValue.html) and [@Transient](http://docs.oracle.com/javaee/7/api/javax/persistence/Transient.html). (I'll probably add [@Column](http://docs.oracle.com/javaee/7/api/javax/persistence/Column.html) soon.)
+Tell the system what to do with your POJOs by using a few annotations. Norm implements a subset of the `javax.persistence` annotations, including [@Table](http://docs.oracle.com/javaee/7/api/javax/persistence/Table.html), [@Id](http://docs.oracle.com/javaee/7/api/javax/persistence/Id.html), [@GeneratedValue](http://docs.oracle.com/javaee/7/api/javax/persistence/GeneratedValue.html), [@Transient](http://docs.oracle.com/javaee/7/api/javax/persistence/Transient.html) and [@Column](http://docs.oracle.com/javaee/7/api/javax/persistence/Column.html).
 
 ```Java
 @Table(name="people")
@@ -121,6 +120,9 @@ public class Person {
 	public long personId;
 
 	public String Name;
+
+	@Column(name = "theColumnName")
+	public String renameThis;
 
 	@Transient
 	public String thisFieldGetsIgnored;
@@ -134,8 +136,9 @@ public class Person {
 
 `@GeneratedValue` indicates that the field is marked AUTO_INCREMENT and will be generated on the server. This prevents the field from being inserted, and it fills in the value in the POJO after an insert.
 
-`@Transient` tells the system to ignore the field. It doesn't get persisted to the database. (Note that this is
-`javax.persistence.Transient`, not `java.beans.Transient`. Different annotations.)
+`@Transient` tells the system to ignore the field. It doesn't get persisted to the database. (Note that this is `javax.persistence.Transient`, not `java.beans.Transient`. Different annotations.)
+
+`@Column` implements a subset of `javax.persistence.Column`. `Column.name` will attach a property to a database column of a different name. `Column.unique`, `.nullable`, `.length`, `.precision`, and `.scale` apply when you call `Database.createTable()`;
 
 
 ###Transactions
@@ -181,6 +184,10 @@ Internally, Norm uses the [Hikari](http://brettwooldridge.github.io/HikariCP/) c
 If you don't want to use system properties, or your DataSource needs some custom startup parameters, just subclass the [Database](https://github.com/dieselpoint/norm/blob/master/src/main/java/com/dieselpoint/norm/Database.java) class and override the .getDataSource() method. You can supply any DataSource you like.
 
 In particular, you might want to override .getDataSource() to set the maximum number of connections that the connection pool opens. By default, it's set to 100, but that is really excessive if you have a large number of servers connecting to a single database. Hikari opens all the connections on startup and leaves them open. This can be a burden on your database server.
+
+###Pluggable SQL Flavors
+
+You can specify the particular flavor of SQL for your database with `Database.setSqlMaker()`. By default, the `StandardSqLMaker` will handle most needs. As of version 0.8.1, there is also a `MySqlMaker` class that will handle MySql-style upserts. To implement your own flavor, subclass `StandardSqlMaker` and possibly `StandardPojoInfo` and do what you need.
 
 ###Dependencies
 Norm needs javax.persistence, but that's just for annotations.
