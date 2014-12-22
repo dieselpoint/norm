@@ -137,6 +137,14 @@ public class Database {
 	}
 
 	/**
+	 * Upsert a row in a table. It will insert, and if that fails, do an update
+	 * with a match on a primary key.
+	 */
+	public Query upsert(Object row) {
+		return new Query(this).upsert(row);
+	}
+	
+	/**
 	 * Create a query and specify which table it operates on.
 	 */
 	public Query table(String table) {

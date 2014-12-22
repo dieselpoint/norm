@@ -1,7 +1,10 @@
 package com.dieselpoint.norm.sqlmakers;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.persistence.Column;
 
 import com.dieselpoint.norm.DbException;
 import com.dieselpoint.norm.Query;
@@ -22,6 +25,7 @@ public class StandardSqlMaker implements SqlMaker {
 			map.put(rowClass, pi);
 			
 			makeInsertSql(pi);
+			makeUpsertSql(pi);
 			makeUpdateSql(pi);
 			makeSelectColumns(pi);
 		}
@@ -129,14 +133,23 @@ public class StandardSqlMaker implements SqlMaker {
 		
 		pojoInfo.insertSql = buf.toString();
 	}
+	
+	@SuppressWarnings("unused")
+	public void makeUpsertSql(StandardPojoInfo pojoInfo) {
+	}
 
 
 	private void makeSelectColumns(StandardPojoInfo pojoInfo) {
-		ArrayList<String> cols = new ArrayList<String>();
-		for (Property prop: pojoInfo.propertyMap.values()) {
-			cols.add(prop.name);
+		if (pojoInfo.propertyMap.isEmpty()) {
+			// this applies if the rowClass is a Map
+			pojoInfo.selectColumns = "*";
+		} else {
+			ArrayList<String> cols = new ArrayList<String>();
+			for (Property prop: pojoInfo.propertyMap.values()) {
+				cols.add(prop.name);
+			}
+			pojoInfo.selectColumns = Util.join(cols);
 		}
-		pojoInfo.selectColumns = Util.join(cols);
 	}
 
 
@@ -173,23 +186,6 @@ public class StandardSqlMaker implements SqlMaker {
 	}
 
 
-	/*
-	@Override
-	public void putValue(Object pojo, String name, Object value) {
-		StandardPojoInfo pojoInfo = getPojoInfo(pojo.getClass());
-		try {
-			pojoInfo.putValue(pojo, name, value);
-		} catch (NoSuchFieldException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException e) {
-			throw new DbException(e);
-		}
-	}
-
-
-
-	*/
-
-
 	@Override
 	public String getCreateTableSql(Class<?> clazz) {
 		
@@ -208,28 +204,40 @@ public class StandardSqlMaker implements SqlMaker {
 			}
 			needsComma = true;
 
-			// TODO use @ Column properties
-			String colType = "varchar(512)";
-			Class<?> dataType = prop.dataType;
-			
-			if (dataType.equals(Integer.class) || dataType.equals(int.class)) {
-				colType = "integer";
-			} else if (dataType.equals(Long.class) || dataType.equals(long.class)) {
-				colType = "bigint";
-			} else if (dataType.equals(Double.class) || dataType.equals(double.class)) {
-				colType = "double";
-			} else if (dataType.equals(Float.class) || dataType.equals(float.class)) {
-				colType = "float";
+			Column columnAnnot = prop.columnAnnotation;
+			if (columnAnnot == null) {
+	
+				buf.append(prop.name);
+				buf.append(" ");
+				buf.append(getColType(prop.dataType, 255, 10, 2));
+				if (prop.isGenerated) {
+					buf.append(" auto_increment");
+				}
+				
+			} else {
+				if (columnAnnot.columnDefinition() == null) {
+					
+					// let the column def override everything
+					buf.append(columnAnnot.columnDefinition());
+					
+				} else {
+
+					buf.append(prop.name);
+					buf.append(" ");
+					buf.append(getColType(prop.dataType, columnAnnot.length(), columnAnnot.precision(), columnAnnot.scale()));
+					if (prop.isGenerated) {
+						buf.append(" auto_increment");
+					}
+					
+					if (columnAnnot.unique()) {
+						buf.append(" unique");
+					}
+					
+					if (!columnAnnot.nullable()) {
+						buf.append(" not null");
+					}
+				}
 			}
-			
-			buf.append(prop.name);
-			buf.append(" ");
-			buf.append(colType);
-			
-			if (prop.isGenerated) {
-				buf.append(" auto_increment");
-			}
-			
 		}
 		
 		if (pojoInfo.primaryKeyName != null) {
@@ -241,6 +249,31 @@ public class StandardSqlMaker implements SqlMaker {
 		buf.append(")");
 		
 		return buf.toString();
+	}
+
+
+	private String getColType(Class<?> dataType, int length, int precision, int scale) {
+		String colType;
+		
+		if (dataType.equals(Integer.class) || dataType.equals(int.class)) {
+			colType = "integer";
+			
+		} else if (dataType.equals(Long.class) || dataType.equals(long.class)) {
+			colType = "bigint";
+			
+		} else if (dataType.equals(Double.class) || dataType.equals(double.class)) {
+			colType = "double";
+			
+		} else if (dataType.equals(Float.class) || dataType.equals(float.class)) {
+			colType = "float";
+			
+		} else if (dataType.equals(BigDecimal.class)) {
+			colType = "decimal(" + precision + "," + scale + ")";
+			
+		} else {
+			colType = "varchar(" + length + ")";
+		}
+		return colType;
 	}
 
 

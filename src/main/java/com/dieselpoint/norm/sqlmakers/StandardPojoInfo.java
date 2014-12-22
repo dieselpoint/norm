@@ -1,6 +1,7 @@
 package com.dieselpoint.norm.sqlmakers;
 
 import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -8,6 +9,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.sql.ResultSet;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -34,6 +36,10 @@ public class StandardPojoInfo implements PojoInfo {
 	String insertSql;
 	int insertSqlArgCount;
 	String [] insertColumnNames;
+
+	String upsertSql;
+	int upsertSqlArgCount;
+	String [] upsertColumnNames;
 	
 	String updateSql;
 	String[] updateColumnNames;
@@ -51,71 +57,17 @@ public class StandardPojoInfo implements PojoInfo {
 		public boolean isPrimaryKey;
 		public boolean isEnumField;
 		public Class<Enum> enumClass;
+		public Column columnAnnotation;
 	}
 
 	public StandardPojoInfo(Class<?> clazz) {
 
 		try {
-
-			for (Field field : clazz.getFields()) {
-				int modifiers = field.getModifiers();
-
-				if (Modifier.isPublic(modifiers)) {
-
-					if (Modifier.isStatic(modifiers)
-							|| Modifier.isFinal(modifiers)) {
-						continue;
-					}
-
-					if (field.getAnnotation(Transient.class) != null) {
-						continue;
-					}
-
-					Property prop = new Property();
-					prop.name = field.getName();
-					prop.field = field;
-					prop.dataType = field.getType();
-
-					if (field.getAnnotation(Id.class) != null) {
-						prop.isPrimaryKey = true;
-						primaryKeyName = field.getName();
-					}
-
-					if (field.getAnnotation(GeneratedValue.class) != null) {
-						generatedColumnName = field.getName();
-						prop.isGenerated = true;
-					}
-
-					if (field.getType().isEnum()) {
-						prop.isEnumField = true;
-						prop.enumClass = (Class<Enum>) field.getType();
-					}
-
-					Column col = field.getAnnotation(Column.class);
-					if (col != null) {
-						String name = col.name().trim();
-						if (name.length() > 0) {
-							prop.name = name;
-						}
-					}
-
-					propertyMap.put(prop.name, prop);
-				}
-			}
-
-			BeanInfo beanInfo = Introspector.getBeanInfo(clazz, Object.class);
-			PropertyDescriptor[] descriptors = beanInfo
-					.getPropertyDescriptors();
-			for (PropertyDescriptor descriptor : descriptors) {
-				String name = descriptor.getName();
-				Property pair = new Property();
-				pair.name = name;
-				pair.readMethod = getMethod(descriptor.getReadMethod(), name,
-						pair);
-				pair.writeMethod = getMethod(descriptor.getWriteMethod(), name,
-						pair);
-				pair.dataType = descriptor.getPropertyType();
-				propertyMap.put(name, pair);
+			
+			if (Map.class.isAssignableFrom(clazz)) {
+				//leave properties empty
+			} else {
+				populateProperties(clazz);
 			}
 
 			Table annot = (Table) clazz.getAnnotation(Table.class);
@@ -129,6 +81,73 @@ public class StandardPojoInfo implements PojoInfo {
 			throw new DbException(t);
 		}
 	}
+	
+	
+	
+	private void populateProperties(Class<?> clazz) throws IntrospectionException {
+		for (Field field : clazz.getFields()) {
+			int modifiers = field.getModifiers();
+
+			if (Modifier.isPublic(modifiers)) {
+
+				if (Modifier.isStatic(modifiers)
+						|| Modifier.isFinal(modifiers)) {
+					continue;
+				}
+
+				if (field.getAnnotation(Transient.class) != null) {
+					continue;
+				}
+
+				Property prop = new Property();
+				prop.name = field.getName();
+				prop.field = field;
+				prop.dataType = field.getType();
+
+				if (field.getAnnotation(Id.class) != null) {
+					prop.isPrimaryKey = true;
+					primaryKeyName = field.getName();
+				}
+
+				if (field.getAnnotation(GeneratedValue.class) != null) {
+					generatedColumnName = field.getName();
+					prop.isGenerated = true;
+				}
+
+				if (field.getType().isEnum()) {
+					prop.isEnumField = true;
+					prop.enumClass = (Class<Enum>) field.getType();
+				}
+
+				Column col = field.getAnnotation(Column.class);
+				if (col != null) {
+					String name = col.name().trim();
+					if (name.length() > 0) {
+						prop.name = name;
+					}
+					prop.columnAnnotation = col;
+				}
+
+				propertyMap.put(prop.name, prop);
+			}
+		}
+
+		BeanInfo beanInfo = Introspector.getBeanInfo(clazz, Object.class);
+		PropertyDescriptor[] descriptors = beanInfo
+				.getPropertyDescriptors();
+		for (PropertyDescriptor descriptor : descriptors) {
+			String name = descriptor.getName();
+			Property pair = new Property();
+			pair.name = name;
+			pair.readMethod = getMethod(descriptor.getReadMethod(), name,
+					pair);
+			pair.writeMethod = getMethod(descriptor.getWriteMethod(), name,
+					pair);
+			pair.dataType = descriptor.getPropertyType();
+			propertyMap.put(name, pair);
+		}
+	}
+
 
 	private Method getMethod(Method meth, String propertyName, Property pair) {
 		if (meth == null) {

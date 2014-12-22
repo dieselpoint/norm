@@ -1,5 +1,13 @@
-Add @Column
+Add more unit tests. Test:
 
-Add a pluggable sql syntax creator. Would handle the differences in syntax between dbs.
-In particular, it would help with upserts.
+select
+insert 
+update
+delete
+upsert
 
+with:
+
+pojo
+map
+primitive

@@ -16,11 +16,7 @@ public class Test {
 	
 	static public void main(String [] args) throws SQLException, FileNotFoundException, IOException {
 		
-		System.setProperty("norm.dataSourceClassName", "com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
-		System.setProperty("norm.serverName", "localhost");
-		System.setProperty("norm.databaseName", "mydb");
-		System.setProperty("norm.user", "root");
-		System.setProperty("norm.password", "rootpassword");
+		setSysProperties();
 		
 		Database db = new Database();
 		
@@ -78,9 +74,18 @@ public class Test {
 		
 		//db.sql("drop table names").execute();
 	}
+
+	
+	public static void setSysProperties() {
+		System.setProperty("norm.dataSourceClassName", "com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+		System.setProperty("norm.serverName", "localhost");
+		System.setProperty("norm.databaseName", "mydb");
+		System.setProperty("norm.user", "root");
+		System.setProperty("norm.password", "rootpassword");
+	}
 	
 	
-	private static void dump(String label, List<Name> list) {
+	public static void dump(String label, List<Name> list) {
 		System.out.println(label);
 		for (Name n: list) {
 			System.out.println(n.toString());
@@ -122,6 +127,7 @@ public class Test {
 		@Transient
 		public String ignoreMe;
 		
+		// ignore static fields
 		public static String ignoreThisToo;
 		
 		public String toString() {
