@@ -11,3 +11,5 @@ with:
 pojo
 map
 primitive
+
+serializers implemented, add docs to readme about them.

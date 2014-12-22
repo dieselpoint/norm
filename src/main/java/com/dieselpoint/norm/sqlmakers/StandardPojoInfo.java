@@ -19,6 +19,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.dieselpoint.norm.DbException;
+import com.dieselpoint.norm.serialize.Serializer;
+import com.dieselpoint.norm.serialize.SerializerClass;
 
 /**
  * Provides means of reading and writing properties in a pojo.
@@ -59,6 +61,7 @@ public class StandardPojoInfo implements PojoInfo {
 		public boolean isEnumField;
 		public Class<Enum> enumClass;
 		public Column columnAnnotation;
+		public Serializer serializer;
 	}
 
 	public StandardPojoInfo(Class<?> clazz) {
@@ -85,7 +88,7 @@ public class StandardPojoInfo implements PojoInfo {
 	
 	
 	
-	private void populateProperties(Class<?> clazz) throws IntrospectionException {
+	private void populateProperties(Class<?> clazz) throws IntrospectionException, InstantiationException, IllegalAccessException {
 		for (Field field : clazz.getFields()) {
 			int modifiers = field.getModifiers();
 
@@ -115,28 +118,34 @@ public class StandardPojoInfo implements PojoInfo {
 		PropertyDescriptor[] descriptors = beanInfo
 				.getPropertyDescriptors();
 		for (PropertyDescriptor descriptor : descriptors) {
-			
-			String name = descriptor.getName();
+
+			Method readMethod = descriptor.getReadMethod();
+			if (readMethod == null) {
+				continue;
+			}
+			if (readMethod.getAnnotation(Transient.class) != null) {
+				continue;
+			}
 			
 			Property prop = new Property();
-			prop.name = name;
-			prop.readMethod = getMethod(descriptor.getReadMethod(), name,
-					prop);
-			prop.writeMethod = getMethod(descriptor.getWriteMethod(), name,
-					prop);
+			prop.name = descriptor.getName();
+			prop.readMethod = readMethod;
+			prop.writeMethod = descriptor.getWriteMethod();
 			prop.dataType = descriptor.getPropertyType();
 
 			applyAnnotations(prop, prop.readMethod);
 			
-			propertyMap.put(name, prop);
+			propertyMap.put(prop.name, prop);
 		}
 	}
 
 
 	/**
 	 * Apply the annotations on the field or getter method to the property.
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
-	private void applyAnnotations(Property prop, AnnotatedElement ae) {
+	private void applyAnnotations(Property prop, AnnotatedElement ae) throws InstantiationException, IllegalAccessException {
 		
 		Column col = ae.getAnnotation(Column.class);
 		if (col != null) {
@@ -161,10 +170,16 @@ public class StandardPojoInfo implements PojoInfo {
 			prop.isEnumField = true;
 			prop.enumClass = (Class<Enum>) prop.dataType;
 		}
+		
+		SerializerClass sc = ae.getAnnotation(SerializerClass.class);
+		if (sc != null) {
+			prop.serializer = sc.value().newInstance();
+		}
+		
 	}
 
 
-
+/*
 	private Method getMethod(Method meth, String propertyName, Property pair) {
 		if (meth == null) {
 			return null;
@@ -182,7 +197,9 @@ public class StandardPojoInfo implements PojoInfo {
 		}
 		return meth;
 	}
-
+*/
+	
+	
 	public Object getValue(Object pojo, String name) {
 
 		try {
@@ -191,55 +208,62 @@ public class StandardPojoInfo implements PojoInfo {
 			if (prop == null) {
 				throw new DbException("No such field: " + name);
 			}
-
+			
+			Object value = null;
+			
 			if (prop.readMethod != null) {
-				return prop.readMethod.invoke(pojo);
-			}
-
-			if (prop.isEnumField) {
+				value = prop.readMethod.invoke(pojo);
+			
+			} else if (prop.isEnumField) {
 				// convert all enums to string
 				Object o = prop.field.get(pojo);
-				if (o == null) {
-					return null;
-				} else {
-					return o.toString();
+				if (o != null) {
+					value = o.toString();
 				}
+				
+			} else if (prop.field != null) {
+				value = prop.field.get(pojo);
+			}
+			
+			if (prop.serializer != null) {
+				value =  prop.serializer.serialize(value);
 			}
 
-			if (prop.field != null) {
-				return prop.field.get(pojo);
-			}
+			return value;
 
 		} catch (Throwable t) {
 			throw new DbException(t);
 		}
-
-		return null;
 	}	
 
 	
 	public void putValue(Object pojo, String name, Object value) {
-		Property pair = propertyMap.get(name);
-		if (pair == null) {
+		
+		Property prop = propertyMap.get(name);
+		if (prop == null) {
 			throw new DbException("No such field: " + name);
 		}
 
 		try {
 
-			if (pair.writeMethod != null) {
-				pair.writeMethod.invoke(pojo, value);
+			if (prop.serializer != null) {
+				value = prop.serializer.deserialize((String) value, prop.dataType);
+			}
+			
+			if (prop.writeMethod != null) {
+				prop.writeMethod.invoke(pojo, value);
 				return;
 			}
 
-			if (pair.field != null) {
+			if (prop.field != null) {
 				Object val = value;
 
-				if (pair.isEnumField) {
+				if (prop.isEnumField) {
 					// convert to enum const
-					val = getEnumConst(pair.enumClass, value.toString());
+					val = getEnumConst(prop.enumClass, value.toString());
 				}
 
-				pair.field.set(pojo, val);
+				prop.field.set(pojo, val);
 				return;
 			}
 		} catch (Throwable t) {

@@ -140,6 +140,8 @@ public class Person {
 
 `@Column` implements a subset of `javax.persistence.Column`. `Column.name` will attach a property to a database column of a different name. `Column.unique`, `.nullable`, `.length`, `.precision`, and `.scale` apply when you call `Database.createTable()`;
 
+Column-level annotations can go on either a public property or on a public getter for the property. Annotations on setters will be ignored.
+
 
 ###Transactions
 
