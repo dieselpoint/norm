@@ -4,6 +4,7 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -104,29 +105,7 @@ public class StandardPojoInfo implements PojoInfo {
 				prop.field = field;
 				prop.dataType = field.getType();
 
-				if (field.getAnnotation(Id.class) != null) {
-					prop.isPrimaryKey = true;
-					primaryKeyName = field.getName();
-				}
-
-				if (field.getAnnotation(GeneratedValue.class) != null) {
-					generatedColumnName = field.getName();
-					prop.isGenerated = true;
-				}
-
-				if (field.getType().isEnum()) {
-					prop.isEnumField = true;
-					prop.enumClass = (Class<Enum>) field.getType();
-				}
-
-				Column col = field.getAnnotation(Column.class);
-				if (col != null) {
-					String name = col.name().trim();
-					if (name.length() > 0) {
-						prop.name = name;
-					}
-					prop.columnAnnotation = col;
-				}
+				applyAnnotations(prop, field);
 
 				propertyMap.put(prop.name, prop);
 			}
@@ -136,17 +115,54 @@ public class StandardPojoInfo implements PojoInfo {
 		PropertyDescriptor[] descriptors = beanInfo
 				.getPropertyDescriptors();
 		for (PropertyDescriptor descriptor : descriptors) {
+			
 			String name = descriptor.getName();
-			Property pair = new Property();
-			pair.name = name;
-			pair.readMethod = getMethod(descriptor.getReadMethod(), name,
-					pair);
-			pair.writeMethod = getMethod(descriptor.getWriteMethod(), name,
-					pair);
-			pair.dataType = descriptor.getPropertyType();
-			propertyMap.put(name, pair);
+			
+			Property prop = new Property();
+			prop.name = name;
+			prop.readMethod = getMethod(descriptor.getReadMethod(), name,
+					prop);
+			prop.writeMethod = getMethod(descriptor.getWriteMethod(), name,
+					prop);
+			prop.dataType = descriptor.getPropertyType();
+
+			applyAnnotations(prop, prop.readMethod);
+			
+			propertyMap.put(name, prop);
 		}
 	}
+
+
+	/**
+	 * Apply the annotations on the field or getter method to the property.
+	 */
+	private void applyAnnotations(Property prop, AnnotatedElement ae) {
+		
+		Column col = ae.getAnnotation(Column.class);
+		if (col != null) {
+			String name = col.name().trim();
+			if (name.length() > 0) {
+				prop.name = name;
+			}
+			prop.columnAnnotation = col;
+		}
+		
+		if (ae.getAnnotation(Id.class) != null) {
+			prop.isPrimaryKey = true;
+			primaryKeyName = prop.name;
+		}
+
+		if (ae.getAnnotation(GeneratedValue.class) != null) {
+			generatedColumnName = prop.name;
+			prop.isGenerated = true;
+		}
+
+		if (prop.dataType.isEnum()) {
+			prop.isEnumField = true;
+			prop.enumClass = (Class<Enum>) prop.dataType;
+		}
+	}
+
 
 
 	private Method getMethod(Method meth, String propertyName, Property pair) {
