@@ -213,21 +213,18 @@ public class StandardPojoInfo implements PojoInfo {
 			
 			if (prop.readMethod != null) {
 				value = prop.readMethod.invoke(pojo);
-			
-			} else if (prop.isEnumField) {
-				// convert all enums to string
-				Object o = prop.field.get(pojo);
-				if (o != null) {
-					value = o.toString();
-				}
 				
 			} else if (prop.field != null) {
 				value = prop.field.get(pojo);
 			}
-			
+
 			if (prop.serializer != null) {
 				value =  prop.serializer.serialize(value);
-			}
+			
+			} else if (prop.isEnumField) {
+				// convert all enums to strings
+				value = value.toString();
+			}	
 
 			return value;
 
@@ -238,7 +235,7 @@ public class StandardPojoInfo implements PojoInfo {
 
 	
 	public void putValue(Object pojo, String name, Object value) {
-		
+
 		Property prop = propertyMap.get(name);
 		if (prop == null) {
 			throw new DbException("No such field: " + name);
@@ -246,35 +243,46 @@ public class StandardPojoInfo implements PojoInfo {
 
 		try {
 
-			if (prop.serializer != null) {
-				value = prop.serializer.deserialize((String) value, prop.dataType);
+			if (value != null) {
+				if (prop.serializer != null) {
+					value = prop.serializer.deserialize((String) value,	prop.dataType);
+					
+				} else if (prop.isEnumField) {
+					value = getEnumConst(prop.enumClass, value);
+				}
 			}
-			
+
 			if (prop.writeMethod != null) {
 				prop.writeMethod.invoke(pojo, value);
 				return;
 			}
 
 			if (prop.field != null) {
-				Object val = value;
-
-				if (prop.isEnumField) {
-					// convert to enum const
-					val = getEnumConst(prop.enumClass, value.toString());
-				}
-
-				prop.field.set(pojo, val);
+				prop.field.set(pojo, value);
 				return;
 			}
+
 		} catch (Throwable t) {
 			throw new DbException(t);
 		}
 	}
-
 	
-	private <T extends Enum<T>> Object getEnumConst(Class<T> enumType, String o) {
-		return Enum.valueOf(enumType, o);
+
+	/**
+	 * Convert a string to an enum const of the appropriate class.
+	 */
+	private <T extends Enum<T>> Object getEnumConst(Class<T> enumType, Object value) {
+		String str = value.toString();
+		for (Enum e: enumType.getEnumConstants()) {
+			if (str.equals(e.toString())) {
+				return e;
+			}
+		}
+		throw new DbException("Enum value does not exist. value:" + str);
 	}
+	
+	
+	
 
 	@Override
 	public void populateGeneratedKey(ResultSet generatedKeys, Object insertRow) {
