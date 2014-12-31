@@ -19,8 +19,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.dieselpoint.norm.DbException;
-import com.dieselpoint.norm.serialize.Serializer;
-import com.dieselpoint.norm.serialize.SerializerClass;
+import com.dieselpoint.norm.serialize.DbSerializable;
+import com.dieselpoint.norm.serialize.DbSerializer;
 
 /**
  * Provides means of reading and writing properties in a pojo.
@@ -61,7 +61,7 @@ public class StandardPojoInfo implements PojoInfo {
 		public boolean isEnumField;
 		public Class<Enum> enumClass;
 		public Column columnAnnotation;
-		public Serializer serializer;
+		public DbSerializable serializer;
 	}
 
 	public StandardPojoInfo(Class<?> clazz) {
@@ -171,7 +171,7 @@ public class StandardPojoInfo implements PojoInfo {
 			prop.enumClass = (Class<Enum>) prop.dataType;
 		}
 		
-		SerializerClass sc = ae.getAnnotation(SerializerClass.class);
+		DbSerializer sc = ae.getAnnotation(DbSerializer.class);
 		if (sc != null) {
 			prop.serializer = sc.value().newInstance();
 		}

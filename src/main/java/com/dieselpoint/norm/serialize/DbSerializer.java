@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD,ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface SerializerClass {
-	Class<? extends Serializer> value();
+public @interface DbSerializer {
+	Class<? extends DbSerializable> value();
 }

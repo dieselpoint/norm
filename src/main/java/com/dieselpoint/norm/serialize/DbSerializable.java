@@ -6,7 +6,7 @@ package com.dieselpoint.norm.serialize;
  * Implementations must have a zero-arg constructor and must
  * be thread-safe.
  */
-public interface Serializer {
+public interface DbSerializable {
 	
 	public String serialize(Object in);
 	public Object deserialize(String in, Class<?> targetClass);
