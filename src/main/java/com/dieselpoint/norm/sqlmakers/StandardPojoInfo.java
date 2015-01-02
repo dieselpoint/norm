@@ -217,14 +217,16 @@ public class StandardPojoInfo implements PojoInfo {
 			} else if (prop.field != null) {
 				value = prop.field.get(pojo);
 			}
-
-			if (prop.serializer != null) {
-				value =  prop.serializer.serialize(value);
 			
-			} else if (prop.isEnumField) {
-				// convert all enums to strings
-				value = value.toString();
-			}	
+			if (value != null) {
+				if (prop.serializer != null) {
+					value =  prop.serializer.serialize(value);
+				
+				} else if (prop.isEnumField) {
+					// convert all enums to strings
+					value = value.toString();
+				}	
+			}
 
 			return value;
 
