@@ -64,6 +64,9 @@ public class Transaction implements Closeable {
 		return con;
 	}
 
+	/**
+	 * This simply calls .commit();
+	 */
 	@Override
 	public void close() throws IOException {
 		commit();
