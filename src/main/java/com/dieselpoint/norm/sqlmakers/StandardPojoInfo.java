@@ -6,6 +6,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.sql.ResultSet;
@@ -235,7 +236,6 @@ public class StandardPojoInfo implements PojoInfo {
 		}
 	}	
 
-	
 	public void putValue(Object pojo, String name, Object value) {
 
 		Property prop = propertyMap.get(name);
@@ -243,32 +243,35 @@ public class StandardPojoInfo implements PojoInfo {
 			throw new DbException("No such field: " + name);
 		}
 
-		try {
+		if (value != null) {
+			if (prop.serializer != null) {
+				value = prop.serializer.deserialize((String) value, prop.dataType);
 
-			if (value != null) {
-				if (prop.serializer != null) {
-					value = prop.serializer.deserialize((String) value,	prop.dataType);
-					
-				} else if (prop.isEnumField) {
-					value = getEnumConst(prop.enumClass, value);
-				}
+			} else if (prop.isEnumField) {
+				value = getEnumConst(prop.enumClass, value);
 			}
-
-			if (prop.writeMethod != null) {
-				prop.writeMethod.invoke(pojo, value);
-				return;
-			}
-
-			if (prop.field != null) {
-				prop.field.set(pojo, value);
-				return;
-			}
-
-		} catch (Throwable t) {
-			throw new DbException(t);
 		}
+
+		if (prop.writeMethod != null) {
+			try {
+				prop.writeMethod.invoke(pojo, value);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				throw new DbException("Could not write value into pojo. Property: " + prop.name + " method: "
+						+ prop.writeMethod.toString() + " value: " + value, e);
+			}
+			return;
+		}
+
+		if (prop.field != null) {
+			try {
+				prop.field.set(pojo, value);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				throw new DbException("Could not set value into pojo. Field: " + prop.field.toString() + " value: " + value, e);
+			}
+			return;
+		}
+
 	}
-	
 
 	/**
 	 * Convert a string to an enum const of the appropriate class.

@@ -17,4 +17,8 @@ public class DbException extends RuntimeException {
 		super(t);
 	}
 
+	public DbException(String msg, Throwable t) {
+		super(msg, t);
+	}
+	
 }
