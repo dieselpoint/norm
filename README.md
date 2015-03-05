@@ -36,7 +36,7 @@ which means that, yes, you can use the same class to fetch a record from a datab
 
 ###Sample Code
 
-[There's a full example here.](https://github.com/dieselpoint/norm/blob/master/src/test/java/com/dieselpoint/norm/Test.java)
+[There's a full example here.](https://github.com/dieselpoint/norm/blob/master/src/test/java/com/dieselpoint/norm/SampleCode.java)
 
 ```Java
 Database db = new Database();
