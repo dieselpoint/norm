@@ -98,6 +98,8 @@ List<Map> list = db.sql("select * from people").results(HashMap.class);
 
 HashMap, LinkedHashMap or any class that implements the Map interface will work.
 
+Note that you must specify full sql, or at a minimum a table name, because the system won't be able to guess the table name from the Map class. Unless you've annotated it to that effect.
+
 ###Primitives
 
 A single column result set can come back in the form of a list of primitives, or even as a single primitive. 
@@ -107,6 +109,9 @@ Long count = db.sql("select count(*) from people").results(Long.class);
 ```
 
 It's sometimes really useful to get a result in the form of a `List<String>`.
+
+Note that you have to specify the full sql when doing primitives because the system won't be able to guess the column or tables names from the primitive class.
+
 
 ###Annotations
 
