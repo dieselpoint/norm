@@ -1,21 +1,23 @@
 package com.dieselpoint.norm;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.SQLException;
+import static org.junit.Assert.fail;
+
 import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
 
+import org.junit.Test;
+
 import com.dieselpoint.norm.sqlmakers.MySqlMaker;
 
 public class TestMySqlUpsert {
 	
-	static public void main(String [] args) throws SQLException, FileNotFoundException, IOException {
-		
-		Test.setSysProperties();
+	@Test
+	public void test() {
+	
+		Setup.setSysProperties();
 		
 		Database db = new Database();
 		db.setSqlMaker(new MySqlMaker());
@@ -34,7 +36,10 @@ public class TestMySqlUpsert {
 		
 		List<HashMap> list = db.table("upserttest").results(HashMap.class);
 		
-		System.out.println(list);
+		String listStr = list.toString();
+		if (!listStr.equals("[{name=Fred, id=1}]")) {
+			fail();
+		}
 	}
 	
 	@Table(name="upserttest")

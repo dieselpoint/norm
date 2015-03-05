@@ -12,11 +12,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-public class Test {
+public class SampleCode {
 	
 	static public void main(String [] args) throws SQLException, FileNotFoundException, IOException {
 		
-		setSysProperties();
+		Setup.setSysProperties();
 		
 		Database db = new Database();
 		
@@ -75,14 +75,6 @@ public class Test {
 		//db.sql("drop table names").execute();
 	}
 
-	
-	public static void setSysProperties() {
-		System.setProperty("norm.dataSourceClassName", "com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
-		System.setProperty("norm.serverName", "localhost");
-		System.setProperty("norm.databaseName", "mydb");
-		System.setProperty("norm.user", "root");
-		System.setProperty("norm.password", "rootpassword");
-	}
 	
 	
 	public static void dump(String label, List<Name> list) {

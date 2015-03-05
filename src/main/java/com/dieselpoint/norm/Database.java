@@ -129,6 +129,14 @@ public class Database {
 	}
 
 	/**
+	 * Returns the first row in a query in a pojo. Will return it in a Map
+	 * if a class that implements Map is specified.
+	 */
+	public <T> T first(Class<T> clazz) {
+		return new Query(this).first(clazz);
+	}
+	
+	/**
 	 * Update a row in a table. It will match an existing row based
 	 * on the primary key.
 	 */

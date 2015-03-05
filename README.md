@@ -60,7 +60,7 @@ class Person {
     // you can also use getters and setters
 }
 ```
-You can modify your database using .insert(), .update(), .delete(), and .sql().execute():
+You can modify your database using .insert(), .upsert(), .update(), .delete(), and .sql().execute():
 
 ```Java
 int rowsAffected = db.table("people").where("firstName=?", "Joe").delete();
@@ -160,6 +160,35 @@ try {
 ```
 Transaction is a pretty simple class, so if it doesn't do what you need,  just subclass it and make it behave differently.
 
+###Custom Serialization
+
+Sometimes it's hard to map a property in your POJO to a database field. For example, suppose your POJO property is List<String>, but you want your database field to be a plain, comma-separated string. You need a way to tell the system how to convert your list to the proper format.
+
+Do it like this:
+
+```Java
+class MyPojo {
+	@DbSerializer(MySerializer.class)
+	public List<String> myList;
+}
+
+class MySerializer implements DbSerializable {
+
+	@Override
+	public String serialize(Object in) {
+		return in.toString();
+	}
+
+	@Override
+	public Object deserialize(String in, Class<?> targetClass) {
+		Object out = // convert the string back to a list here
+		return out;
+	}
+}
+
+```
+You can sometimes achieve the same purpose by using appropriate getters and setters on your POJO. Mark the ones that Norm should ignore with @Transient.
+
 
 ###Configuration
 Here's the Maven dependency:
@@ -168,7 +197,7 @@ Here's the Maven dependency:
 <dependency>
     <groupId>com.dieselpoint</groupId>
     <artifactId>norm</artifactId>
-    <version>0.8</version>
+    <version>0.8.1-rc1</version>
 </dependency>
 ```  
 
