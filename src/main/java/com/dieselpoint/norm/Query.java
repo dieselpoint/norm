@@ -17,7 +17,7 @@ import com.dieselpoint.norm.sqlmakers.SqlMaker;
  * Holds all of the information in a query. Create a query
  * using Database.someQueryCreationMethod(), populate it using
  * a builder pattern, and execute it using either .execute() (to
- * update the database) or .results() (to get the results of a query.)
+ * update the database) or .results() (to get the results of a query.) 
  */
 public class Query {
 
@@ -87,8 +87,8 @@ public class Query {
 	}
 
 	/**
-	 * Returns the first row in a query in a pojo. Will return it in a Map
-	 * if a class that implements Map is specified.
+	 * Returns the first row in a query in a pojo, or null if the query returns no results. 
+	 * Will return it in a Map if a class that implements Map is specified.
 	 */
 	public <T> T first(Class<T> clazz) {
 		List<T> list = results(clazz);
@@ -154,7 +154,7 @@ public class Query {
 	
 	/**
 	 * Execute a "select" query and return a list of results where each row
-	 * is an instance of clazz.
+	 * is an instance of clazz. Returns an empty list if there are no results.
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> List<T> results(Class<T> clazz) {

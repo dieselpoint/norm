@@ -29,7 +29,7 @@ import com.dieselpoint.norm.serialize.DbSerializer;
 public class StandardPojoInfo implements PojoInfo {
 	
 	/*
-	 * annotations recognized: @ Id, @ GeneratedValue @ Transient @ Table @ Column
+	 * annotations recognized: @ Id, @ GeneratedValue @ Transient @ Table @ Column @ DbSerializer
 	 */
 
 	LinkedHashMap<String, Property> propertyMap = new LinkedHashMap<String, Property>();
