@@ -14,6 +14,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -29,7 +31,7 @@ import com.dieselpoint.norm.serialize.DbSerializer;
 public class StandardPojoInfo implements PojoInfo {
 	
 	/*
-	 * annotations recognized: @ Id, @ GeneratedValue @ Transient @ Table @ Column @ DbSerializer
+	 * annotations recognized: @ Id, @ GeneratedValue @ Transient @ Table @ Column @ DbSerializer @ Enumerated
 	 */
 
 	LinkedHashMap<String, Property> propertyMap = new LinkedHashMap<String, Property>();
@@ -61,6 +63,7 @@ public class StandardPojoInfo implements PojoInfo {
 		public boolean isPrimaryKey;
 		public boolean isEnumField;
 		public Class<Enum> enumClass;
+		public EnumType enumType;
 		public Column columnAnnotation;
 		public DbSerializable serializer;
 	}
@@ -170,6 +173,11 @@ public class StandardPojoInfo implements PojoInfo {
 		if (prop.dataType.isEnum()) {
 			prop.isEnumField = true;
 			prop.enumClass = (Class<Enum>) prop.dataType;
+			/* We default to STRING enum type. Can be overriden with @Enumerated annotation */
+			prop.enumType = EnumType.STRING;
+			if (ae.getAnnotation(Enumerated.class) != null) {
+				prop.enumType = ae.getAnnotation(Enumerated.class).value();
+			}
 		}
 		
 		DbSerializer sc = ae.getAnnotation(DbSerializer.class);
@@ -224,8 +232,14 @@ public class StandardPojoInfo implements PojoInfo {
 					value =  prop.serializer.serialize(value);
 				
 				} else if (prop.isEnumField) {
-					// convert all enums to strings
-					value = value.toString();
+					// handle enums according to selected enum type
+					if (prop.enumType == EnumType.ORDINAL) {
+						value = ((Enum) value).ordinal();
+					}
+					// EnumType.STRING and others (if present in the future)
+					else {
+						value = value.toString();
+					}					
 				}	
 			}
 
@@ -248,7 +262,7 @@ public class StandardPojoInfo implements PojoInfo {
 				value = prop.serializer.deserialize((String) value, prop.dataType);
 
 			} else if (prop.isEnumField) {
-				value = getEnumConst(prop.enumClass, value);
+				value = getEnumConst(prop.enumClass, prop.enumType, value);
 			}
 		}
 
@@ -276,14 +290,23 @@ public class StandardPojoInfo implements PojoInfo {
 	/**
 	 * Convert a string to an enum const of the appropriate class.
 	 */
-	private <T extends Enum<T>> Object getEnumConst(Class<T> enumType, Object value) {
+	private <T extends Enum<T>> Object getEnumConst(Class<T> enumType, EnumType type, Object value) {
 		String str = value.toString();
-		for (Enum e: enumType.getEnumConstants()) {
-			if (str.equals(e.toString())) {
-				return e;
+		if (type == EnumType.ORDINAL) {
+			Integer ordinalValue = (Integer) value;
+			if (ordinalValue < 0 || ordinalValue >= enumType.getEnumConstants().length) {
+				throw new DbException("Invalid ordinal number " + ordinalValue + " for enum class " + enumType.getCanonicalName());
 			}
+			return enumType.getEnumConstants()[ordinalValue];
 		}
-		throw new DbException("Enum value does not exist. value:" + str);
+		else {		
+			for (T e: enumType.getEnumConstants()) {
+				if (str.equals(e.toString())) {
+					return e;
+				}
+			}
+			throw new DbException("Enum value does not exist. value:" + str);
+		}
 	}
 	
 	
