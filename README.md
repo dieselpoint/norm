@@ -115,7 +115,7 @@ Note that you have to specify the full sql when doing primitives because the sys
 
 ###Annotations
 
-Tell the system what to do with your POJOs by using a few annotations. Norm implements a subset of the `javax.persistence` annotations, including [@Table](http://docs.oracle.com/javaee/7/api/javax/persistence/Table.html), [@Id](http://docs.oracle.com/javaee/7/api/javax/persistence/Id.html), [@GeneratedValue](http://docs.oracle.com/javaee/7/api/javax/persistence/GeneratedValue.html), [@Transient](http://docs.oracle.com/javaee/7/api/javax/persistence/Transient.html) and [@Column](http://docs.oracle.com/javaee/7/api/javax/persistence/Column.html).
+Tell the system what to do with your POJOs by using a few annotations. Norm implements a subset of the `javax.persistence` annotations, including [@Table](http://docs.oracle.com/javaee/7/api/javax/persistence/Table.html), [@Id](http://docs.oracle.com/javaee/7/api/javax/persistence/Id.html), [@GeneratedValue](http://docs.oracle.com/javaee/7/api/javax/persistence/GeneratedValue.html), [@Transient](http://docs.oracle.com/javaee/7/api/javax/persistence/Transient.html), [@Column](http://docs.oracle.com/javaee/7/api/javax/persistence/Column.html) and [@Enumerated](http://docs.oracle.com/javaee/7/api/javax/persistence/Enumerated.html).
 
 ```Java
 @Table(name="people")
@@ -144,6 +144,9 @@ public class Person {
 `@Transient` tells the system to ignore the field. It doesn't get persisted to the database. (Note that this is `javax.persistence.Transient`, not `java.beans.Transient`. Different annotations.)
 
 `@Column` implements a subset of `javax.persistence.Column`. `Column.name` will attach a property to a database column of a different name. `Column.unique`, `.nullable`, `.length`, `.precision`, and `.scale` apply when you call `Database.createTable()`;
+
+`@Enumerated` specifies type of enumeration to be stored in the database. By default `EnumType.STRING` is used for string representation. One can select `EnumType.ORDINAL` for integer representation.
+
 
 Column-level annotations can go on either a public property or on a public getter for the property. Annotations on setters will be ignored.
 
