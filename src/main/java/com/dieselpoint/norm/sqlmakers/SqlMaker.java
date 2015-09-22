@@ -1,5 +1,7 @@
 package com.dieselpoint.norm.sqlmakers;
 
+import java.sql.ResultSet;
+
 import com.dieselpoint.norm.Query;
 
 
@@ -22,5 +24,7 @@ public interface SqlMaker {
 	public String getCreateTableSql(Class<?> clazz);
 	
 	public PojoInfo getPojoInfo(Class rowClass);
+	
+	public void populateGeneratedKey(ResultSet generatedKeys, Object insertRow);
 	
 }

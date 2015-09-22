@@ -1,6 +1,7 @@
 package com.dieselpoint.norm.sqlmakers;
 
 import java.math.BigDecimal;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -9,7 +10,6 @@ import javax.persistence.Column;
 import com.dieselpoint.norm.DbException;
 import com.dieselpoint.norm.Query;
 import com.dieselpoint.norm.Util;
-import com.dieselpoint.norm.sqlmakers.StandardPojoInfo.Property;
 
 /**
  * Produces ANSI-standard SQL. Extend this class to handle different flavors of sql.
@@ -134,7 +134,6 @@ public class StandardSqlMaker implements SqlMaker {
 		pojoInfo.insertSql = buf.toString();
 	}
 	
-	@SuppressWarnings("unused")
 	public void makeUpsertSql(StandardPojoInfo pojoInfo) {
 	}
 
@@ -320,5 +319,44 @@ public class StandardSqlMaker implements SqlMaker {
 		throw new UnsupportedOperationException();
 	}
 
+
+	@Override
+	public void populateGeneratedKey(ResultSet generatedKeys, Object insertRow) {
+		
+		PojoInfo pojoInfo = getPojoInfo(insertRow.getClass());
+		
+		try {
+
+			Property prop = pojoInfo.getGeneratedColumnProperty();
+			boolean isInt = prop.dataType.isAssignableFrom(int.class); // int or long
+			
+			Object newKey;
+			
+			// if there is just one column, it's the generated key
+			// postgres returns multiple columns, though, so we have the fetch the value by name
+			int colCount = generatedKeys.getMetaData().getColumnCount();
+			if (colCount == 1) {
+				if (isInt) {
+					newKey = generatedKeys.getInt(1);
+				} else {
+					newKey = generatedKeys.getLong(1);
+				}
+			} else {
+				// colcount > 1, must do by name
+				if (isInt) {
+					newKey = generatedKeys.getInt(prop.name);
+				} else {
+					newKey = generatedKeys.getLong(prop.name);
+				}
+			}
+
+			pojoInfo.putValue(insertRow, prop.name, newKey);
+
+		} catch (Throwable t) {
+			throw new DbException(t);
+		}
+	}
+	
+	
 
 }

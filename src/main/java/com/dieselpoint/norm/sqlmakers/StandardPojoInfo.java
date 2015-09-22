@@ -9,7 +9,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.sql.ResultSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -20,7 +19,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.dieselpoint.norm.DbException;
-import com.dieselpoint.norm.serialize.DbSerializable;
 import com.dieselpoint.norm.serialize.DbSerializer;
 
 /**
@@ -50,20 +48,7 @@ public class StandardPojoInfo implements PojoInfo {
 	int updateSqlArgCount;
 	
 	String selectColumns;
-	
-	public static class Property {
-		public String name;
-		public Method readMethod;
-		public Method writeMethod;
-		public Field field;
-		public Class<?> dataType;
-		public boolean isGenerated;
-		public boolean isPrimaryKey;
-		public boolean isEnumField;
-		public Class<Enum> enumClass;
-		public Column columnAnnotation;
-		public DbSerializable serializer;
-	}
+
 
 	public StandardPojoInfo(Class<?> clazz) {
 
@@ -285,31 +270,18 @@ public class StandardPojoInfo implements PojoInfo {
 		}
 		throw new DbException("Enum value does not exist. value:" + str);
 	}
-	
-	
-	
+
+
 
 	@Override
-	public void populateGeneratedKey(ResultSet generatedKeys, Object insertRow) {
-
-		try {
-
-			//StandardPojoInfo pojoInfo = getPojoInfo(insertRow.getClass());
-			Property prop = propertyMap.get(generatedColumnName);
-
-			Object newKey;
-			if (prop.dataType.isAssignableFrom(int.class)) {
-				newKey = generatedKeys.getInt(1);
-			} else {
-				newKey = generatedKeys.getLong(1);
-			}
-
-			putValue(insertRow, generatedColumnName, newKey);
-
-		} catch (Throwable t) {
-			throw new DbException(t);
-		}
+	public Property getGeneratedColumnProperty() {
+		return propertyMap.get(generatedColumnName);
 	}
+	
+	
+	
+
+
 	
 	
 }

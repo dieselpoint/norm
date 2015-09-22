@@ -322,9 +322,7 @@ public class Query {
 			if (insertRow != null) {
 				ResultSet generatedKeys = state.getGeneratedKeys();
 				if (generatedKeys.next()) {
-					
-					PojoInfo pojoInfo = sqlMaker.getPojoInfo(insertRow.getClass());
-					pojoInfo.populateGeneratedKey(generatedKeys, insertRow);
+					sqlMaker.populateGeneratedKey(generatedKeys, insertRow);
 				}			
 			}
 
