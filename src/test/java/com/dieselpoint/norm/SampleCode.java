@@ -7,10 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import com.dieselpoint.norm.sqlmakers.PostgresMaker;
 
 public class SampleCode {
 	
@@ -19,6 +22,9 @@ public class SampleCode {
 		Setup.setSysProperties();
 		
 		Database db = new Database();
+		
+		db.setSqlMaker(new PostgresMaker());
+		
 		
 		/* test straight sql */
 		db.sql("drop table if exists names").execute();
@@ -103,11 +109,13 @@ public class SampleCode {
 		public long id;
 		
 		// a public property without getter or setter
+		@Column(name="firstname")  // must do this for Postgres
 		public String firstName; 
 		
 		// a private property with getter and setter below
 		private String lastName; 
 		
+		@Column(name="lastname")  // must do this for Postgres
 		public String getLastName() {
 			return lastName;
 		}

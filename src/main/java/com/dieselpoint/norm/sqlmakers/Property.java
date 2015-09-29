@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import javax.persistence.Column;
+import javax.persistence.EnumType;
 
 import com.dieselpoint.norm.serialize.DbSerializable;
 
@@ -17,6 +18,7 @@ public class Property {
 	public boolean isPrimaryKey;
 	public boolean isEnumField;
 	public Class<Enum> enumClass;
+	public EnumType enumType;
 	public Column columnAnnotation;
 	public DbSerializable serializer;
 }

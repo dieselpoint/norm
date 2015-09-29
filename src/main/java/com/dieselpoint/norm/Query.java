@@ -308,7 +308,21 @@ public class Query {
 				localCon = transaction.getConnection();
 			}
 
-			state = localCon.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			/*
+			 * This is a hack to deal with an error in the Postgres driver.
+			 * Postgres blindly appends "RETURNING *" to any query that includes
+			 * Statement.RETURN_GENERATED_KEYS. This is a bug. See:
+			 * http://www.postgresql.org/message-id/4BD196B4.3040607@smilehouse.com
+			 * So, as a workaround, we only add that flag if the query contains
+			 * "insert". Yuck.
+			 */
+			String lowerSql = sql.toLowerCase();
+			if (lowerSql.contains("insert")) {
+				state = localCon.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			} else {
+				state = localCon.prepareStatement(sql);
+			}
+			
 			if (args != null) {
 				for (int i = 0; i < args.length; i++) {
 					state.setObject(i + 1, args[i]);

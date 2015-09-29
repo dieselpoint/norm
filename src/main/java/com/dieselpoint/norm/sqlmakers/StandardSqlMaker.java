@@ -251,7 +251,7 @@ public class StandardSqlMaker implements SqlMaker {
 	}
 
 
-	private String getColType(Class<?> dataType, int length, int precision, int scale) {
+	protected String getColType(Class<?> dataType, int length, int precision, int scale) {
 		String colType;
 		
 		if (dataType.equals(Integer.class) || dataType.equals(int.class)) {
