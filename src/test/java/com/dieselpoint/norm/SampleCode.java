@@ -23,8 +23,7 @@ public class SampleCode {
 		
 		Database db = new Database();
 		
-		db.setSqlMaker(new PostgresMaker());
-		
+		db.setSqlMaker(new PostgresMaker()); // set this to match your sql flavor		
 		
 		/* test straight sql */
 		db.sql("drop table if exists names").execute();
