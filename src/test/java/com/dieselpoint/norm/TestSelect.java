@@ -1,6 +1,6 @@
 package com.dieselpoint.norm;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -12,6 +12,7 @@ import org.junit.Test;
 
 public class TestSelect {
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
 	
@@ -30,23 +31,16 @@ public class TestSelect {
 		
 		// primitive
 		Long myId = db.sql("select id from primitivetest").first(Long.class);
-		if (myId != 99) {
-			fail();
-		}
+		assertEquals(new Long(99), myId);
 		
 		// map
-		Map myMap = db.table("selecttest").first(LinkedHashMap.class);
-		String str = myMap.toString();
-		if (!str.equals("{id=99, name=bob}")) {
-			fail();
-		}
+		Map<String, Object> myMap = db.table("selecttest").first(LinkedHashMap.class);
+		assertEquals(99L, myMap.get("id"));
+		assertEquals("bob", myMap.get("name"));
 		
 		// pojo
 		Row myRow = db.first(Row.class);
-		String myRowStr = myRow.toString();
-		if (!myRowStr.equals("99bob")) {
-			fail();
-		}
+		assertEquals("99bob", myRow.toString());
 		
 	}
 	

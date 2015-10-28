@@ -1,6 +1,6 @@
 package com.dieselpoint.norm;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +14,7 @@ import com.dieselpoint.norm.sqlmakers.MySqlMaker;
 
 public class TestMySqlUpsert {
 	
+	@SuppressWarnings("rawtypes")
 	@Test
 	public void test() {
 	
@@ -35,11 +36,9 @@ public class TestMySqlUpsert {
 		db.upsert(row);
 		
 		List<HashMap> list = db.table("upserttest").results(HashMap.class);
+		assertEquals(1L, list.get(0).get("id"));
+		assertEquals("Fred", list.get(0).get("name"));
 		
-		String listStr = list.toString();
-		if (!listStr.equals("[{name=Fred, id=1}]")) {
-			fail();
-		}
 	}
 	
 	@Table(name="upserttest")
