@@ -27,6 +27,7 @@ public class Query {
 	private String table;
 	private String where;
 	private String orderBy;
+	private String direction;
 
 	private Object[] args;
 
@@ -80,9 +81,21 @@ public class Query {
 
 	/**
 	 * Add an "orderBy" clause to a query.
+	 * @param string 
 	 */
 	public Query orderBy(String orderBy) {
 		this.orderBy = orderBy;
+		return this;
+	}
+	
+	/**
+	 * Add an "orderBy" clause with direction to a query.
+	 * @param orderBy 
+	 * @param direction 
+	 */
+	public Query orderBy(String orderBy, String direction) {
+		this.orderBy = orderBy;
+		this.direction = direction;
 		return this;
 	}
 
@@ -427,6 +440,10 @@ public class Query {
 
 	public String getTable() {
 		return table;
+	}
+	
+	public String getDirection() {
+		return direction;
 	}
 	
 }
