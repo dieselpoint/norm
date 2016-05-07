@@ -37,8 +37,9 @@ public class Query {
 	
 	private Transaction transaction;
 
-	public Query(Database db) {
+	public Query(Database db, Transaction transaction) {
 		this.db = db;
+		this.transaction = transaction;
 		this.sqlMaker = db.getSqlMaker();
 	}
 
