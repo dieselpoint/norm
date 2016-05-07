@@ -166,6 +166,18 @@ try {
 } 
 
 ```
+
+```Java
+db.transaction(new Runnable() {
+        @Override
+        public void run() {
+            db.insert(row);
+            db.update(row);
+            db.delete(row);
+        }
+});
+```
+
 Transaction is a pretty simple class, so if it doesn't do what you need,  just subclass it and make it behave differently.
 
 ###Custom Serialization
