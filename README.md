@@ -168,6 +168,7 @@ try {
 ```
 
 ```Java
+// if fails will auto rollback
 db.transaction(new Runnable() {
         @Override
         public void run() {
