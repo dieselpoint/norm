@@ -221,24 +221,24 @@ Here's the Maven dependency:
 <dependency>
     <groupId>com.dieselpoint</groupId>
     <artifactId>norm</artifactId>
-    <version>0.8.1-rc2</version>
+    <version>0.8.1</version>
 </dependency>
 ```  
 
 To specify the database connection parameters:
 
 ```Java
-System.setProperty("norm.dataSourceClassName", "com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
-System.setProperty("norm.serverName", "localhost");
-System.setProperty("norm.databaseName", "mydb");
+System.setProperty("norm.jdbcUrl", "jdbc:mysql://localhost:3306/mydb?useSSL=false");
 System.setProperty("norm.user", "root");
 System.setProperty("norm.password", "rootpassword");
 ```
-Internally, Norm uses the [Hikari](http://brettwooldridge.github.io/HikariCP/) connection pool. Hikari has a complete list of [DataSource class names](https://github.com/brettwooldridge/HikariCP#popular-datasource-class-names). Your database is bound to be on the list.
+
+Internally, Norm uses the [Hikari](http://brettwooldridge.github.io/HikariCP/) connection pool. Hikari allows you to use  
+[DataSource class names](https://github.com/brettwooldridge/HikariCP#popular-datasource-class-names) or the jdbcUrl method. Your database is bound to be on the list. 
 
 If you don't want to use system properties, or your DataSource needs some custom startup parameters, just subclass the [Database](https://github.com/dieselpoint/norm/blob/master/src/main/java/com/dieselpoint/norm/Database.java) class and override the .getDataSource() method. You can supply any DataSource you like.
 
-In particular, you might want to override .getDataSource() to set the maximum number of connections that the connection pool opens. By default, it's set to 100, but that is really excessive if you have a large number of servers connecting to a single database. Hikari opens all the connections on startup and leaves them open. This can be a burden on your database server.
+In particular, you might want to override .getDataSource() to set the maximum number of connections that the connection pool opens. By default, it's set to 10. Tune it appropriately.
 
 ### Dependencies
 Norm needs javax.persistence, but that's just for annotations.
@@ -251,7 +251,7 @@ Finally, you'll need to include your JDBC driver as a dependency. Here's a sampl
 <dependency>
     <groupId>mysql</groupId>
     <artifactId>mysql-connector-java</artifactId>
-    <version>5.1.32</version>
+    <version>6.0.6</version>
 </dependency>
 ```  
 
