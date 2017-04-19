@@ -36,7 +36,7 @@ public class Database {
 	 */
 	protected DataSource getDataSource() throws SQLException {
 		HikariConfig config = new HikariConfig();
-		config.setMaximumPoolSize(100);
+		config.setMaximumPoolSize(10);
 		config.setDataSourceClassName(System.getProperty("norm.dataSourceClassName"));
 		config.addDataSourceProperty("serverName", System.getProperty("norm.serverName"));
 		config.addDataSourceProperty("databaseName", System.getProperty("norm.databaseName"));
