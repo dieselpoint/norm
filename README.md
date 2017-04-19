@@ -1,4 +1,4 @@
-#Norm
+# Norm
 
 Norm is a simple way to access a JDBC database, usually in one line of code. It purges your code of the complex mess that is [Hibernate](http://www.hibernate.org), [JPA](http://en.wikipedia.org/wiki/Java_Persistence_API), and [ORM](http://en.wikipedia.org/wiki/Object-relational_mapping). 
 
@@ -10,17 +10,17 @@ Here it is:
 List<Person> people = db.where("name=?", "Bob").results(Person.class);
 ```
 
-###Get Started
+### Get Started
 
 [Configure your system](#configuration).
 
 [Start with this sample code](#sample-code).
 
-###Overview
+### Overview
 
 Norm is an extremely lightweight layer over JDBC. It gets rid of large amounts of boilerplate JDBC code. It steals some ideas from [ActiveJDBC](hhttp://javalite.io/), which is a very nice system, but requires some very ugly instrumentation / byte code rewriting. 
 
-###Why?
+### Why?
 
 Sometimes the most important thing about writing software is knowing when to stop. A solution that gets you 90% of the way is often good enough, because the other 90% isn't worth the hassle. In this case, Norm gives you a fast and convenient way to do select, insert, update and delete, and when you need more, you just drop into straight SQL.
 
@@ -34,7 +34,7 @@ POJOs are fabulous, truly fabulous:
 
 which means that, yes, you can use the same class to fetch a record from a database and then create JSON from it.
 
-###Sample Code
+### Sample Code
 
 [There's a full example here.](https://github.com/dieselpoint/norm/blob/master/src/test/java/com/dieselpoint/norm/SampleCode.java)
 
@@ -88,7 +88,7 @@ You can also use straight SQL to modify the database:
 db.sql("drop table people").execute();
 ```
 
-###Maps and Lists
+### Maps and Lists
 
 Don't want to create a new POJO class for every query? No problem, just use a Map:
 
@@ -100,7 +100,7 @@ HashMap, LinkedHashMap or any class that implements the Map interface will work.
 
 Note that you must specify full sql, or at a minimum a table name, because the system won't be able to guess the table name from the Map class. Unless you've annotated it to that effect.
 
-###Primitives
+### Primitives
 
 A single column result set can come back in the form of a list of primitives, or even as a single primitive. 
 
@@ -113,7 +113,7 @@ It's sometimes really useful to get a result in the form of a `List<String>`.
 Note that you have to specify the full sql when doing primitives because the system won't be able to guess the column or tables names from the primitive class.
 
 
-###Annotations
+### Annotations
 
 Tell the system what to do with your POJOs by using a few annotations. Norm implements a subset of the `javax.persistence` annotations, including [@Table](http://docs.oracle.com/javaee/7/api/javax/persistence/Table.html), [@Id](http://docs.oracle.com/javaee/7/api/javax/persistence/Id.html), [@GeneratedValue](http://docs.oracle.com/javaee/7/api/javax/persistence/GeneratedValue.html), [@Transient](http://docs.oracle.com/javaee/7/api/javax/persistence/Transient.html), [@Column](http://docs.oracle.com/javaee/7/api/javax/persistence/Column.html) and [@Enumerated](http://docs.oracle.com/javaee/7/api/javax/persistence/Enumerated.html).
 
@@ -151,7 +151,7 @@ public class Person {
 Column-level annotations can go on either a public property or on a public getter for the property. Annotations on setters will be ignored.
 
 
-###Transactions
+### Transactions
 
 If you need multiple database operations to succeed or fail as a unit, use a transaction. The basic scheme is to create a Transaction object, pass it to every query that needs it, and then .commit() or .rollback().
 
@@ -168,7 +168,7 @@ try {
 ```
 Transaction is a pretty simple class, so if it doesn't do what you need,  just subclass it and make it behave differently.
 
-###Custom Serialization
+### Custom Serialization
 
 Sometimes it's hard to map a property in your POJO to a database field. For example, suppose your POJO property is List<String>, but you want your database field to be a plain, comma-separated string. You need a way to tell the system how to convert your list to the proper format.
 
@@ -198,7 +198,7 @@ class MySerializer implements DbSerializable {
 You can sometimes achieve the same purpose by using appropriate getters and setters on your POJO. Mark the ones that Norm should ignore with @Transient.
 
 
-###Pluggable SQL Flavors
+### Pluggable SQL Flavors
 
 You can specify the particular flavor of SQL for your database with `Database.setSqlMaker()`. By default, the `StandardSqLMaker` will handle most needs. As of version 0.8.1, there is also a `MySqlMaker` class that will handle MySql-style upserts. To implement your own flavor, subclass `StandardSqlMaker` and possibly `StandardPojoInfo` and do what you need.
 
@@ -214,7 +214,7 @@ Postgres: Inexplicably, Postgres converts all column names to lowercase when you
 forces you to use double quotes around column names if you want mixed or upper case. The workaround
 is to add an @Column(name="somelowercasename") annotation to the fields in your pojo.
 
-###Configuration
+### Configuration
 Here's the Maven dependency:
 
 ```
@@ -240,7 +240,7 @@ If you don't want to use system properties, or your DataSource needs some custom
 
 In particular, you might want to override .getDataSource() to set the maximum number of connections that the connection pool opens. By default, it's set to 100, but that is really excessive if you have a large number of servers connecting to a single database. Hikari opens all the connections on startup and leaves them open. This can be a burden on your database server.
 
-###Dependencies
+### Dependencies
 Norm needs javax.persistence, but that's just for annotations.
 
 It also has a dependency on HikariCP for connection pooling, but that's entirely optional. If you don't want it, add an `<exclude>`  to the Norm dependency in your project's pom. Then subclass Database and override the getDataSource() method. 
