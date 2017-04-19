@@ -6,7 +6,7 @@
 	<groupId>com.dieselpoint</groupId>
 	<artifactId>norm</artifactId>
 	<name>Norm</name>
-	<version>0.8.1-rc2</version>
+	<version>0.8.1</version>
 	<packaging>jar</packaging>
 
 	<description>An extremely lightweight data access layer over JDBC</description>
@@ -61,7 +61,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.5.1</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
@@ -70,7 +70,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>2.2.1</version>
+				<version>3.0.1</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -83,7 +83,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
+				<version>2.10.4</version>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
@@ -97,7 +97,7 @@
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
 				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.3</version>
+				<version>1.6.8</version>
 				<extensions>true</extensions>
 				<configuration>
 					<serverId>ossrh</serverId>
@@ -109,7 +109,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.5</version>
+				<version>1.6</version>
 				<executions>
 					<execution>
 						<id>sign-artifacts</id>
@@ -135,20 +135,20 @@
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
-			<version>2.4.1</version>
+			<version>2.6.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.36</version>
+			<version>6.0.6</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>9.4-1203-jdbc42</version>
+			<version>42.0.0</version>
 			<scope>test</scope>
 		</dependency>
 

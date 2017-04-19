@@ -29,7 +29,7 @@ public class TestSelect {
 		db.insert(row);
 		
 		// primitive
-		Long myId = db.sql("select id from primitivetest").first(Long.class);
+		Long myId = db.sql("select id from selecttest").first(Long.class);
 		if (myId != 99) {
 			fail();
 		}

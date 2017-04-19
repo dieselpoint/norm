@@ -31,21 +31,42 @@ public class Database {
 	}
 	
 	/**
-	 * Provides the DataSource used by this database. Override this method 
-	 * to change how the DataSource is created or configured.
+	 * Provides the DataSource used by this database. Override this method to change how the DataSource is created or
+	 * configured.
 	 */
 	protected DataSource getDataSource() throws SQLException {
 		HikariConfig config = new HikariConfig();
 		config.setMaximumPoolSize(10);
-		config.setDataSourceClassName(System.getProperty("norm.dataSourceClassName"));
-		config.addDataSourceProperty("serverName", System.getProperty("norm.serverName"));
-		config.addDataSourceProperty("databaseName", System.getProperty("norm.databaseName"));
-		config.addDataSourceProperty("user", System.getProperty("norm.user"));
-		config.addDataSourceProperty("password", System.getProperty("norm.password"));
-		config.setInitializationFailFast(true);
+		
+		String dataSourceClassName = System.getProperty("norm.dataSourceClassName");
+		if (dataSourceClassName != null) {
+			config.setDataSourceClassName(dataSourceClassName);
+		}
+		
+		String driverClassName = System.getProperty("norm.driverClassName");
+		if (driverClassName != null) {
+			config.setDriverClassName(driverClassName);
+		}
+		
+		String jdbcUrl = System.getProperty("norm.jdbcUrl");
+		if (jdbcUrl != null) {
+			config.setJdbcUrl(jdbcUrl);
+		}
+
+		addConfigProperty(config, "serverName", System.getProperty("norm.serverName"));
+		addConfigProperty(config, "databaseName", System.getProperty("norm.databaseName"));
+		addConfigProperty(config, "user", System.getProperty("norm.user"));
+		addConfigProperty(config, "password", System.getProperty("norm.password"));
+
 		return new HikariDataSource(config);
 	}
 
+	private void addConfigProperty(HikariConfig config, String name, String value) {
+		if (value != null) {
+			config.addDataSourceProperty(name, value);
+		}
+	}	
+	
 	/**
 	 * Create a query using straight SQL. Overrides any other methods
 	 * like .where(), .orderBy(), etc.
