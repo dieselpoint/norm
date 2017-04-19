@@ -233,8 +233,7 @@ System.setProperty("norm.user", "root");
 System.setProperty("norm.password", "rootpassword");
 ```
 
-Internally, Norm uses the [Hikari](http://brettwooldridge.github.io/HikariCP/) connection pool. Hikari allows you to use  
-[DataSource class names](https://github.com/brettwooldridge/HikariCP#popular-datasource-class-names) or the jdbcUrl method. Your database is bound to be on the list. 
+Internally, Norm uses the [Hikari](http://brettwooldridge.github.io/HikariCP/) connection pool. Hikari allows you to use the jdbcUrl method or [DataSource class names](https://github.com/brettwooldridge/HikariCP#popular-datasource-class-names). Your database is bound to be on the list. 
 
 If you don't want to use system properties, or your DataSource needs some custom startup parameters, just subclass the [Database](https://github.com/dieselpoint/norm/blob/master/src/main/java/com/dieselpoint/norm/Database.java) class and override the .getDataSource() method. You can supply any DataSource you like.
 
