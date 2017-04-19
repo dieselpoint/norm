@@ -167,6 +167,7 @@ public class StandardSqlMaker implements SqlMaker {
 			table = pojoInfo.table;
 		}
 		String orderBy = query.getOrderBy();
+		String direction = query.getDirection();
 		
 		StringBuilder out = new StringBuilder();
 		out.append("select ");
@@ -180,6 +181,12 @@ public class StandardSqlMaker implements SqlMaker {
 		if (orderBy != null) {
 			out.append(" order by ");
 			out.append(orderBy);
+			
+			if (direction != null) {
+				out.append(" ");
+				out.append(direction);
+				out.append(" ");
+			}
 		}
 		return out.toString();
 	}

@@ -1,8 +1,10 @@
 package com.dieselpoint.norm;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Column;
@@ -12,6 +14,7 @@ import org.junit.Test;
 
 public class TestSelect {
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
 	
@@ -23,31 +26,30 @@ public class TestSelect {
 		
 		db.createTable(Row.class);
 		
-		Row row = new Row();
-		row.id = 99;
-		row.name = "bob";
-		db.insert(row);
+		Row firstRow = new Row(99, "bob");
+		db.insert(firstRow);
 		
 		// primitive
-		Long myId = db.sql("select id from primitivetest").first(Long.class);
-		if (myId != 99) {
-			fail();
-		}
+		Long myId = db.sql("select id from selecttest").first(Long.class);
+		assertEquals(new Long(99), myId);
 		
 		// map
-		Map myMap = db.table("selecttest").first(LinkedHashMap.class);
-		String str = myMap.toString();
-		if (!str.equals("{id=99, name=bob}")) {
-			fail();
-		}
+		Map<String, Object> myMap = db.table("selecttest").first(LinkedHashMap.class);
+		assertEquals(99L, myMap.get("id"));
+		assertEquals("bob", myMap.get("name"));
 		
 		// pojo
 		Row myRow = db.first(Row.class);
-		String myRowStr = myRow.toString();
-		if (!myRowStr.equals("99bob")) {
-			fail();
-		}
+		assertEquals("99bob", myRow.toString());
 		
+		Row secondRow = new Row(100, "ant");
+		db.insert(secondRow);
+		
+		List<HashMap> results = db.table("selecttest").orderBy("id", "desc").results(HashMap.class);
+		assertEquals(100L, results.get(0).get("id"));
+		assertEquals("ant", results.get(0).get("name"));
+		assertEquals(99L, results.get(1).get("id"));
+		assertEquals("bob", results.get(1).get("name"));
 	}
 	
 	@Table(name="selecttest")
@@ -55,6 +57,12 @@ public class TestSelect {
 		@Column(unique=true)
 		public long id;
 		public String name; 
+		public Row() {
+		}
+		public Row(long id, String name) {
+			this.id = id;
+			this.name = name;
+		}
 		public String toString() {
 			return id + name;
 		}
