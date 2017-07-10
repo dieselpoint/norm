@@ -268,6 +268,9 @@ public class StandardSqlMaker implements SqlMaker {
 			
 		} else if (dataType.equals(BigDecimal.class)) {
 			colType = "decimal(" + precision + "," + scale + ")";
+
+		} else if (dataType.equals(java.util.Date.class)) {
+			colType = "datetime";
 			
 		} else {
 			colType = "varchar(" + length + ")";
