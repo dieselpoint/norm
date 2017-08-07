@@ -63,7 +63,12 @@ public class StandardPojoInfo implements PojoInfo {
 
 			Table annot = (Table) clazz.getAnnotation(Table.class);
 			if (annot != null) {
-				table = annot.name();
+				if (annot.schema() != null && !annot.schema().isEmpty()) {
+					table = annot.schema() + "." + annot.name();
+				}
+				else {
+					table = annot.name();
+				}
 			} else {
 				table = clazz.getSimpleName();
 			}
