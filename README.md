@@ -1,5 +1,7 @@
 # Norm
 
+[Read a blog post on this project.](https://blog.dieselpoint.com/a-minimalist-good-enough-approach-to-object-relational-mapping-64df9798b276)
+
 Norm is a simple way to access a JDBC database, usually in one line of code. It purges your code of the complex mess that is [Hibernate](http://www.hibernate.org), [JPA](http://en.wikipedia.org/wiki/Java_Persistence_API), and [ORM](http://en.wikipedia.org/wiki/Object-relational_mapping). 
 
 [Lots of people think that complex ORMs are a bad idea.](http://stackoverflow.com/questions/398134/what-are-the-advantages-of-using-an-orm/398182)
