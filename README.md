@@ -124,7 +124,7 @@ public class Person {
 	@GeneratedValue
 	public long personId;
 
-	public String Name;
+	public String name;
 
 	@Column(name = "theColumnName")
 	public String renameThis;
@@ -145,7 +145,7 @@ public class Person {
 
 `@Column` implements a subset of `javax.persistence.Column`. `Column.name` will attach a property to a database column of a different name. `Column.unique`, `.nullable`, `.length`, `.precision`, and `.scale` apply when you call `Database.createTable()`;
 
-`@Enumerated` specifies type of enumeration to be stored in the database. By default `EnumType.STRING` is used for string representation. One can select `EnumType.ORDINAL` for integer representation.
+`@Enumerated` specifies the type of the enumeration to be stored in the database. By default `EnumType.STRING` is used for string representation. One can select `EnumType.ORDINAL` for integer representation.
 
 
 Column-level annotations can go on either a public property or on a public getter for the property. Annotations on setters will be ignored.
