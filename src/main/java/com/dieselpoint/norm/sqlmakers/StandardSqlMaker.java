@@ -331,33 +331,33 @@ public class StandardSqlMaker implements SqlMaker {
 		try {
 
 			Property prop = pojoInfo.getGeneratedColumnProperty();
-			boolean isInt = prop.dataType.isAssignableFrom(int.class); // int or long
-			
-			Object newKey;
-			
-			// if there is just one column, it's the generated key
-			// postgres returns multiple columns, though, so we have the fetch the value by name
-			int colCount = generatedKeys.getMetaData().getColumnCount();
-			if (colCount == 1) {
+                        if(prop != null)
+                        {
+			    boolean isInt = prop.dataType.isAssignableFrom(int.class); // int or long
+			    Object newKey;
+			   // if there is just one column, it's the generated key
+			   // postgres returns multiple columns, though, so we have the fetch the value by name
+			   int colCount = generatedKeys.getMetaData().getColumnCount();
+			   if (colCount == 1) {
 				if (isInt) {
 					newKey = generatedKeys.getInt(1);
 				} else {
 					newKey = generatedKeys.getLong(1);
 				}
-			} else {
+			   } else {
 				// colcount > 1, must do by name
 				if (isInt) {
 					newKey = generatedKeys.getInt(prop.name);
 				} else {
 					newKey = generatedKeys.getLong(prop.name);
 				}
-			}
+			  }
 
-			pojoInfo.putValue(insertRow, prop.name, newKey);
-
-		} catch (Throwable t) {
+			  pojoInfo.putValue(insertRow, prop.name, newKey);
+			 }
+		    } catch (Throwable t) {
 			throw new DbException(t);
-		}
+		    }
 	}
 	
 	
