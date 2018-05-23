@@ -284,7 +284,9 @@ public class Query {
 		sql = sqlMaker.getUpdateSql(this, row);
 		args = sqlMaker.getUpdateArgs(this, row);
 
-		execute();
+		if (execute().getRowsAffected() <= 0) {
+			throw new DbException("Row not updated because the primary key was not found");
+		}
 		return this;
 	}
 

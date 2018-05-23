@@ -9,7 +9,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Column;
@@ -20,6 +22,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.dieselpoint.norm.ColumnOrder;
 import com.dieselpoint.norm.DbException;
 import com.dieselpoint.norm.serialize.DbSerializer;
 
@@ -58,10 +61,31 @@ public class StandardPojoInfo implements PojoInfo {
 			if (Map.class.isAssignableFrom(clazz)) {
 				//leave properties empty
 			} else {
-				populateProperties(clazz);
+				List<Property> props = populateProperties(clazz);
+				
+				ColumnOrder colOrder = clazz.getAnnotation(ColumnOrder.class);
+				if (colOrder != null) {
+					// reorder the properties
+					String [] cols = colOrder.value();
+					List<Property> reordered = new ArrayList<>();
+					for (int i = 0; i < cols.length; i++) {
+						for (Property prop: props) {
+							if (prop.name.equals(cols[i])) {
+								reordered.add(prop);
+								break;
+							}
+						}
+					}
+					// props not in the cols list are ignored
+					props = reordered;
+				}
+				
+				for (Property prop: props) {
+					propertyMap.put(prop.name, prop);
+				}
 			}
-
-			Table annot = (Table) clazz.getAnnotation(Table.class);
+			
+			Table annot = clazz.getAnnotation(Table.class);
 			if (annot != null) {
 				if (annot.schema() != null && !annot.schema().isEmpty()) {
 					table = annot.schema() + "." + annot.name();
@@ -80,7 +104,10 @@ public class StandardPojoInfo implements PojoInfo {
 	
 	
 	
-	private void populateProperties(Class<?> clazz) throws IntrospectionException, InstantiationException, IllegalAccessException {
+	private List<Property> populateProperties(Class<?> clazz) throws IntrospectionException, InstantiationException, IllegalAccessException {
+		
+		List<Property> props = new ArrayList<>();
+		
 		for (Field field : clazz.getFields()) {
 			int modifiers = field.getModifiers();
 
@@ -102,13 +129,12 @@ public class StandardPojoInfo implements PojoInfo {
 
 				applyAnnotations(prop, field);
 
-				propertyMap.put(prop.name, prop);
+				props.add(prop);
 			}
 		}
 
 		BeanInfo beanInfo = Introspector.getBeanInfo(clazz, Object.class);
-		PropertyDescriptor[] descriptors = beanInfo
-				.getPropertyDescriptors();
+		PropertyDescriptor[] descriptors = beanInfo.getPropertyDescriptors();
 		for (PropertyDescriptor descriptor : descriptors) {
 
 			Method readMethod = descriptor.getReadMethod();
@@ -126,9 +152,11 @@ public class StandardPojoInfo implements PojoInfo {
 			prop.dataType = descriptor.getPropertyType();
 
 			applyAnnotations(prop, prop.readMethod);
-			
-			propertyMap.put(prop.name, prop);
+
+			props.add(prop);
 		}
+		
+		return props;
 	}
 
 
@@ -259,7 +287,7 @@ public class StandardPojoInfo implements PojoInfo {
 				prop.writeMethod.invoke(pojo, value);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				throw new DbException("Could not write value into pojo. Property: " + prop.name + " method: "
-						+ prop.writeMethod.toString() + " value: " + value, e);
+						+ prop.writeMethod.toString() + " value: " + value + " value class:" + value.getClass().toString(), e);
 			}
 			return;
 		}
