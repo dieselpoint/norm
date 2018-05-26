@@ -216,6 +216,11 @@ Postgres: Inexplicably, Postgres converts all column names to lowercase when you
 forces you to use double quotes around column names if you want mixed or upper case. The workaround
 is to add an @Column(name="somelowercasename") annotation to the fields in your pojo.
 
+H2: Does the opposite of Postgres. It forces all column names to upper case. Avoid the problem by
+adding the database_to_upper option to the jdbcUrl: `jdbc:h2:./h2test;database_to_upper=false`
+
+
+
 ### Configuration
 Here's the Maven dependency:
 
@@ -223,11 +228,20 @@ Here's the Maven dependency:
 <dependency>
     <groupId>com.dieselpoint</groupId>
     <artifactId>norm</artifactId>
-    <version>0.8.1</version>
+    <version>0.8.2</version>
 </dependency>
 ```  
 
 To specify the database connection parameters:
+
+```Java
+Database db = new Database();
+db.setJdbcUrl("jdbc:mysql://localhost:3306/mydb?useSSL=false");
+db.setUser("blah");
+db.setPassword("doubleblah");
+```
+
+or 
 
 ```Java
 System.setProperty("norm.jdbcUrl", "jdbc:mysql://localhost:3306/mydb?useSSL=false");
