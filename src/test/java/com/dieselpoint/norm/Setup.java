@@ -21,5 +21,8 @@ public class Setup {
 		System.setProperty("norm.password", "postgres");
 		*/
 		
+		
+		
+		
 	}
 }

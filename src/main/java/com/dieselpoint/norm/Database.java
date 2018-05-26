@@ -18,6 +18,14 @@ public class Database {
 	
 	private SqlMaker sqlMaker = new StandardSqlMaker();
 	private DataSource ds;
+	
+	private String dataSourceClassName = System.getProperty("norm.dataSourceClassName");
+	private String driverClassName = System.getProperty("norm.driverClassName");
+	private String jdbcUrl = System.getProperty("norm.jdbcUrl");
+	private String serverName = System.getProperty("norm.serverName");
+	private String databaseName = System.getProperty("norm.databaseName");
+	private String user = System.getProperty("norm.user");
+	private String password = System.getProperty("norm.password");
 
 	/**
 	 * Set the maker object for the particular flavor of sql.
@@ -38,25 +46,22 @@ public class Database {
 		HikariConfig config = new HikariConfig();
 		config.setMaximumPoolSize(10);
 		
-		String dataSourceClassName = System.getProperty("norm.dataSourceClassName");
 		if (dataSourceClassName != null) {
 			config.setDataSourceClassName(dataSourceClassName);
 		}
 		
-		String driverClassName = System.getProperty("norm.driverClassName");
 		if (driverClassName != null) {
 			config.setDriverClassName(driverClassName);
 		}
 		
-		String jdbcUrl = System.getProperty("norm.jdbcUrl");
 		if (jdbcUrl != null) {
 			config.setJdbcUrl(jdbcUrl);
 		}
 
-		addConfigProperty(config, "serverName", System.getProperty("norm.serverName"));
-		addConfigProperty(config, "databaseName", System.getProperty("norm.databaseName"));
-		addConfigProperty(config, "user", System.getProperty("norm.user"));
-		addConfigProperty(config, "password", System.getProperty("norm.password"));
+		addConfigProperty(config, "serverName", serverName);
+		addConfigProperty(config, "databaseName", databaseName);
+		addConfigProperty(config, "user", user);
+		addConfigProperty(config, "password", password);
 
 		return new HikariDataSource(config);
 	}
@@ -199,6 +204,34 @@ public class Database {
 	 */
 	public Query transaction(Transaction trans) {
 		return new Query(this).transaction(trans);
+	}
+
+	public void setDataSourceClassName(String dataSourceClassName) {
+		this.dataSourceClassName = dataSourceClassName;
+	}
+
+	public void setDriverClassName(String driverClassName) {
+		this.driverClassName = driverClassName;
+	}
+
+	public void setJdbcUrl(String jdbcUrl) {
+		this.jdbcUrl = jdbcUrl;
+	}
+
+	public void setServerName(String serverName) {
+		this.serverName = serverName;
+	}
+
+	public void setDatabaseName(String databaseName) {
+		this.databaseName = databaseName;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	
 }
