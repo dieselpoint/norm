@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 /**
  * Specify the order of the columns. Is used in the create table sql.
- * @ColumnOrder({"name","address", ...})
+ * ColumnOrder({"name","address", ...})
  * 
  * @author ccleve
  */
