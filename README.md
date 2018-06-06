@@ -237,8 +237,8 @@ To specify the database connection parameters:
 ```Java
 Database db = new Database();
 db.setJdbcUrl("jdbc:mysql://localhost:3306/mydb?useSSL=false");
-db.setUser("blah");
-db.setPassword("doubleblah");
+db.setUser("root");
+db.setPassword("rootpassword");
 ```
 
 or 

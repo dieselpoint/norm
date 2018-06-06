@@ -206,6 +206,12 @@ public class Database {
 		return new Query(this).transaction(trans);
 	}
 
+	public void close() {
+		if (ds instanceof HikariDataSource) {
+			((HikariDataSource)ds).close();
+		}
+	}
+	
 	public void setDataSourceClassName(String dataSourceClassName) {
 		this.dataSourceClassName = dataSourceClassName;
 	}
