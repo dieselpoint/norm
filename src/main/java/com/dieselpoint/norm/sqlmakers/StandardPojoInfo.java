@@ -29,6 +29,7 @@ import com.dieselpoint.norm.serialize.DbSerializer;
 /**
  * Provides means of reading and writing properties in a pojo.
  */
+@SuppressWarnings("rawtypes")
 public class StandardPojoInfo implements PojoInfo {
 	
 	/*

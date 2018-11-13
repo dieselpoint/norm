@@ -16,9 +16,9 @@ import com.dieselpoint.norm.Util;
  */
 public class StandardSqlMaker implements SqlMaker {
 
-	private static ConcurrentHashMap<Class, StandardPojoInfo> map = new ConcurrentHashMap<Class, StandardPojoInfo>();
+	private static ConcurrentHashMap<Class<?>, StandardPojoInfo> map = new ConcurrentHashMap<Class<?>, StandardPojoInfo>();
 
-	public StandardPojoInfo getPojoInfo(Class rowClass) {
+	public StandardPojoInfo getPojoInfo(Class<?> rowClass) {
 		StandardPojoInfo pi = map.get(rowClass);
 		if (pi == null) {
 			pi = new StandardPojoInfo(rowClass);
@@ -153,7 +153,7 @@ public class StandardSqlMaker implements SqlMaker {
 
 
 	@Override
-	public String getSelectSql(Query query, Class rowClass) {
+	public String getSelectSql(Query query, Class<?> rowClass) {
 
 		// unlike insert and update, this needs to be done dynamically
 		// and can't be precalculated because of the where and order by

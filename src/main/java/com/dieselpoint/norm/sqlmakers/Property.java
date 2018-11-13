@@ -8,6 +8,7 @@ import javax.persistence.EnumType;
 
 import com.dieselpoint.norm.serialize.DbSerializable;
 
+@SuppressWarnings("rawtypes")
 public class Property {
 	public String name;
 	public Method readMethod;

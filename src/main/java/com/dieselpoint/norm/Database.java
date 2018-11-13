@@ -122,7 +122,7 @@ public class Database {
 	 * Does not add indexes or implement complex data types. Probably
 	 * not suitable for production use.
 	 */
-	public Query createTable(Class clazz) {
+	public Query createTable(Class<?> clazz) {
 		return new Query(this).createTable(clazz);
 	}
 

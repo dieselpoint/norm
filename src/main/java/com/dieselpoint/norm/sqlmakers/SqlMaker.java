@@ -20,10 +20,10 @@ public interface SqlMaker {
 	public String getUpsertSql(Query query, Object row);
 	public Object[] getUpsertArgs(Query query, Object row);
 	
-	public String getSelectSql(Query query, Class rowClass);
+	public String getSelectSql(Query query, Class<?> rowClass);
 	public String getCreateTableSql(Class<?> clazz);
 	
-	public PojoInfo getPojoInfo(Class rowClass);
+	public PojoInfo getPojoInfo(Class<?> rowClass);
 	
 	public void populateGeneratedKey(ResultSet generatedKeys, Object insertRow);
 	

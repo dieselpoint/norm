@@ -39,7 +39,7 @@ public class Util {
 		return sb.toString();
 	}
 	
-	public static boolean isPrimitiveOrString(Class c) {
+	public static boolean isPrimitiveOrString(Class<?> c) {
 		if (c.isPrimitive()) {
 			return true;
 		} else if (c == Byte.class 
