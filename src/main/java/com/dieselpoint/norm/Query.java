@@ -317,13 +317,18 @@ public class Query {
 			 * http://www.postgresql.org/message-id/4BD196B4.3040607@smilehouse.com
 			 * So, as a workaround, we only add that flag if the query contains
 			 * "insert". Yuck.
-			 */
+			 * 
+			 * UPDATE: bug appears to have been fixed. Leave this here for now, though.
+			 * 
+			 * /
 			String lowerSql = sql.toLowerCase();
 			if (lowerSql.contains("insert")) {
 				state = localCon.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			} else {
 				state = localCon.prepareStatement(sql);
 			}
+			*/
+			state = localCon.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			
 			if (args != null) {
 				for (int i = 0; i < args.length; i++) {
