@@ -25,6 +25,7 @@ public class Query {
 	
 	private String sql;
 	private String table;
+	private String join;
 	private String where;
 	private String orderBy;
 
@@ -422,6 +423,10 @@ public class Query {
 	public Query transaction(Transaction trans) {
 		this.transaction = trans;
 		return this;
+	}
+
+	public String getJoin() {
+		return join;
 	}
 
 	public String getOrderBy() {

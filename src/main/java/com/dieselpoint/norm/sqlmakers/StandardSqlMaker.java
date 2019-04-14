@@ -154,18 +154,19 @@ public class StandardSqlMaker implements SqlMaker {
 
 	@Override
 	public String getSelectSql(Query query, Class<?> rowClass) {
-
 		// unlike insert and update, this needs to be done dynamically
 		// and can't be precalculated because of the where and order by
-		
 		StandardPojoInfo pojoInfo = getPojoInfo(rowClass);
 		String columns = pojoInfo.selectColumns;
-		
+
+		String join = query.getJoin();
 		String where = query.getWhere();
 		String table = query.getTable();
+
 		if (table == null) {
 			table = pojoInfo.table;
 		}
+
 		String orderBy = query.getOrderBy();
 		
 		StringBuilder out = new StringBuilder();
@@ -173,21 +174,28 @@ public class StandardSqlMaker implements SqlMaker {
 		out.append(columns);
 		out.append(" from ");
 		out.append(table);
+
+		if (join != null) {
+			out.append(" join ");
+			out.append(join);
+		}
+
 		if (where != null) {
 			out.append(" where ");
 			out.append(where);
 		}
+
 		if (orderBy != null) {
 			out.append(" order by ");
 			out.append(orderBy);
 		}
+
 		return out.toString();
 	}
 
 
 	@Override
 	public String getCreateTableSql(Class<?> clazz) {
-		
 		StringBuilder buf = new StringBuilder();
 
 		StandardPojoInfo pojoInfo = getPojoInfo(clazz);
