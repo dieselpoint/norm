@@ -14,13 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import com.dieselpoint.norm.ColumnOrder;
 import com.dieselpoint.norm.DbException;
@@ -39,6 +33,7 @@ public class StandardPojoInfo implements PojoInfo {
 	LinkedHashMap<String, Property> propertyMap = new LinkedHashMap<String, Property>();
 	String table;
 	String primaryKeyName;
+	//String foreignKeyName;
 	String generatedColumnName;
 	
 	String insertSql;

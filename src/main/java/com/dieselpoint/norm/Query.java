@@ -48,6 +48,11 @@ public class Query {
 		this.joinTables = new HashMap<String, List<String>>();
 	}
 
+	/**
+	 * Add a select clause so as to specify the columns in which
+	 * the query will return.
+	 * @param columns Example: "id,username,password"
+	 */
 	public Query select(String columns) {
 		this.columns = columns;
 		return this;
@@ -56,8 +61,7 @@ public class Query {
 	/**
 	 * Add a join clause and some parameters to specify the columns in which
 	 * the join is performed. Has no effect if the .sql() method is used.
-	 * @param joinTable
-	 * @return
+	 * @param joinTable Name of table in which to join.
 	 */
 	public Query innerJoin(String joinTable) {
 		this.joinTable = joinTable;
