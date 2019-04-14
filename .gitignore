@@ -4,3 +4,5 @@
 /sqlitetest.db
 /.settings/
 /.idea/
+norm.iml
+test.sqlite3
