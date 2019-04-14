@@ -58,7 +58,9 @@ public class TestSelect {
 		Database db = new Database();
 		db.setJdbcUrl("jdbc:sqlite:/home/ghost/IdeaProjects/norm/norm/test.sqlite3");
 
-		db.joinTable("rowtest", "rowtest_id = rowtest,id")
+		db.innerJoin("rowtest")
+				.on("rowtest_id = rowtest,id")
+				.on("rowtest2_id = rowtest2.id")
 				.where("name = ?", "nick")
 				.results(Row.class);
 	}

@@ -3,6 +3,8 @@ package com.dieselpoint.norm.sqlmakers;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.Column;
@@ -159,8 +161,7 @@ public class StandardSqlMaker implements SqlMaker {
 		StandardPojoInfo pojoInfo = getPojoInfo(rowClass);
 		String columns = pojoInfo.selectColumns;
 
-		String joinTable = query.getJoinTable();
-		String join = query.getJoin();
+		Map<String, List<String>> joinTables = query.getJoinTables();
 		String where = query.getWhere();
 		String table = query.getTable();
 
@@ -176,11 +177,19 @@ public class StandardSqlMaker implements SqlMaker {
 		out.append(" from ");
 		out.append(table);
 
-		if (join != null) {
-			out.append(" inner join ");
-			out.append(joinTable);
-			out.append(" on ");
-			out.append(join);
+		if (joinTables != null) {
+			for (String joinTable : joinTables.keySet()) {
+				out.append(" inner join ");
+				out.append(joinTable);
+				out.append(" on ");
+
+				for (String joinClause : joinTables.get(joinTable)) {
+					out.append(joinClause);
+
+					if (joinTables.get(joinTable).indexOf(joinClause) < joinTables.size())
+					out.append(" and ");
+				}
+			}
 		}
 
 		if (where != null) {

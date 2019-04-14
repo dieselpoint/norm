@@ -82,8 +82,8 @@ public class Database {
 		return new Query(this).sql(sql, args);
 	}
 
-	public Query joinTable(String joinTable, String join) {
-		return new Query(this).joinTable(joinTable, join);
+	public Query innerJoin(String joinTable) {
+		return new Query(this).innerJoin(joinTable);
 	}
 
 	/**

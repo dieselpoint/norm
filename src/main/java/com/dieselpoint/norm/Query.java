@@ -7,6 +7,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,8 @@ public class Query {
 	private String sql;
 	private String table;
 	private String joinTable;
-	private String join;
+	private String joinClause;
+	private Map<String, List<String>> joinTables;
 	private String where;
 	private String orderBy;
 
@@ -42,18 +44,24 @@ public class Query {
 	public Query(Database db) {
 		this.db = db;
 		this.sqlMaker = db.getSqlMaker();
+		this.joinTables = new HashMap<String, List<String>>();
 	}
 
 	/**
 	 * Add a join clause and some parameters to specify the columns in which
 	 * the join is performed. Has no effect if the .sql() method is used.
 	 * @param joinTable
-	 * @param join
 	 * @return
 	 */
-	public Query joinTable(String joinTable, String join) {
+	public Query innerJoin(String joinTable) {
 		this.joinTable = joinTable;
-		this.join = join;
+		this.joinTables.put(joinTable, new ArrayList<String>());
+		return this;
+	}
+
+	public Query on(String joinClause) {
+		this.joinClause = joinClause;
+		this.joinTables.get(joinTable).add(joinClause);
 		return this;
 	}
 
@@ -440,11 +448,15 @@ public class Query {
 	}
 
 	public String getJoin() {
-		return join;
+		return joinClause;
 	}
 
 	public String getJoinTable() {
 		return joinTable;
+	}
+
+	public Map<String, List<String>> getJoinTables() {
+		return joinTables;
 	}
 
 	public String getOrderBy() {
