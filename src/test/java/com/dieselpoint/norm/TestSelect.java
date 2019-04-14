@@ -3,6 +3,7 @@ package com.dieselpoint.norm;
 import static org.junit.Assert.fail;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Column;
@@ -57,7 +58,9 @@ public class TestSelect {
 		Database db = new Database();
 		db.setJdbcUrl("jdbc:sqlite:/home/ghost/IdeaProjects/norm/norm/test.sqlite3");
 
-		db.joinTable();
+		db.join("rowtest", "rowtest_id = rowtest,id");
+		db.where("name = ?", "nick");
+		List<Row> results = db.results(Row.class);
 	}
 	
 	@Table(name="selecttest")
