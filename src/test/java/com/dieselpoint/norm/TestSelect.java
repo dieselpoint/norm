@@ -8,16 +8,18 @@ import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Table;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestSelect {
-	
+	@Ignore
 	@Test
 	public void test() {
 	
-		Setup.setSysProperties();
+	//	Setup.setSysProperties();
 		
 		Database db = new Database();
+		db.setJdbcUrl("jdbc:sqlite:/home/ghost/IdeaProjects/norm/norm/test.sqlite3");
 		
 		db.sql("drop table if exists selecttest").execute();
 		
@@ -50,7 +52,13 @@ public class TestSelect {
 		
 	}
 
+	@Test
+	public void selectTest() {
+		Database db = new Database();
+		db.setJdbcUrl("jdbc:sqlite:/home/ghost/IdeaProjects/norm/norm/test.sqlite3");
 
+		db.joinTable();
+	}
 	
 	@Table(name="selecttest")
 	public static class Row {

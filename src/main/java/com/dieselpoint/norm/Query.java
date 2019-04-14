@@ -51,7 +51,7 @@ public class Query {
 	 * @param join
 	 * @return
 	 */
-	public Query joinTable(String joinTable, String join) {
+	public Query join(String joinTable, String join) {
 		this.joinTable = joinTable;
 		this.join = join;
 		return this;
