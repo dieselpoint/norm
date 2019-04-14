@@ -49,6 +49,8 @@ public class TestSelect {
 		}
 		
 	}
+
+
 	
 	@Table(name="selecttest")
 	public static class Row {

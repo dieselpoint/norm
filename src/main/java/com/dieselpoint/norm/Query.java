@@ -44,6 +44,13 @@ public class Query {
 		this.sqlMaker = db.getSqlMaker();
 	}
 
+	/**
+	 * Add a join clause and some parameters to specify the columns in which
+	 * the join is performed. Has no effect if the .sql() method is used.
+	 * @param joinTable
+	 * @param join
+	 * @return
+	 */
 	public Query joinTable(String joinTable, String join) {
 		this.joinTable = joinTable;
 		this.join = join;
