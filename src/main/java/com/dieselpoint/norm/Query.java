@@ -25,6 +25,7 @@ public class Query {
 	
 	private String sql;
 	private String table;
+	private String joinTable;
 	private String join;
 	private String where;
 	private String orderBy;
@@ -41,6 +42,12 @@ public class Query {
 	public Query(Database db) {
 		this.db = db;
 		this.sqlMaker = db.getSqlMaker();
+	}
+
+	public Query joinTable(String joinTable, String join) {
+		this.joinTable = joinTable;
+		this.join = join;
+		return this;
 	}
 
 	/**
@@ -427,6 +434,10 @@ public class Query {
 
 	public String getJoin() {
 		return join;
+	}
+
+	public String getJoinTable() {
+		return joinTable;
 	}
 
 	public String getOrderBy() {

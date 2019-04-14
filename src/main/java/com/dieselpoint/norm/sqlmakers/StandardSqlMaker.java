@@ -159,6 +159,7 @@ public class StandardSqlMaker implements SqlMaker {
 		StandardPojoInfo pojoInfo = getPojoInfo(rowClass);
 		String columns = pojoInfo.selectColumns;
 
+		String joinTable = query.getJoinTable();
 		String join = query.getJoin();
 		String where = query.getWhere();
 		String table = query.getTable();
@@ -177,6 +178,8 @@ public class StandardSqlMaker implements SqlMaker {
 
 		if (join != null) {
 			out.append(" join ");
+			out.append(joinTable);
+			out.append(" on ");
 			out.append(join);
 		}
 
