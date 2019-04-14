@@ -18,10 +18,11 @@ public class TestSelect {
 		db.setJdbcUrl("jdbc:sqlite:/home/ghost/IdeaProjects/norm/norm/test.sqlite3");
 
 		List<Person> rows =
-				db.select("person.id, name")
+				db.select("*")
 					.table("person")
-					.innerJoin("name")
-					.on("person.name_id = name.id")
+						.innerJoin("name")
+						.on("person.name_id = name.id")
+					.where("name.name = ? or name.name = ?", "nick", "Nick")
 					.results(Person.class);
 
 		System.out.println();
@@ -32,7 +33,7 @@ public class TestSelect {
 		@Id
 		public long id;
 
-		@OneToOne
+		@OneToOne()
 		@JoinColumn(name = "name_id")
 		public Name name;
 	}
