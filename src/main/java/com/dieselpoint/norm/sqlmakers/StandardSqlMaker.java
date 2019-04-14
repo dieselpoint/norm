@@ -177,7 +177,7 @@ public class StandardSqlMaker implements SqlMaker {
 		out.append(table);
 
 		if (join != null) {
-			out.append(" join ");
+			out.append(" inner join ");
 			out.append(joinTable);
 			out.append(" on ");
 			out.append(join);
