@@ -25,6 +25,7 @@ public class Query {
 	private Object insertRow;
 	
 	private String sql;
+	private String columns;
 	private String table;
 	private String joinTable;
 	private String joinClause;
@@ -45,6 +46,11 @@ public class Query {
 		this.db = db;
 		this.sqlMaker = db.getSqlMaker();
 		this.joinTables = new HashMap<String, List<String>>();
+	}
+
+	public Query select(String columns) {
+		this.columns = columns;
+		return this;
 	}
 
 	/**
@@ -237,7 +243,7 @@ public class Query {
 				| SQLException	e) {
 			throw new DbException(e);
 		} finally {
-			close(state);
+ 			close(state);
 			close(con);
 		}
 
@@ -445,6 +451,10 @@ public class Query {
 	public Query transaction(Transaction trans) {
 		this.transaction = trans;
 		return this;
+	}
+
+	public String getColumns() {
+		return columns;
 	}
 
 	public String getJoin() {

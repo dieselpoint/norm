@@ -159,7 +159,11 @@ public class StandardSqlMaker implements SqlMaker {
 		// unlike insert and update, this needs to be done dynamically
 		// and can't be precalculated because of the where and order by
 		StandardPojoInfo pojoInfo = getPojoInfo(rowClass);
-		String columns = pojoInfo.selectColumns;
+		String columns = query.getColumns();
+
+		if (columns == null) {
+			columns = pojoInfo.selectColumns;
+		}
 
 		Map<String, List<String>> joinTables = query.getJoinTables();
 		String where = query.getWhere();
@@ -186,8 +190,8 @@ public class StandardSqlMaker implements SqlMaker {
 				for (String joinClause : joinTables.get(joinTable)) {
 					out.append(joinClause);
 
-					if (joinTables.get(joinTable).indexOf(joinClause) < joinTables.size())
-					out.append(" and ");
+					if (joinTables.get(joinTable).indexOf(joinClause) < joinTables.get(joinTable).size() - 1)
+						out.append(" and ");
 				}
 			}
 		}

@@ -6,73 +6,41 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Column;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestSelect {
-	@Ignore
-	@Test
-	public void test() {
-	
-	//	Setup.setSysProperties();
-		
-		Database db = new Database();
-		db.setJdbcUrl("jdbc:sqlite:/home/ghost/IdeaProjects/norm/norm/test.sqlite3");
-		
-		db.sql("drop table if exists selecttest").execute();
-		
-		db.createTable(Row.class);
-		
-		Row row = new Row();
-		row.id = 99;
-		row.name = "bob";
-		db.insert(row);
-		
-		// primitive
-		Long myId = db.sql("select id from selecttest").first(Long.class);
-		if (myId != 99) {
-			fail();
-		}
-		
-		// map
-		Map myMap = db.table("selecttest").first(LinkedHashMap.class);
-		String str = myMap.toString();
-		if (!str.equals("{id=99, name=bob}")) {
-			fail();
-		}
-		
-		// pojo
-		Row myRow = db.first(Row.class);
-		String myRowStr = myRow.toString();
-		if (!myRowStr.equals("99bob")) {
-			fail();
-		}
-		
-	}
-
 	@Test
 	public void selectTest() {
 		Database db = new Database();
 		db.setJdbcUrl("jdbc:sqlite:/home/ghost/IdeaProjects/norm/norm/test.sqlite3");
 
-		db.innerJoin("rowtest")
-				.on("rowtest_id = rowtest,id")
-				.on("rowtest2_id = rowtest2.id")
-				.where("name = ?", "nick")
-				.results(Row.class);
+		List<Person> rows =
+				db.select("person.id, name")
+					.table("person")
+					.innerJoin("name")
+					.on("person.name_id = name.id")
+					.results(Person.class);
+
+		System.out.println();
 	}
 	
-	@Table(name="selecttest")
-	public static class Row {
-		@Column(unique=true)
+	@Table(name="person")
+	public static class Person {
+		@Id
 		public long id;
-		public String name; 
-		public String toString() {
-			return id + name;
-		}
+
+		@OneToOne
+		@JoinColumn(name = "name_id")
+		public Name name;
 	}
 
+	@Table(name="name")
+	public static class Name {
+		@Id
+		public long id;
+		public String firstName;
+	}
 }
