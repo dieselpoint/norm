@@ -69,6 +69,11 @@ public class Query {
 		return this;
 	}
 
+	/**
+	 * Used with .innerJoin(), specifies what field to join the tables
+	 * on.
+	 * @param joinClause Example: person.address_id = address.id
+	 */
 	public Query on(String joinClause) {
 		this.joinClause = joinClause;
 		this.joinTables.get(joinTable).add(joinClause);

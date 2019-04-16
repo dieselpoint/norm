@@ -18,7 +18,7 @@ public class TestSelect {
 		db.setJdbcUrl("jdbc:sqlite:/home/ghost/IdeaProjects/norm/norm/test.sqlite3");
 
 		List<Person> rows =
-				db.select("*")
+				db.select("person.id, name")
 					.table("person")
 						.innerJoin("name")
 						.on("person.name_id = name.id")
@@ -34,8 +34,8 @@ public class TestSelect {
 		public long id;
 
 		@OneToOne()
-		@JoinColumn(name = "name_id")
-		public Name name;
+		@JoinColumn
+		public String name;
 	}
 
 	@Table(name="name")

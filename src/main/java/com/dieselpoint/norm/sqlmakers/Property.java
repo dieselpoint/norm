@@ -17,7 +17,6 @@ public class Property {
 	public Class<?> dataType;
 	public boolean isGenerated;
 	public boolean isPrimaryKey;
-	public boolean isForeignKey;
 	public boolean isEnumField;
 	public Class<Enum> enumClass;
 	public EnumType enumType;
