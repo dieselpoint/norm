@@ -63,6 +63,13 @@ public class StandardSqlMakerTest {
         assertEquals(selectSql, "select id,name from testTable");
     }
 
+    @Test
+    public void getCreateTableSql() {
+        String createTableSql = sut.getCreateTableSql(TestTable.class);
+
+        assertEquals(createTableSql, "create table testTable (id integer auto_increment,name varchar(255), primary key (id))");
+    }
+
     @Table(name = "testTable")
     static class TestTable {
         private int id;
