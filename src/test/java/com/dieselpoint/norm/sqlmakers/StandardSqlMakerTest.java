@@ -38,7 +38,7 @@ public class StandardSqlMakerTest {
 
         String insertSql = sut.getInsertSql(query, testTable);
 
-        assertEquals(insertSql, "insert into testTable (id,name) values (?,?)");
+        assertEquals(insertSql, "insert into testTable (name) values (?)");
     }
 
     @Test
@@ -46,8 +46,6 @@ public class StandardSqlMakerTest {
         Query query = new Query(db);
 
         TestTable testTable = new TestTable();
-        testTable.setId(1);
-        testTable.setName("test");
 
         String updateSql = sut.getUpdateSql(query, testTable);
 
@@ -68,6 +66,65 @@ public class StandardSqlMakerTest {
         String createTableSql = sut.getCreateTableSql(TestTable.class);
 
         assertEquals(createTableSql, "create table testTable (id integer auto_increment,name varchar(255), primary key (id))");
+    }
+
+    @Test
+    public void getDeleteSql() {
+        TestTable testTable = new TestTable();
+
+        String deleteSql = sut.getDeleteSql(new Query(db), testTable);
+
+        assertEquals(deleteSql, "delete from testTable where id=?");
+    }
+
+    @Test
+    public void getUpdateArgs() {
+        Query query = new Query(db);
+
+        TestTable testTable = new TestTable();
+        testTable.setId(1);
+        testTable.setName("test");
+
+        Object[] updateArgs = sut.getUpdateArgs(query, testTable);
+
+        assertEquals(updateArgs.length,2);
+
+        assertArrayEquals(updateArgs, new Object[] {"test", 1});
+    }
+
+    @Test
+    public void getInsertArgs() {
+        Query query = new Query(db);
+
+        TestTable testTable = new TestTable();
+        testTable.setId(1);
+        testTable.setName("test");
+
+        Object[] insertArgs = sut.getUpdateArgs(query, testTable);
+
+        assertEquals(insertArgs.length,2);
+
+        assertArrayEquals(insertArgs, new Object[] {"test", 1});
+    }
+
+    @Test
+    public void getDeleteArgs() {
+        Query query = new Query(db);
+
+        TestTable testTable = new TestTable();
+        testTable.setId(1);
+        testTable.setName("test");
+
+        Object[] deleteArgs = sut.getDeleteArgs(query, testTable);
+
+        assertEquals(deleteArgs.length,1);
+
+        assertArrayEquals(deleteArgs, new Object[] { 1 });
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void getUpsertArgs() {
+        sut.getUpsertArgs(new Query(db), new TestTable());
     }
 
     @Table(name = "testTable")
