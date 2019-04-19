@@ -7,6 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 import static org.junit.Assert.*;
@@ -39,11 +41,26 @@ public class StandardSqlMakerTest {
         assertEquals(insertSql, "insert into testTable (id,name) values (?,?)");
     }
 
+    @Test
+    public void getUpdateSql() {
+        Query query = new Query(db);
+
+        TestTable testTable = new TestTable();
+        testTable.setId(1);
+        testTable.setName("test");
+
+        String updateSql = sut.getUpdateSql(query, testTable);
+
+        assertEquals(updateSql, "update testTable set name=? where id=?");
+    }
+
     @Table(name = "testTable")
     static class TestTable {
         private int id;
         private String name;
 
+        @Id
+        @GeneratedValue
         @Column(name = "id")
         public int getId() {
             return id;
