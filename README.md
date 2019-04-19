@@ -228,7 +228,7 @@ Here's the Maven dependency:
 <dependency>
     <groupId>com.dieselpoint</groupId>
     <artifactId>norm</artifactId>
-    <version>0.8.3</version>
+    <version>0.8.2</version>
 </dependency>
 ```  
 
@@ -266,7 +266,7 @@ Finally, you'll need to include your JDBC driver as a dependency. Here's a sampl
 <dependency>
     <groupId>mysql</groupId>
     <artifactId>mysql-connector-java</artifactId>
-    <version>8.0.15</version>
+    <version>6.0.6</version>
 </dependency>
 ```  
 
