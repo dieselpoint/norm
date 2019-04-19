@@ -54,6 +54,15 @@ public class StandardSqlMakerTest {
         assertEquals(updateSql, "update testTable set name=? where id=?");
     }
 
+    @Test
+    public void getSelectSql() {
+        Query query = new Query(db);
+
+        String selectSql = sut.getSelectSql(query, TestTable.class);
+
+        assertEquals(selectSql, "select id,name from testTable");
+    }
+
     @Table(name = "testTable")
     static class TestTable {
         private int id;
