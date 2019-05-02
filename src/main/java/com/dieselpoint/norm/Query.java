@@ -93,7 +93,7 @@ public class Query {
 	public <T> T first(Class<T> clazz) {
 		List<T> list = results(clazz);
 		if (list.size() > 0) {
-			return (T) list.get(0);
+			return list.get(0);
 		} else {
 			return null;
 		}
@@ -103,9 +103,9 @@ public class Query {
 	/**
 	 * Provides the results as a list of Map objects instead of a list of pojos.
 	 */
-	private List<Map> resultsMap(Class<Map<String, Object>> clazz) {
+	private List<Map<String, Object>> resultsMap(Class<Map<String, Object>> clazz) {
 
-		List<Map> out = new ArrayList<Map>();
+		List<Map<String, Object>> out = new ArrayList<Map<String, Object>>();
 		Connection con = null;
 		PreparedStatement state = null;
 
@@ -206,7 +206,7 @@ public class Query {
 						
 						pojoInfo.putValue(row, colName, colValue);
 					}
-					out.add((T) row);
+					out.add(row);
 				}
 			}
 
