@@ -36,24 +36,25 @@ public class StandardPojoInfo implements PojoInfo {
 	 * annotations recognized: @ Id, @ GeneratedValue @ Transient @ Table @ Column @ DbSerializer @ Enumerated
 	 */
 
-	LinkedHashMap<String, Property> propertyMap = new LinkedHashMap<String, Property>();
-	String table;
-	String primaryKeyName;
-	String generatedColumnName;
+	// these are public to make subclassing easier
+	public LinkedHashMap<String, Property> propertyMap = new LinkedHashMap<String, Property>();
+	public String table;
+	public String primaryKeyName;
+	public String generatedColumnName;
 	
-	String insertSql;
-	int insertSqlArgCount;
-	String [] insertColumnNames;
+	public String insertSql;
+	public int insertSqlArgCount;
+	public String [] insertColumnNames;
 
-	String upsertSql;
-	int upsertSqlArgCount;
-	String [] upsertColumnNames;
+	public String upsertSql;
+	public int upsertSqlArgCount;
+	public String [] upsertColumnNames;
 	
-	String updateSql;
-	String[] updateColumnNames;
-	int updateSqlArgCount;
+	public String updateSql;
+	public String[] updateColumnNames;
+	public int updateSqlArgCount;
 	
-	String selectColumns;
+	public String selectColumns;
 
 	public StandardPojoInfo(Class<?> clazz) {
 
@@ -204,27 +205,6 @@ public class StandardPojoInfo implements PojoInfo {
 		
 	}
 
-
-/*
-	private Method getMethod(Method meth, String propertyName, Property pair) {
-		if (meth == null) {
-			return null;
-		}
-		if (meth.getAnnotation(Transient.class) != null) {
-			return null;
-		}
-		if (meth.getAnnotation(Id.class) != null) {
-			this.primaryKeyName = propertyName;
-			pair.isPrimaryKey = true;
-		}
-		if (meth.getAnnotation(GeneratedValue.class) != null) {
-			this.generatedColumnName = propertyName;
-			pair.isGenerated = true;
-		}
-		return meth;
-	}
-*/
-	
 	
 	public Object getValue(Object pojo, String name) {
 
