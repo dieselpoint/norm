@@ -1,5 +1,6 @@
 package com.dieselpoint.norm;
 
+import java.util.Collection;
 import java.util.List;
 
 public class Util {
@@ -16,16 +17,18 @@ public class Util {
 	}
 	
 	
-	public static String join(List<String> strs) {
-		StringBuilder buf = new StringBuilder();
-		int len = strs.size();
-		for (int i = 0; i < len; i++) {
-			if (i > 0) {
-				buf.append(",");
+	public static String join(Collection<String> strs) {
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (String col: strs) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(",");
 			}
-			buf.append(strs.get(i));
+			sb.append(col);
 		}
-		return buf.toString();
+		return sb.toString();
 	}
 	
 	public static String getQuestionMarks(int count) {

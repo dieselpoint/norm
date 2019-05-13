@@ -37,6 +37,10 @@ public class Query {
 	
 	private Transaction transaction;
 
+	private String generatedKeyName;
+	private long generatedKeyValue;
+	
+	
 	public Query(Database db) {
 		this.db = db;
 		this.sqlMaker = db.getSqlMaker();
@@ -257,6 +261,7 @@ public class Query {
 
 		return this;
 	}
+	
 
 	/**
 	 * Upsert a row into a table.
@@ -340,11 +345,16 @@ public class Query {
 			
 			// Set auto generated primary key. The code assumes that the primary
 			// key is the only auto generated key.
-			if (insertRow != null) {
-				ResultSet generatedKeys = state.getGeneratedKeys();
-				if (generatedKeys.next()) {
+			ResultSet generatedKeys = state.getGeneratedKeys();
+			if (generatedKeys.next()) {
+				if (insertRow != null) {
 					sqlMaker.populateGeneratedKey(generatedKeys, insertRow);
-				}			
+				} else {
+					// temporary hack to enable inserting maps
+					if (generatedKeyName != null) {
+						generatedKeyValue = generatedKeys.getLong(generatedKeyName);
+					}
+				}
 			}
 
 		} catch (SQLException | IllegalArgumentException e) {
@@ -357,6 +367,41 @@ public class Query {
 		return this;
 	}
 
+	
+	/**
+	 * Temporary hack. Avoid.
+	 * @deprecated
+	 * @param generatedKeyName
+	 * @return
+	 */
+	public Query generatedKeyName(String generatedKeyName) {
+		this.generatedKeyName = generatedKeyName;
+		return this;
+	}
+	
+	public long getGeneratedKeyValue() {
+		return generatedKeyValue;
+	}
+	
+	/**
+	 * This is a temporary hack to deal with inserting Maps using sql. May go away. Marking this 
+	 * deprecated right from the start.
+	 * @deprecated
+	 * @return
+	 * /
+	public long getGeneratedKey(String colName) {
+		if (generatedKeys != null) {
+			try {
+				return generatedKeys.getLong(colName);
+			} catch (SQLException e) {
+				throw new DbException(e);
+			}
+		}
+		return -1;
+	}
+	*/
+	
+	
 	/**
 	 * Simple, primitive method for creating a table based on a pojo. 
 	 */
