@@ -40,7 +40,7 @@ public class TestGeneratedId {
         NormPojo np = new NormPojo();
         np.setId("MyID");
         np.setName("My name");
-        db.insert(np);
+        db.generatedKeyReceiver(np, "id").insert(np);
         Assert.assertNotNull(np.getDatabaseId());
     }
     

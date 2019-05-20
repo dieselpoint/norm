@@ -52,7 +52,7 @@ public class SampleCode {
 		dump("bill is now joe, and rowsAffected=" + rowsAffected, list2);
 		
 		/* test using a map for results instead of a pojo */
-		Map map = db.sql("select count(*) as count from names").first(HashMap.class);
+		Map<?, ?> map = db.sql("select count(*) as count from names").first(HashMap.class);
 		System.out.println("Num records (should be 1):" + map.get("count"));
 		
 		/* test using a primitive for results instead of a pojo */

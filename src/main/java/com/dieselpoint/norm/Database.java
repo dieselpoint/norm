@@ -134,6 +134,13 @@ public class Database {
 	public Query insert(Object row) {
 		return new Query(this).insert(row);
 	}
+	
+	/**
+	 * @see Query.generateKeyReceiver
+	 */
+	public Query generatedKeyReceiver(Object generatedKeyReceiver, String... generatedKeyNames) {
+		return new Query(this).generatedKeyReceiver(generatedKeyReceiver, generatedKeyNames);
+	}
 
 	/**
 	 * Delete a row in a table. This method looks for an @Id annotation

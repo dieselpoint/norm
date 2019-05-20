@@ -312,6 +312,13 @@ public class StandardPojoInfo implements PojoInfo {
 	public Property getGeneratedColumnProperty() {
 		return propertyMap.get(generatedColumnName);
 	}
+
+
+
+	@Override
+	public Property getProperty(String name) {
+		return propertyMap.get(name);
+	}
 	
 	
 	
