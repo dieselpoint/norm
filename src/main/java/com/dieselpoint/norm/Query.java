@@ -327,7 +327,7 @@ public class Query {
 					 * The purpose of this is to allow List args to be inserted into JDBC array
 					 * fields. Postgres JDBC drivers do not handle this correctly.
 					 */
-					if (List.class.isAssignableFrom(arg.getClass())) {
+					if (arg != null && List.class.isAssignableFrom(arg.getClass())) {
 						arg = ((List<?>) arg).toArray();
 					}
 
