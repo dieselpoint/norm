@@ -278,6 +278,9 @@ public class StandardSqlMaker implements SqlMaker {
 		return colType;
 	}
 
+	public Object convertValue(Object value, String columnTypeName) {
+		return value;
+	}
 
 	@Override
 	public String getDeleteSql(Query query, Object row) {

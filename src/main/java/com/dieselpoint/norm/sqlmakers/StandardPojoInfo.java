@@ -268,7 +268,7 @@ public class StandardPojoInfo implements PojoInfo {
 				prop.writeMethod.invoke(pojo, value);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				throw new DbException("Could not write value into pojo. Property: " + prop.name + " method: "
-						+ prop.writeMethod.toString() + " value: " + value + " value class:" + value.getClass().toString(), e);
+						+ prop.writeMethod.toString() + " value: " + value + " value class: " + value.getClass().toString(), e);
 			}
 			return;
 		}
