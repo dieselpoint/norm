@@ -22,5 +22,7 @@ public interface SqlMaker {
 	public String getCreateTableSql(Class<?> clazz);
 	
 	public PojoInfo getPojoInfo(Class<?> rowClass);
-	
+
+	public Object convertValue(Object value, String columnTypeName);
+
 }

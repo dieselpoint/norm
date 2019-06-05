@@ -53,5 +53,25 @@ public class MySqlMaker extends StandardSqlMaker {
 		pojoInfo.upsertSql = buf.toString();
 	}
 
-	
+	@Override
+	protected String getColType(Class<?> dataType, int length, int precision, int scale) {
+		String colType;
+
+		if (dataType.equals(Boolean.class) || dataType.equals(boolean.class)) {
+			colType = "tinyint";
+		} else {
+			colType = super.getColType(dataType, length, precision, scale);
+		}
+		return colType;
+	}
+
+	@Override
+	public Object convertValue(Object value, String columnTypeName) {
+		if ("TINYINT".equalsIgnoreCase(columnTypeName)) {
+			value = (int) value == 1;
+		}
+
+		return value;
+	}
+
 }
