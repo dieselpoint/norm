@@ -167,7 +167,8 @@ public class StandardSqlMaker implements SqlMaker {
 			table = pojoInfo.table;
 		}
 		String orderBy = query.getOrderBy();
-		
+		Integer limit = query.getLimit();
+
 		StringBuilder out = new StringBuilder();
 		out.append("select ");
 		out.append(columns);
@@ -180,6 +181,10 @@ public class StandardSqlMaker implements SqlMaker {
 		if (orderBy != null) {
 			out.append(" order by ");
 			out.append(orderBy);
+		}
+		if (limit != null) {
+			out.append(" limit ");
+			out.append(limit.toString());
 		}
 		return out.toString();
 	}

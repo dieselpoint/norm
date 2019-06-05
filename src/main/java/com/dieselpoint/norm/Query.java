@@ -29,6 +29,7 @@ public class Query {
 	private String table;
 	private String where;
 	private String orderBy;
+	private Integer limit;
 
 	private Object[] args;
 
@@ -88,6 +89,14 @@ public class Query {
 	 */
 	public Query orderBy(String orderBy) {
 		this.orderBy = orderBy;
+		return this;
+	}
+
+	/**
+	 * Add a "limit" clause to a query.
+	 */
+	public Query limit(int limit) {
+		this.limit = limit;
 		return this;
 	}
 
@@ -539,6 +548,10 @@ public class Query {
 
 	public String getOrderBy() {
 		return orderBy;
+	}
+
+	public Integer getLimit() {
+		return limit;
 	}
 
 	public String getWhere() {
