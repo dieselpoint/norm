@@ -253,8 +253,6 @@ Internally, Norm uses the [Hikari](http://brettwooldridge.github.io/HikariCP/) c
 
 If you don't want to use system properties, or your DataSource needs some custom startup parameters, just subclass the [Database](https://github.com/dieselpoint/norm/blob/master/src/main/java/com/dieselpoint/norm/Database.java) class and override the .getDataSource() method. You can supply any DataSource you like.
 
-In particular, you might want to override .getDataSource() to set the maximum number of connections that the connection pool opens. By default, it's set to 10. Tune it appropriately.
-
 ### Dependencies
 Norm needs javax.persistence, but that's just for annotations.
 

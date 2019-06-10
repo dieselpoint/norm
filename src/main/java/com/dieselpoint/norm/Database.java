@@ -26,6 +26,7 @@ public class Database {
 	private String databaseName = System.getProperty("norm.databaseName");
 	private String user = System.getProperty("norm.user");
 	private String password = System.getProperty("norm.password");
+	private int maxPoolSize = 10;
 
 	/**
 	 * Set the maker object for the particular flavor of sql.
@@ -44,7 +45,7 @@ public class Database {
 	 */
 	protected DataSource getDataSource() throws SQLException {
 		HikariConfig config = new HikariConfig();
-		config.setMaximumPoolSize(10);
+		config.setMaximumPoolSize(maxPoolSize);
 		
 		if (dataSourceClassName != null) {
 			config.setDataSourceClassName(dataSourceClassName);
@@ -246,5 +247,13 @@ public class Database {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
+	public int getMaxPoolSize() {
+		return maxPoolSize;
+	}
+
+	public void setMaxPoolSize(int maxPoolSize) {
+		this.maxPoolSize = maxPoolSize;
+	}
+
 }
