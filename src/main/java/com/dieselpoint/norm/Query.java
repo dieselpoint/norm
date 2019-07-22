@@ -206,7 +206,7 @@ public class Query {
 						String colName = meta.getColumnLabel(i);
 						Object colValue = sqlMaker.convertValue(rs.getObject(i), meta.getColumnTypeName(i));
 
-						pojoInfo.putValue(row, colName, colValue);
+						pojoInfo.putValue(row, colName, colValue, true);
 					}
 					out.add(row);
 				}

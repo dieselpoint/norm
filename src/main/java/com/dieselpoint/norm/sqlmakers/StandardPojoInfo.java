@@ -248,9 +248,16 @@ public class StandardPojoInfo implements PojoInfo {
 	}	
 
 	public void putValue(Object pojo, String name, Object value) {
+		putValue(pojo, name, value, false);
+	}
+
+	public void putValue(Object pojo, String name, Object value, boolean ignoreIfMissing) {
 
 		Property prop = propertyMap.get(name);
 		if (prop == null) {
+			if (ignoreIfMissing) {
+				return;
+			} 
 			throw new DbException("No such field: " + name);
 		}
 
