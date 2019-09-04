@@ -7,6 +7,8 @@ package com.dieselpoint.norm;
  */
 public class DbException extends RuntimeException {
 	
+	private String sql;
+	
 	public DbException() {}
 	
 	public DbException(String msg) {
@@ -19,6 +21,14 @@ public class DbException extends RuntimeException {
 
 	public DbException(String msg, Throwable t) {
 		super(msg, t);
+	}
+	
+	public void setSql(String sql) {
+		this.sql = sql;
+	}
+	
+	public String getSql() {
+		return sql;
 	}
 	
 }
