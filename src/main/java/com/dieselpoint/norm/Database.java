@@ -16,17 +16,17 @@ import com.zaxxer.hikari.HikariDataSource;
  */
 public class Database {
 	
-	private SqlMaker sqlMaker = new StandardSqlMaker();
-	private DataSource ds;
+	protected SqlMaker sqlMaker = new StandardSqlMaker();
+	protected DataSource ds;
 	
-	private String dataSourceClassName = System.getProperty("norm.dataSourceClassName");
-	private String driverClassName = System.getProperty("norm.driverClassName");
-	private String jdbcUrl = System.getProperty("norm.jdbcUrl");
-	private String serverName = System.getProperty("norm.serverName");
-	private String databaseName = System.getProperty("norm.databaseName");
-	private String user = System.getProperty("norm.user");
-	private String password = System.getProperty("norm.password");
-	private int maxPoolSize = 10;
+	protected String dataSourceClassName = System.getProperty("norm.dataSourceClassName");
+	protected String driverClassName = System.getProperty("norm.driverClassName");
+	protected String jdbcUrl = System.getProperty("norm.jdbcUrl");
+	protected String serverName = System.getProperty("norm.serverName");
+	protected String databaseName = System.getProperty("norm.databaseName");
+	protected String user = System.getProperty("norm.user");
+	protected String password = System.getProperty("norm.password");
+	protected int maxPoolSize = 10;
 
 	/**
 	 * Set the maker object for the particular flavor of sql.
