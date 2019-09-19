@@ -137,7 +137,7 @@ public class Database {
 	}
 	
 	/**
-	 * @see Query.generateKeyReceiver
+	 * See {@link com.dieselpoint.norm.Query#generatedKeyReceiver(Object, String...) generateKeyReceiver} method.
 	 */
 	public Query generatedKeyReceiver(Object generatedKeyReceiver, String... generatedKeyNames) {
 		return new Query(this).generatedKeyReceiver(generatedKeyReceiver, generatedKeyNames);

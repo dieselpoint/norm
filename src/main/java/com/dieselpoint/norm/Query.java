@@ -190,8 +190,8 @@ public class Query {
 			ResultSetMetaData meta = rs.getMetaData();
 			int colCount = meta.getColumnCount();
 
-			if (Util.isPrimitiveOrString(clazz)) {
-				// if the receiver class is a primitive just grab the first column and assign it
+			if (Util.isPrimitiveOrString(clazz) || clazz.getPackage().getName().startsWith("java.sql")) {
+				// if the receiver class is a primitive or jdbc type just grab the first column and assign it
 				while (rs.next()) {
 					Object colValue = rs.getObject(1);
 					out.add((T) colValue);
