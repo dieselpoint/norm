@@ -33,6 +33,8 @@ public class Query {
 	private Object[] args;
 
 	private int rowsAffected;
+	
+	private ResultSetMetaData meta;
 
 	private Database db;
 	private SqlMaker sqlMaker;
@@ -131,7 +133,7 @@ public class Query {
 
 			ResultSet rs = state.executeQuery();
 
-			ResultSetMetaData meta = rs.getMetaData();
+			meta = rs.getMetaData();
 			int colCount = meta.getColumnCount();
 
 			while (rs.next()) {
@@ -187,7 +189,7 @@ public class Query {
 
 			ResultSet rs = state.executeQuery();
 
-			ResultSetMetaData meta = rs.getMetaData();
+			meta = rs.getMetaData();
 			int colCount = meta.getColumnCount();
 
 			if (Util.isPrimitiveOrString(clazz) || clazz.getPackage().getName().startsWith("java.sql")) {
@@ -547,6 +549,10 @@ public class Query {
 
 	public String getTable() {
 		return table;
+	}
+	
+	public ResultSetMetaData getResultSetMetaData() {
+		return meta;
 	}
 
 }
