@@ -3,6 +3,7 @@ package com.dieselpoint.norm.sqlmakers;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import javax.persistence.AttributeConverter;
 import javax.persistence.Column;
 import javax.persistence.EnumType;
 
@@ -22,4 +23,5 @@ public class Property {
 	public EnumType enumType;
 	public Column columnAnnotation;
 	public DbSerializable serializer;
+	public AttributeConverter converter;
 }
