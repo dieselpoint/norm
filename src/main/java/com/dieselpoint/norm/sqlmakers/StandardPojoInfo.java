@@ -234,9 +234,9 @@ public class StandardPojoInfo implements PojoInfo {
 			if (value != null) {
 				if (prop.serializer != null) {
 					value = prop.serializer.serialize(value);
-
-				// TODO put prop.converter here
 					
+				} else if (prop.converter != null) {
+					value = prop.converter.convertToDatabaseColumn(value);
 					
 				} else if (prop.isEnumField) {
 					// handle enums according to selected enum type
@@ -274,6 +274,9 @@ public class StandardPojoInfo implements PojoInfo {
 		if (value != null) {
 			if (prop.serializer != null) {
 				value = prop.serializer.deserialize((String) value, prop.dataType);
+				
+			} else if (prop.converter != null) {
+				value = prop.converter.convertToEntityAttribute(value);
 
 			} else if (prop.isEnumField) {
 				value = getEnumConst(prop.enumClass, prop.enumType, value);

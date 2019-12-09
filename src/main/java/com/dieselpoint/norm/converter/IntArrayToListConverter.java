@@ -25,10 +25,11 @@ public class IntArrayToListConverter implements AttributeConverter<List<Integer>
 			if (dbData.getBaseType() != java.sql.Types.INTEGER) {
 				throw new DbException("Database is not returning an integer array");
 			}
-			int[] arr = (int[]) dbData.getArray();
+			
+			Integer [] arr = (Integer[]) dbData.getArray();
 			List<Integer> out = new ArrayList<>();
-			for (int i = 0; i < arr.length; i++) {
-				out.add(arr[i]);
+			for (Integer i: arr) {
+				out.add(i);
 			}
 			return out;
 
