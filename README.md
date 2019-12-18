@@ -172,32 +172,23 @@ Transaction is a pretty simple class, so if it doesn't do what you need,  just s
 
 ### Custom Serialization
 
-Sometimes it's hard to map a property in your POJO to a database field. For example, suppose your POJO property is List<String>, but you want your database field to be a plain, comma-separated string. You need a way to tell the system how to convert your list to the proper format.
+> The older @DbSerializable and @DbSerializer annotations are now deprecated.
+> Use @Convert and an AttributeConverter class instead.
 
-Do it like this:
+Norm now supports JPA serialization. We'll add a bit more documentation here later, but for
+now you can learn all about it here:
 
-```Java
-class MyPojo {
-	@DbSerializer(MySerializer.class)
-	public List<String> myList;
-}
+[https://thoughts-on-java.org/jpa-21-how-to-implement-type-converter/](https://thoughts-on-java.org/jpa-21-how-to-implement-type-converter/)
 
-class MySerializer implements DbSerializable {
+and here:
 
-	@Override
-	public String serialize(Object in) {
-		return in.toString();
-	}
+[https://www.baeldung.com/jpa-attribute-converters](https://www.baeldung.com/jpa-attribute-converters)
 
-	@Override
-	public Object deserialize(String in, Class<?> targetClass) {
-		Object out = // convert the string back to a list here
-		return out;
-	}
-}
+In short, @Convert give you a way of converting a particular column datatype in your database
+to a particular datatype in your POJO. So, you can store a list of integers in your database
+as String, and in your POJO as List&lt;Integer>.
 
-```
-You can sometimes achieve the same purpose by using appropriate getters and setters on your POJO. Mark the ones that Norm should ignore with @Transient.
+Note that you can sometimes achieve the same purpose by using appropriate getters and setters on your POJO. Mark the ones that Norm should ignore with @Transient.
 
 
 ### Pluggable SQL Flavors
