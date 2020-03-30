@@ -107,7 +107,7 @@ Note that you must specify full sql, or at a minimum a table name, because the s
 A single column result set can come back in the form of a list of primitives, or even as a single primitive. 
 
 ```Java
-Long count = db.sql("select count(*) from people").results(Long.class);
+Long count = db.sql("select count(*) from people").first(Long.class);
 ```
 
 It's sometimes really useful to get a result in the form of a `List<String>`.
