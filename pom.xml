@@ -7,7 +7,7 @@
 	<groupId>com.dieselpoint</groupId>
 	<artifactId>norm</artifactId>
 	<name>Norm</name>
-	<version>0.8.6</version>
+	<version>0.8.7</version>
 	<packaging>jar</packaging>
 
 	<description>An extremely lightweight data access layer over JDBC</description>
@@ -46,6 +46,7 @@
 	<!-- Here's the explanation for all this: http://central.sonatype.org/pages/apache-maven.html -->
 	<!-- "mvn install" to do a build -->
 	<!-- "mvn clean deploy" to do an actual release to central -->
+	<!-- Do these from the command line, not Eclipse. Eclipse messes up java.home. -->
 	<!-- Look in my local notes/norm project for more -->
 
 	<distributionManagement>
@@ -84,6 +85,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.1.0</version>
 				<configuration>
+				    <source>1.8</source>
 					<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
 					<additionalparam>-Xdoclint:none</additionalparam>
 					<additionalOptions>-Xdoclint:none</additionalOptions>
@@ -97,7 +99,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
