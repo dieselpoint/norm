@@ -33,7 +33,7 @@ public class Query {
 	private Object[] args;
 
 	private int rowsAffected;
-	
+
 	private ResultSetMetaData meta;
 
 	private Database db;
@@ -193,7 +193,8 @@ public class Query {
 			int colCount = meta.getColumnCount();
 
 			if (Util.isPrimitiveOrString(clazz) || clazz.getPackage().getName().startsWith("java.sql")) {
-				// if the receiver class is a primitive or jdbc type just grab the first column and assign it
+				// if the receiver class is a primitive or jdbc type just grab the first column
+				// and assign it
 				while (rs.next()) {
 					Object colValue = rs.getObject(1);
 					out.add((T) colValue);
@@ -250,13 +251,13 @@ public class Query {
 	 * specify the table, or you can specify the table with the .table() method.
 	 */
 	public Query insert(Object row) {
-		
+
 		if (this.generatedKeyReceiver == null) {
 			PojoInfo pojoInfo = sqlMaker.getPojoInfo(row.getClass());
 			Property prop = pojoInfo.getGeneratedColumnProperty();
 			if (prop != null) {
 				this.generatedKeyReceiver = row;
-				this.generatedKeyNames = new String [] {prop.name};
+				this.generatedKeyNames = new String[] { prop.name };
 			}
 		}
 
@@ -403,25 +404,13 @@ public class Query {
 							throw new DbException("Generated key name not found: " + generatedKeyName);
 						}
 
-						// is it an int or a long?
-						boolean isInt = prop.dataType.isAssignableFrom(int.class)
-								|| prop.dataType.isAssignableFrom(Integer.class);
-
 						Object newKey;
 						if (colCount == 1) {
-							if (isInt) {
-								newKey = rs.getInt(1);
-							} else {
-								newKey = rs.getLong(1);
-							}
+							newKey = rs.getObject(1, prop.dataType);
 						} else {
-							// colcount > 1, must do by name
-							if (isInt) {
-								newKey = rs.getInt(prop.name);
-							} else {
-								newKey = rs.getLong(prop.name);
-							}
+							newKey = rs.getObject(prop.name, prop.dataType);
 						}
+
 						pojoInfo.putValue(generatedKeyReceiver, prop.name, newKey);
 					}
 				}
@@ -554,7 +543,7 @@ public class Query {
 	public String getTable() {
 		return table;
 	}
-	
+
 	public ResultSetMetaData getResultSetMetaData() {
 		return meta;
 	}

@@ -69,7 +69,11 @@ public class Database {
 		addDataSourceProperty("password", password);
 
 		for (Map.Entry<String, String> entry : dataSourceProperties.entrySet()) {
-			config.addDataSourceProperty(entry.getKey(), entry.getValue());
+			String key = entry.getKey();
+			String value = entry.getValue();
+			if (value != null) {
+				config.addDataSourceProperty(key, value);
+			}
 		}
 
 		/*

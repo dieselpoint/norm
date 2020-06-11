@@ -7,7 +7,7 @@
 	<groupId>com.dieselpoint</groupId>
 	<artifactId>norm</artifactId>
 	<name>Norm</name>
-	<version>0.8.7</version>
+	<version>0.8.9</version>
 	<packaging>jar</packaging>
 
 	<description>An extremely lightweight data access layer over JDBC</description>
@@ -62,8 +62,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<release>11</release>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -85,7 +84,6 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.1.0</version>
 				<configuration>
-				    <source>1.8</source>
 					<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
 					<additionalparam>-Xdoclint:none</additionalparam>
 					<additionalOptions>-Xdoclint:none</additionalOptions>
