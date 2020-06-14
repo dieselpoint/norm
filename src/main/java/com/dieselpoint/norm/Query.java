@@ -1,5 +1,6 @@
 package com.dieselpoint.norm;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -137,7 +138,7 @@ public class Query {
 			int colCount = meta.getColumnCount();
 
 			while (rs.next()) {
-				Map<String, Object> map = clazz.newInstance();
+				Map<String, Object> map = clazz.getDeclaredConstructor().newInstance();
 
 				for (int i = 1; i <= colCount; i++) {
 					String colName = meta.getColumnLabel(i);
@@ -146,7 +147,8 @@ public class Query {
 				out.add(map);
 			}
 
-		} catch (InstantiationException | IllegalAccessException | SQLException | IllegalArgumentException e) {
+		} catch (InstantiationException | IllegalAccessException | SQLException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			throw new DbException(e);
 		} finally {
 			close(state);
@@ -203,7 +205,7 @@ public class Query {
 			} else {
 				PojoInfo pojoInfo = sqlMaker.getPojoInfo(clazz);
 				while (rs.next()) {
-					T row = clazz.newInstance();
+					T row = clazz.getDeclaredConstructor().newInstance();
 
 					for (int i = 1; i <= colCount; i++) {
 						String colName = meta.getColumnLabel(i);
@@ -215,7 +217,8 @@ public class Query {
 				}
 			}
 
-		} catch (InstantiationException | IllegalAccessException | SQLException e) {
+		} catch (InstantiationException | IllegalAccessException | SQLException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			DbException dbe = new DbException(e);
 			dbe.setSql(sql);
 			throw dbe;
@@ -404,11 +407,18 @@ public class Query {
 							throw new DbException("Generated key name not found: " + generatedKeyName);
 						}
 
+						/*
+						 * getObject() below doesn't handle primitives correctly. Must convert to object
+						 * equivalent.
+						 */
+
+						Class<?> type = Util.wrap(prop.dataType);
+
 						Object newKey;
 						if (colCount == 1) {
-							newKey = rs.getObject(1, prop.dataType);
+							newKey = rs.getObject(1, type);
 						} else {
-							newKey = rs.getObject(prop.name, prop.dataType);
+							newKey = rs.getObject(prop.name, type);
 						}
 
 						pojoInfo.putValue(generatedKeyReceiver, prop.name, newKey);
@@ -429,6 +439,8 @@ public class Query {
 		}
 
 	}
+
+	// similar to Guava's Primitives.wrap
 
 	/**
 	 * Specify the object and its fields that should receive any column values that
