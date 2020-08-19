@@ -45,11 +45,11 @@ Database db = new Database();
 
 Person joe = new Person();
 joe.firstName = "Joe";
-joe.lastName = "Biden";
+joe.lastName = "Sixpack";
 
 db.insert(joe);
 
-List<Person> people = db.where("lastname=?", "Biden").orderBy("lastName").results(Person.class);
+List<Person> people = db.where("lastname=?", "Sixpack").orderBy("lastName").results(Person.class);
 ```
 
 The `Person` class:
