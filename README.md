@@ -261,8 +261,7 @@ Finally, you'll need to include your JDBC driver as a dependency. Here's a sampl
 
 ****
 
-That's about it. Post any bugs or feature requests to the issue tracker. Post any support requests to Stack Overflow.
-
+That's about it. Post any bugs or feature requests to the issue tracker. 
 
 
 
