@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.dieselpoint.norm.sqlmakers.PojoInfo;
-import com.dieselpoint.norm.sqlmakers.Property;
 import com.dieselpoint.norm.sqlmakers.SqlMaker;
 
 /**
@@ -257,10 +256,10 @@ public class Query {
 
 		if (this.generatedKeyReceiver == null) {
 			PojoInfo pojoInfo = sqlMaker.getPojoInfo(row.getClass());
-			Property prop = pojoInfo.getGeneratedColumnProperty();
-			if (prop != null) {
+			String[] names = pojoInfo.getGeneratedColumnNames();
+			if (names.length != 0) {
 				this.generatedKeyReceiver = row;
-				this.generatedKeyNames = new String[] { prop.name };
+				this.generatedKeyNames = names;
 			}
 		}
 
@@ -402,26 +401,41 @@ public class Query {
 				} else {
 
 					for (String generatedKeyName : generatedKeyNames) {
+
+						Object value;
+						if (colCount == 1) {
+							value = rs.getObject(1);
+						} else {
+							value = rs.getObject(generatedKeyName);
+						}
+						pojoInfo.putValue(generatedKeyReceiver, generatedKeyName, value);
+
+						/*-
+						
+						
 						Property prop = pojoInfo.getProperty(generatedKeyName);
 						if (prop == null) {
 							throw new DbException("Generated key name not found: " + generatedKeyName);
 						}
-
+						
 						/*
 						 * getObject() below doesn't handle primitives correctly. Must convert to object
 						 * equivalent.
-						 */
-
+						 * /
+						
 						Class<?> type = Util.wrap(prop.dataType);
-
+						
+						Object colValue = sqlMaker.convertValue(rs.getObject(i), meta.getColumnTypeName(i));
+						
 						Object newKey;
 						if (colCount == 1) {
 							newKey = rs.getObject(1, type);
 						} else {
 							newKey = rs.getObject(prop.name, type);
 						}
-
+						
 						pojoInfo.putValue(generatedKeyReceiver, prop.name, newKey);
+						*/
 					}
 				}
 			}

@@ -43,7 +43,7 @@ public class StandardPojoInfo implements PojoInfo {
 	public LinkedHashMap<String, Property> propertyMap = new LinkedHashMap<String, Property>();
 	public String table;
 	public String primaryKeyName;
-	public String generatedColumnName;
+	public String[] generatedColumnNames;
 
 	public String insertSql;
 	public int insertSqlArgCount;
@@ -158,6 +158,16 @@ public class StandardPojoInfo implements PojoInfo {
 			props.add(prop);
 		}
 
+		List<String> genCols = new ArrayList<>();
+		for (Property prop : props) {
+			if (prop.isGenerated) {
+				genCols.add(prop.name);
+			}
+		}
+
+		this.generatedColumnNames = new String[genCols.size()];
+		genCols.toArray(this.generatedColumnNames);
+
 		return props;
 	}
 
@@ -185,7 +195,6 @@ public class StandardPojoInfo implements PojoInfo {
 		}
 
 		if (ae.getAnnotation(GeneratedValue.class) != null) {
-			generatedColumnName = prop.name;
 			prop.isGenerated = true;
 		}
 
@@ -234,10 +243,10 @@ public class StandardPojoInfo implements PojoInfo {
 			if (value != null) {
 				if (prop.serializer != null) {
 					value = prop.serializer.serialize(value);
-					
+
 				} else if (prop.converter != null) {
 					value = prop.converter.convertToDatabaseColumn(value);
-					
+
 				} else if (prop.isEnumField) {
 					// handle enums according to selected enum type
 					if (prop.enumType == EnumType.ORDINAL) {
@@ -274,7 +283,7 @@ public class StandardPojoInfo implements PojoInfo {
 		if (value != null) {
 			if (prop.serializer != null) {
 				value = prop.serializer.deserialize((String) value, prop.dataType);
-				
+
 			} else if (prop.converter != null) {
 				value = prop.converter.convertToEntityAttribute(value);
 
@@ -329,13 +338,13 @@ public class StandardPojoInfo implements PojoInfo {
 	}
 
 	@Override
-	public Property getGeneratedColumnProperty() {
-		return propertyMap.get(generatedColumnName);
+	public Property getProperty(String name) {
+		return propertyMap.get(name);
 	}
 
 	@Override
-	public Property getProperty(String name) {
-		return propertyMap.get(name);
+	public String[] getGeneratedColumnNames() {
+		return this.generatedColumnNames;
 	}
 
 }

@@ -1,19 +1,20 @@
 package com.dieselpoint.norm.sqlmakers;
 
-import com.dieselpoint.norm.Database;
-import com.dieselpoint.norm.Query;
-import com.dieselpoint.norm.TestGeneratedId;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.dieselpoint.norm.Database;
+import com.dieselpoint.norm.Query;
 
 public class StandardSqlMakerTest {
 
