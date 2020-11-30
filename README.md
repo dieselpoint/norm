@@ -45,11 +45,11 @@ Database db = new Database();
 
 Person joe = new Person();
 joe.firstName = "Joe";
-joe.lastName = "Biden";
+joe.lastName = "Sixpack";
 
 db.insert(joe);
 
-List<Person> people = db.where("lastname=?", "Biden").orderBy("lastName").results(Person.class);
+List<Person> people = db.where("lastname=?", "Sixpack").orderBy("lastName").results(Person.class);
 ```
 
 The `Person` class:
@@ -261,8 +261,7 @@ Finally, you'll need to include your JDBC driver as a dependency. Here's a sampl
 
 ****
 
-That's about it. Post any bugs or feature requests to the issue tracker. Post any support requests to Stack Overflow.
-
+That's about it. Post any bugs or feature requests to the issue tracker. 
 
 
 
