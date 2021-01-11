@@ -86,7 +86,10 @@ public class StandardPojoInfo implements PojoInfo {
 				}
 
 				for (Property prop : props) {
-					propertyMap.put(prop.name, prop);
+					if (propertyMap.put(prop.name, prop) != null) {
+						throw new DbException("Duplicate pojo property found: '" + prop.name + "' in " + clazz.getName()
+								+ ". There may be both a field and a getter/setter");
+					}
 				}
 			}
 
