@@ -43,7 +43,7 @@ public class StandardPojoInfo implements PojoInfo {
 	public LinkedHashMap<String, Property> propertyMap = new LinkedHashMap<String, Property>();
 	public String table;
 	public String primaryKeyName;
-	public String[] generatedColumnNames;
+	public String[] generatedColumnNames = new String[0];
 
 	public String insertSql;
 	public int insertSqlArgCount;

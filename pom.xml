@@ -7,7 +7,7 @@
 	<groupId>com.dieselpoint</groupId>
 	<artifactId>norm</artifactId>
 	<name>Norm</name>
-	<version>1.0.1</version>
+	<version>1.0.4</version>
 	<packaging>jar</packaging>
 
 	<description>An extremely lightweight data access layer over JDBC</description>
