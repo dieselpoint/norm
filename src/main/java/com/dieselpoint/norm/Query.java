@@ -218,9 +218,7 @@ public class Query {
 
 		} catch (InstantiationException | IllegalAccessException | SQLException | IllegalArgumentException
 				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			DbException dbe = new DbException(e);
-			dbe.setSql(sql);
-			throw dbe;
+			throw new DbException(e, sql);
 		} finally {
 			close(state);
 			close(con);
@@ -349,9 +347,7 @@ public class Query {
 			}
 
 		} catch (SQLException | IllegalArgumentException e) {
-			DbException dbe = new DbException(e);
-			dbe.setSql(sql);
-			throw dbe;
+			throw new DbException(e, sql );
 		} finally {
 			close(state);
 			close(con);
