@@ -99,7 +99,7 @@ public class Query {
 	 */
 	public <T> T first(Class<T> clazz) {
 		List<T> list = results(clazz);
-		if (list.size() > 0) {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		} else {
 			return null;
