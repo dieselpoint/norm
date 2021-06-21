@@ -40,7 +40,7 @@ public class StandardPojoInfo implements PojoInfo {
 	 */
 
 	// these are public to make subclassing easier
-	public LinkedHashMap<String, Property> propertyMap = new LinkedHashMap<String, Property>();
+	public Map<String, Property> propertyMap = new LinkedHashMap<>();
 	public String table;
 	public String primaryKeyName;
 	public String[] generatedColumnNames = new String[0];
