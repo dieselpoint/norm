@@ -20,7 +20,7 @@ List<Person> people = db.where("name=?", "Bob").results(Person.class);
 
 ### Overview
 
-Norm is an extremely lightweight layer over JDBC. It gets rid of large amounts of boilerplate JDBC code. It steals some ideas from [ActiveJDBC](hhttp://javalite.io/), which is a very nice system, but requires some very ugly instrumentation / byte code rewriting. 
+Norm is an extremely lightweight layer over JDBC. It gets rid of large amounts of boilerplate JDBC code. It steals some ideas from [ActiveJDBC](http://javalite.io/), which is a very nice system, but requires some very ugly instrumentation / byte code rewriting. 
 
 ### Why?
 
