@@ -111,7 +111,7 @@ public class Query {
 	 */
 	private List<Map<String, Object>> resultsMap(Class<Map<String, Object>> clazz) {
 
-		List<Map<String, Object>> out = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> out = new ArrayList<>();
 		Connection con = null;
 		PreparedStatement state = null;
 
@@ -168,7 +168,7 @@ public class Query {
 			return (List<T>) resultsMap((Class<Map<String, Object>>) clazz);
 		}
 
-		List<T> out = new ArrayList<T>();
+		List<T> out = new ArrayList<>();
 		Connection con = null;
 		PreparedStatement state = null;
 
