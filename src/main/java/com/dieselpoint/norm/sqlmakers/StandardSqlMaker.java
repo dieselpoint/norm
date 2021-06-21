@@ -16,7 +16,7 @@ import com.dieselpoint.norm.Util;
  */
 public class StandardSqlMaker implements SqlMaker {
 
-	private static ConcurrentHashMap<Class<?>, StandardPojoInfo> map = new ConcurrentHashMap<Class<?>, StandardPojoInfo>();
+	private static ConcurrentHashMap<Class<?>, StandardPojoInfo> map = new ConcurrentHashMap<>();
 
 	public StandardPojoInfo getPojoInfo(Class<?> rowClass) {
 		StandardPojoInfo pi = map.get(rowClass);
@@ -73,7 +73,7 @@ public class StandardSqlMaker implements SqlMaker {
 
 	public void makeUpdateSql(StandardPojoInfo pojoInfo) {
 
-		ArrayList<String> cols = new ArrayList<String>();
+		ArrayList<String> cols = new ArrayList<>();
 		for (Property prop : pojoInfo.propertyMap.values()) {
 
 			if (prop.isPrimaryKey) {
@@ -106,7 +106,7 @@ public class StandardSqlMaker implements SqlMaker {
 	}
 
 	public void makeInsertSql(StandardPojoInfo pojoInfo) {
-		ArrayList<String> cols = new ArrayList<String>();
+		ArrayList<String> cols = new ArrayList<>();
 		for (Property prop : pojoInfo.propertyMap.values()) {
 			if (prop.isGenerated) {
 				continue;
@@ -136,7 +136,7 @@ public class StandardSqlMaker implements SqlMaker {
 			// this applies if the rowClass is a Map
 			pojoInfo.selectColumns = "*";
 		} else {
-			ArrayList<String> cols = new ArrayList<String>();
+			ArrayList<String> cols = new ArrayList<>();
 			for (Property prop : pojoInfo.propertyMap.values()) {
 				cols.add(prop.name);
 			}
