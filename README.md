@@ -173,7 +173,7 @@ Transaction is a pretty simple class, so if it doesn't do what you need,  just s
 ### Custom Serialization
 
 > The older @DbSerializable and @DbSerializer annotations are now deprecated.
-> Use @Convert and an AttributeConverter class instead.
+> Use @Converter and an AttributeConverter class instead.
 
 Norm now supports JPA serialization. We'll add a bit more documentation here later, but for
 now you can learn all about it here:
@@ -184,7 +184,7 @@ and here:
 
 [https://www.baeldung.com/jpa-attribute-converters](https://www.baeldung.com/jpa-attribute-converters)
 
-In short, @Convert give you a way of converting a particular column datatype in your database
+In short, @Converter give you a way of converting a particular column datatype in your database
 to a particular datatype in your POJO. So, you can store a list of integers in your database
 as String, and in your POJO as List&lt;Integer>.
 
