@@ -2,7 +2,7 @@
 
 [Read a blog post on this project.](https://blog.dieselpoint.com/a-minimalist-good-enough-approach-to-object-relational-mapping-64df9798b276)
 
-Norm is a simple way to access a JDBC database, usually in one line of code. It purges your code of the complex mess that is [Hibernate](http://www.hibernate.org), [JPA](http://en.wikipedia.org/wiki/Java_Persistence_API), and [ORM](http://en.wikipedia.org/wiki/Object-relational_mapping). 
+Norm is a simple way to access a JDBC database, usually in one line of code. It purges your code of the complex mess that is [Hibernate](http://www.hibernate.org), [JPA](http://en.wikipedia.org/wiki/Java_Persistence_API), and [ORM](http://en.wikipedia.org/wiki/Object-relational_mapping).
 
 [Lots of people think that complex ORMs are a bad idea.](http://stackoverflow.com/questions/398134/what-are-the-advantages-of-using-an-orm/398182)
 
@@ -20,7 +20,7 @@ List<Person> people = db.where("name=?", "Bob").results(Person.class);
 
 ### Overview
 
-Norm is an extremely lightweight layer over JDBC. It gets rid of large amounts of boilerplate JDBC code. It steals some ideas from [ActiveJDBC](hhttp://javalite.io/), which is a very nice system, but requires some very ugly instrumentation / byte code rewriting. 
+Norm is an extremely lightweight layer over JDBC. It gets rid of large amounts of boilerplate JDBC code. It steals some ideas from [ActiveJDBC](hhttp://javalite.io/), which is a very nice system, but requires some very ugly instrumentation / byte code rewriting.
 
 ### Why?
 
@@ -78,7 +78,7 @@ When you need more than this, just use straight SQL. This is the best way to do 
 
 ```Java
 List<MyPojo> list1 = db.sql(
-    "select lastname, sum(amount) from account, transaction " + 
+    "select lastname, sum(amount) from account, transaction " +
     "where account.accountId = transaction.accountId " +
 	"and date > ?", "2000-01-01")
 	.results(MyPojo.class);
@@ -104,7 +104,7 @@ Note that you must specify full sql, or at a minimum a table name, because the s
 
 ### Primitives
 
-A single column result set can come back in the form of a list of primitives, or even as a single primitive. 
+A single column result set can come back in the form of a list of primitives, or even as a single primitive.
 
 ```Java
 Long count = db.sql("select count(*) from people").first(Long.class);
@@ -165,10 +165,30 @@ try {
 	trans.commit();
 } catch (Throwable t) {
 	trans.rollback();
-} 
+}
 
 ```
 Transaction is a pretty simple class, so if it doesn't do what you need,  just subclass it and make it behave differently.
+
+### Latency Checking
+
+As data volumes increase and functionality enhancements are made, the calls to your database have a nasty habit of slowing down. For the whole database, or for individual Queries and Transactions, you can specify a max acceptable latency. Database calls exceeding that SLA will be reported via a pluggable LatencyAlerter.
+
+```Java
+ // alert with an slf4j log message any call to the database takes >30 milliseconds
+db.setMaxLatency(30);
+db.addLatencyAlerter( new Slf4jLatencyAlerter() );
+
+// raise an alert if latency on these queries exceeds >20ms
+var people = db.where("lastname=?", "Sixpack").maxLatency(20).results(Person.class);
+db.sql("select count(*) from people").maxLatency(20).first(Long.class);
+
+// latency checking also works with Transaction commits
+Transaction trans = db.startTransaction().maxLatency(30);
+
+```
+More information can be found here: [LatencyChecking.md](LatencyChecking.md)
+
 
 ### Custom Serialization
 
@@ -203,7 +223,7 @@ Some database-specific notes:
 
 MySQL: Should work out of the box.
 
-Postgres: Inexplicably, Postgres converts all column names to lowercase when you create a table, and 
+Postgres: Inexplicably, Postgres converts all column names to lowercase when you create a table, and
 forces you to use double quotes around column names if you want mixed or upper case. The workaround
 is to add an @Column(name="somelowercasename") annotation to the fields in your pojo.
 
@@ -232,7 +252,7 @@ db.setUser("root");
 db.setPassword("rootpassword");
 ```
 
-or 
+or
 
 ```Java
 System.setProperty("norm.jdbcUrl", "jdbc:mysql://localhost:3306/mydb?useSSL=false");
@@ -240,14 +260,14 @@ System.setProperty("norm.user", "root");
 System.setProperty("norm.password", "rootpassword");
 ```
 
-Internally, Norm uses the [Hikari](http://brettwooldridge.github.io/HikariCP/) connection pool. Hikari allows you to use the jdbcUrl method or [DataSource class names](https://github.com/brettwooldridge/HikariCP#popular-datasource-class-names). Your database is bound to be on the list. 
+Internally, Norm uses the [Hikari](http://brettwooldridge.github.io/HikariCP/) connection pool. Hikari allows you to use the jdbcUrl method or [DataSource class names](https://github.com/brettwooldridge/HikariCP#popular-datasource-class-names). Your database is bound to be on the list.
 
 If you don't want to use system properties, or your DataSource needs some custom startup parameters, just subclass the [Database](https://github.com/dieselpoint/norm/blob/master/src/main/java/com/dieselpoint/norm/Database.java) class and override the .getDataSource() method. You can supply any DataSource you like.
 
 ### Dependencies
 Norm needs javax.persistence, but that's just for annotations.
 
-It also has a dependency on HikariCP for connection pooling, but that's entirely optional. If you don't want it, add an `<exclude>`  to the Norm dependency in your project's pom. Then subclass Database and override the getDataSource() method. 
+It also has a dependency on HikariCP for connection pooling, but that's entirely optional. If you don't want it, add an `<exclude>`  to the Norm dependency in your project's pom. Then subclass Database and override the getDataSource() method.
 
 Finally, you'll need to include your JDBC driver as a dependency. Here's a sample for MySQL:
 
@@ -261,9 +281,4 @@ Finally, you'll need to include your JDBC driver as a dependency. Here's a sampl
 
 ****
 
-That's about it. Post any bugs or feature requests to the issue tracker. 
-
-
-
-
-
+That's about it. Post any bugs or feature requests to the issue tracker.
