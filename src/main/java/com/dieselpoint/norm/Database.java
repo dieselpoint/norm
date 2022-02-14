@@ -2,12 +2,15 @@ package com.dieselpoint.norm;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
+import com.dieselpoint.norm.latency.DbLatencyWarning;
+import com.dieselpoint.norm.latency.LatencyAlerter;
 import com.dieselpoint.norm.sqlmakers.SqlMaker;
 import com.dieselpoint.norm.sqlmakers.StandardSqlMaker;
 import com.zaxxer.hikari.HikariConfig;
@@ -29,6 +32,8 @@ public class Database {
 	protected String user = System.getProperty("norm.user");
 	protected String password = System.getProperty("norm.password");
 	protected int maxPoolSize = 10;
+	protected long maxLatency = System.getProperty("norm.maxLatency") != null ? Integer.parseInt( System.getProperty("norm.maxLatency") ) : -1;
+	protected ArrayList<LatencyAlerter> latencyAlerters = new ArrayList<>();
 
 	protected Map<String, String> dataSourceProperties = new HashMap<>();
 
@@ -227,9 +232,7 @@ public class Database {
 	 * @return a transaction object
 	 */
 	public Transaction startTransaction() {
-		Transaction trans = new Transaction();
-		trans.setConnection(getConnection());
-		return trans;
+		return new Transaction( this, getConnection() );
 	}
 
 	/**
@@ -281,4 +284,32 @@ public class Database {
 		this.maxPoolSize = maxPoolSize;
 	}
 
+	public long getMaxLatencyMillis() { return maxLatency; }
+
+	/**
+	 * @param millis the maximum latency that all {@link Query} or {@link Transaction#commit()} calls should tolerate.
+	 * By default millis is set to {@code -1 } which turns off all latency alerting. Note that setting maxLatency to {@code 0} is
+	 * an easy way to log all SQL Statements. This value can also be set using environment variable {@code norm.maxLatency }
+	 */
+	public void setMaxLatency( long millis ) {
+		this.maxLatency = millis;
+	}
+
+	/**
+	 * Adds the provided {@link LatencyAlerter} instance to the instances that are called in-order, when a
+	 * {@link Query} or
+	 * {@link Transaction#commit()} call to the database exceeds the maximum latency (either the global maximum set via
+	 * {@link #setMaxLatency(long)}, or {@link Query#maxLatency(long)} or
+	 * {@link Transaction#maxLatency(long)}
+	 * @param alerter, the alerter to add
+	 */
+	public void addLatencyAlerter( LatencyAlerter alerter ) {
+		this.latencyAlerters.add( alerter );
+	}
+
+	public void alertLatency( DbLatencyWarning latencyWarning ) {
+		for (LatencyAlerter a : latencyAlerters) {
+			a.alertLatencyFailure( latencyWarning );
+		}
+	}
 }

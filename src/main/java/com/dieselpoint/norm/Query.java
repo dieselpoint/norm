@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.dieselpoint.norm.latency.LatencyTimer;
 import com.dieselpoint.norm.sqlmakers.PojoInfo;
 import com.dieselpoint.norm.sqlmakers.SqlMaker;
 
@@ -38,12 +39,14 @@ public class Query {
 
 	private Database db;
 	private SqlMaker sqlMaker;
+	private long maxLatency;
 
 	private Transaction transaction;
 
 	public Query(Database db) {
 		this.db = db;
 		this.sqlMaker = db.getSqlMaker();
+		this.maxLatency( db.getMaxLatencyMillis() );
 	}
 
 	/**
@@ -131,7 +134,9 @@ public class Query {
 			state = localCon.prepareStatement(sql);
 			loadArgs(state);
 
+			LatencyTimer myTimer = new LatencyTimer( this );
 			ResultSet rs = state.executeQuery();
+			myTimer.stop( sql, args );
 
 			meta = rs.getMetaData();
 			int colCount = meta.getColumnCount();
@@ -188,7 +193,9 @@ public class Query {
 			state = localCon.prepareStatement(sql);
 			loadArgs(state);
 
+			LatencyTimer myLatencyTimer = new LatencyTimer( this );
 			ResultSet rs = state.executeQuery();
+			myLatencyTimer.stop( sql, args );
 
 			meta = rs.getMetaData();
 			int colCount = meta.getColumnCount();
@@ -342,7 +349,9 @@ public class Query {
 				}
 			}
 
+			LatencyTimer myTimer = new LatencyTimer( this );
 			rowsAffected = state.executeUpdate();
+			myTimer.stop( sql, args );
 
 			if (generatedKeyReceiver != null) {
 				populateGeneratedKeys(state, generatedKeyReceiver, generatedKeyNames);
@@ -574,4 +583,20 @@ public class Query {
 		return meta;
 	}
 
+	public long getMaxLatencyMillis() { return maxLatency; }
+
+	/**
+	 * sets the maximum acceptable latency for this query. Must be called before terminal operators such as {@link #execute}
+	 * or {@link #first(Class)} . <br>If latency of the query exceeds the threshold then the
+	 * {@link com.dieselpoint.norm.latency.LatencyAlerter} that have been added to the
+	 * {@link Database} will be called in order
+	 * @param millis maximum number of milliseconds that a query can take to execute before an alert will be generated
+	 * @return this, to enable maxLatency to be chained, a la {@code db.sql( "select count(*) from Thing" ).maxLatency(50).first( Long.class )}
+	 */
+	public Query maxLatency( long millis ) {
+		this.maxLatency = millis;
+		return this;
+	}
+
+	public Database getDatabase() { return db; }
 }
