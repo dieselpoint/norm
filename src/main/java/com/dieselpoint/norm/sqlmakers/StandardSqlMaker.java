@@ -205,15 +205,16 @@ public class StandardSqlMaker implements SqlMaker {
 				}
 
 			} else {
-				if (columnAnnot.columnDefinition() != null) {
+				buf.append(prop.name);
+				buf.append(" ");
+
+				if (!columnAnnot.columnDefinition().isEmpty()) {
 
 					// let the column def override everything
 					buf.append(columnAnnot.columnDefinition());
 
 				} else {
 
-					buf.append(prop.name);
-					buf.append(" ");
 					buf.append(getColType(prop.dataType, columnAnnot.length(), columnAnnot.precision(),
 							columnAnnot.scale()));
 					if (prop.isGenerated) {
