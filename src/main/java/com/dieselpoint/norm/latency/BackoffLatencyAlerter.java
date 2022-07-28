@@ -58,7 +58,7 @@ public abstract class BackoffLatencyAlerter implements LatencyAlerter {
         if (warning.maxAcceptableLatency != 0) {
             long myTime = System.currentTimeMillis();
             if (nextReportTime <= myTime) {
-                if (alertLatencyFailureAfterBackoffAndJitter( warning, alertsSwallowedWhileWaiting ) == false)
+                if (!alertLatencyFailureAfterBackoffAndJitter(warning, alertsSwallowedWhileWaiting))
                     ++alertsSwallowedWhileWaiting;
                 nextReportTime = myTime + calculateWaitTime();
                 alertsSwallowedWhileWaiting = 0;

@@ -1,20 +1,19 @@
 package com.dieselpoint.norm;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.sql.DataSource;
-
 import com.dieselpoint.norm.latency.DbLatencyWarning;
 import com.dieselpoint.norm.latency.LatencyAlerter;
 import com.dieselpoint.norm.sqlmakers.SqlMaker;
 import com.dieselpoint.norm.sqlmakers.StandardSqlMaker;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Provides methods to access a database.
@@ -105,7 +104,7 @@ public class Database {
 	/**
 	 * Create a query using straight SQL. Overrides any other methods like .where(),
 	 * .orderBy(), etc.
-	 * 
+	 *
 	 * @param sql  The SQL string to use, may include ? parameters.
 	 * @param args The parameter values to use in the query.
 	 */
@@ -115,7 +114,7 @@ public class Database {
 
 	/**
 	 * Create a query with the given where clause.
-	 * 
+	 *
 	 * @param where Example: "name=?"
 	 * @param args  The parameter values to use in the where, example: "Bob"
 	 */
@@ -228,7 +227,7 @@ public class Database {
 	 * command that should be part of the transaction using the .transaction()
 	 * method. Then call transaction.commit() or .rollback() to complete the
 	 * process. No need to close the transaction.
-	 * 
+	 *
 	 * @return a transaction object
 	 */
 	public Transaction startTransaction() {
@@ -288,7 +287,7 @@ public class Database {
 
 	/**
 	 * @param millis the maximum latency that all {@link Query} or {@link Transaction#commit()} calls should tolerate.
-	 * By default millis is set to {@code -1 } which turns off all latency alerting. Note that setting maxLatency to {@code 0} is
+	 * By default, millis is set to {@code -1 } which turns off all latency alerting. Note that setting maxLatency to {@code 0} is
 	 * an easy way to log all SQL Statements. This value can also be set using environment variable {@code norm.maxLatency }
 	 */
 	public void setMaxLatency( long millis ) {

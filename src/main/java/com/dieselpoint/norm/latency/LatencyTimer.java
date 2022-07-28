@@ -38,7 +38,7 @@ public class LatencyTimer {
     }
 
     public boolean stop( String sql, Object[] args ) {
-        if (stop() == false) {
+        if (!stop()) {
             if (db != null) {
                 db.alertLatency( new DbLatencyWarning( maxAcceptableLatency, duration, sql, args ) );
             }
@@ -47,7 +47,7 @@ public class LatencyTimer {
     }
 
     public boolean stop( Transaction aTransaction ) {
-        if (stop() == false) {
+        if (!stop()) {
             if (db != null) {
                 db.alertLatency( new DbLatencyWarning( maxAcceptableLatency, duration, aTransaction ) );
             }

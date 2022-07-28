@@ -1,32 +1,19 @@
 package com.dieselpoint.norm.sqlmakers;
 
+import com.dieselpoint.norm.ColumnOrder;
+import com.dieselpoint.norm.DbException;
+import com.dieselpoint.norm.serialize.DbSerializer;
+
+import javax.persistence.*;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.AttributeConverter;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import com.dieselpoint.norm.ColumnOrder;
-import com.dieselpoint.norm.DbException;
-import com.dieselpoint.norm.serialize.DbSerializer;
 
 /**
  * Provides means of reading and writing properties in a pojo.
@@ -176,7 +163,7 @@ public class StandardPojoInfo implements PojoInfo {
 
 	/**
 	 * Apply the annotations on the field or getter method to the property.
-	 * 
+	 *
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
@@ -313,7 +300,6 @@ public class StandardPojoInfo implements PojoInfo {
 				throw new DbException(
 						"Could not set value into pojo. Field: " + prop.field.toString() + " value: " + value, e);
 			}
-			return;
 		}
 
 	}
@@ -324,7 +310,7 @@ public class StandardPojoInfo implements PojoInfo {
 	private <T extends Enum<T>> Object getEnumConst(Class<T> enumType, EnumType type, Object value) {
 		String str = value.toString();
 		if (type == EnumType.ORDINAL) {
-			Integer ordinalValue = (Integer) value;
+			int ordinalValue = (Integer) value;
 			if (ordinalValue < 0 || ordinalValue >= enumType.getEnumConstants().length) {
 				throw new DbException(
 						"Invalid ordinal number " + ordinalValue + " for enum class " + enumType.getCanonicalName());

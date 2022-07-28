@@ -42,7 +42,7 @@ public class DbLatencyWarning {
         for (int i=2; i<elements.length; i++) {
             StackTraceElement e = elements[i];
             // ignore everything in the com.dieselpoint.norm package
-            if (e.getClassName().startsWith( "com.dieselpoint.norm.") == false)
+            if (!e.getClassName().startsWith("com.dieselpoint.norm."))
                 return e.toString();
         }
         return "[Unknown]";

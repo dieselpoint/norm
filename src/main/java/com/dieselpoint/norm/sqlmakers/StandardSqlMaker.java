@@ -1,14 +1,14 @@
 package com.dieselpoint.norm.sqlmakers;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.persistence.Column;
-
 import com.dieselpoint.norm.DbException;
 import com.dieselpoint.norm.Query;
 import com.dieselpoint.norm.Util;
+
+import javax.persistence.Column;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Produces ANSI-standard SQL. Extend this class to handle different flavors of
@@ -16,7 +16,7 @@ import com.dieselpoint.norm.Util;
  */
 public class StandardSqlMaker implements SqlMaker {
 
-	private static ConcurrentHashMap<Class<?>, StandardPojoInfo> map = new ConcurrentHashMap<>();
+	private static final ConcurrentHashMap<Class<?>, StandardPojoInfo> map = new ConcurrentHashMap<>();
 
 	public StandardPojoInfo getPojoInfo(Class<?> rowClass) {
 		StandardPojoInfo pi = map.get(rowClass);
@@ -35,7 +35,7 @@ public class StandardSqlMaker implements SqlMaker {
 	@Override
 	public String getInsertSql(Query query, Object row) {
 		StandardPojoInfo pojoInfo = getPojoInfo(row.getClass());
-		return pojoInfo.insertSql;
+		return String.format(pojoInfo.insertSql, Objects.requireNonNullElse(query.getTable(), pojoInfo.table));
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class StandardSqlMaker implements SqlMaker {
 		if (pojoInfo.primaryKeyName == null) {
 			throw new DbException("No primary key specified in the row. Use the @Id annotation.");
 		}
-		return pojoInfo.updateSql;
+		return String.format(pojoInfo.updateSql, Objects.requireNonNullElse(query.getTable(), pojoInfo.table));
 	}
 
 	@Override
@@ -90,17 +90,15 @@ public class StandardSqlMaker implements SqlMaker {
 		pojoInfo.updateSqlArgCount = pojoInfo.updateColumnNames.length + 1; // + 1 for the where arg
 
 		StringBuilder buf = new StringBuilder();
-		buf.append("update ");
-		buf.append(pojoInfo.table);
-		buf.append(" set ");
+		buf.append("update %s set ");
 
 		for (int i = 0; i < cols.size(); i++) {
 			if (i > 0) {
 				buf.append(',');
 			}
-			buf.append(cols.get(i) + "=?");
+			buf.append(cols.get(i)).append("=?");
 		}
-		buf.append(" where " + pojoInfo.primaryKeyName + "=?");
+		buf.append(" where ").append(pojoInfo.primaryKeyName).append("=?");
 
 		pojoInfo.updateSql = buf.toString();
 	}
@@ -116,16 +114,8 @@ public class StandardSqlMaker implements SqlMaker {
 		pojoInfo.insertColumnNames = cols.toArray(new String[cols.size()]);
 		pojoInfo.insertSqlArgCount = pojoInfo.insertColumnNames.length;
 
-		StringBuilder buf = new StringBuilder();
-		buf.append("insert into ");
-		buf.append(pojoInfo.table);
-		buf.append(" (");
-		buf.append(Util.join(pojoInfo.insertColumnNames)); // comma sep list?
-		buf.append(") values (");
-		buf.append(Util.getQuestionMarks(pojoInfo.insertSqlArgCount));
-		buf.append(")");
-
-		pojoInfo.insertSql = buf.toString();
+		pojoInfo.insertSql = "insert into %s (" + Util.join(pojoInfo.insertColumnNames) + // comma sep list?
+				") values (" + Util.getQuestionMarks(pojoInfo.insertSqlArgCount) + ")";
 	}
 
 	public void makeUpsertSql(StandardPojoInfo pojoInfo) {
@@ -302,7 +292,7 @@ public class StandardSqlMaker implements SqlMaker {
 
 	@Override
 	public String getUpsertSql(Query query, Object row) {
-		String msg = "There's no standard upsert implemention. There is one in the MySql driver, though,"
+		String msg = "There's no standard upsert implementation. There is one in the MySql driver, though,"
 				+ "so if you're using MySql, call Database.setSqlMaker(new MySqlMaker()); Or roll your own.";
 		throw new UnsupportedOperationException(msg);
 	}

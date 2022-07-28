@@ -5,10 +5,10 @@ import java.sql.SQLException;
 import java.util.Map;
 
 public class SimpleArray implements java.sql.Array {
-	
-	private int baseType;
-	private Object [] arr;
-	
+
+	private final int baseType;
+	private final Object [] arr;
+
 	public SimpleArray(int baseType, Object [] arr) {
 		this.baseType = baseType;
 		this.arr = arr;

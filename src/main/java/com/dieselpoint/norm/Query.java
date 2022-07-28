@@ -1,19 +1,14 @@
 package com.dieselpoint.norm;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import com.dieselpoint.norm.latency.LatencyTimer;
 import com.dieselpoint.norm.sqlmakers.PojoInfo;
 import com.dieselpoint.norm.sqlmakers.SqlMaker;
+
+import java.lang.reflect.InvocationTargetException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Holds all of the information in a query. Create a query using
@@ -37,8 +32,8 @@ public class Query {
 
 	private ResultSetMetaData meta;
 
-	private Database db;
-	private SqlMaker sqlMaker;
+	private final Database db;
+	private final SqlMaker sqlMaker;
 	private long maxLatency;
 
 	private Transaction transaction;
@@ -52,7 +47,7 @@ public class Query {
 	/**
 	 * Add a where clause and some parameters to a query. Has no effect if the
 	 * .sql() method is used.
-	 * 
+	 *
 	 * @param where Example: "name=?"
 	 * @param args  The parameter values to use in the where, example: "Bob"
 	 */
@@ -65,7 +60,7 @@ public class Query {
 	/**
 	 * Create a query using straight SQL. Overrides any other methods like .where(),
 	 * .orderBy(), etc.
-	 * 
+	 *
 	 * @param sql  The SQL string to use, may include ? parameters.
 	 * @param args The parameter values to use in the query.
 	 */
@@ -78,7 +73,7 @@ public class Query {
 	/**
 	 * Create a query using straight SQL. Overrides any other methods like .where(),
 	 * .orderBy(), etc.
-	 * 
+	 *
 	 * @param sql  The SQL string to use, may include ? parameters.
 	 * @param args The parameter values to use in the query.
 	 */
@@ -420,29 +415,29 @@ public class Query {
 						pojoInfo.putValue(generatedKeyReceiver, generatedKeyName, value);
 
 						/*-
-						
-						
+
+
 						Property prop = pojoInfo.getProperty(generatedKeyName);
 						if (prop == null) {
 							throw new DbException("Generated key name not found: " + generatedKeyName);
 						}
-						
+
 						/*
 						 * getObject() below doesn't handle primitives correctly. Must convert to object
 						 * equivalent.
 						 * /
-						
+
 						Class<?> type = Util.wrap(prop.dataType);
-						
+
 						Object colValue = sqlMaker.convertValue(rs.getObject(i), meta.getColumnTypeName(i));
-						
+
 						Object newKey;
 						if (colCount == 1) {
 							newKey = rs.getObject(1, type);
 						} else {
 							newKey = rs.getObject(prop.name, type);
 						}
-						
+
 						pojoInfo.putValue(generatedKeyReceiver, prop.name, newKey);
 						*/
 					}
@@ -456,7 +451,7 @@ public class Query {
 			if (rs != null) {
 				try {
 					rs.close();
-				} catch (SQLException e) {
+				} catch (SQLException ignored) {
 				}
 			}
 		}
@@ -483,19 +478,19 @@ public class Query {
 
 	/**
 	 * Temporary hack. Avoid.
-	 * 
+	 *
 	 * @deprecated
 	 * @param generatedKeyName
 	 * @return / public Query generatedKeyName(String generatedKeyName) {
 	 *         this.generatedKeyName = generatedKeyName; return this; }
-	 * 
+	 *
 	 *         public long getGeneratedKeyValue() { return generatedKeyValue; }
 	 */
 
 	/**
 	 * This is a temporary hack to deal with inserting Maps using sql. May go away.
 	 * Marking this deprecated right from the start.
-	 * 
+	 *
 	 * @deprecated
 	 * @return / public long getGeneratedKey(String colName) { if (generatedKeys !=
 	 *         null) { try { return generatedKeys.getLong(colName); } catch
