@@ -52,8 +52,8 @@ public class StandardSqlMaker implements SqlMaker {
 	@Override
 	public String getUpdateSql(Query query, Object row) {
 		StandardPojoInfo pojoInfo = getPojoInfo(row.getClass());
-		if (pojoInfo.primaryKeyName == null) {
-			throw new DbException("No primary key specified in the row. Use the @Id annotation.");
+		if (pojoInfo.primaryKeyNames.size() == 0) {
+			throw new DbException("No primary keys specified in the row. Use the @Id annotation.");
 		}
 		return String.format(pojoInfo.updateSql, Objects.requireNonNullElse(query.getTable(), pojoInfo.table));
 	}
@@ -62,13 +62,15 @@ public class StandardSqlMaker implements SqlMaker {
 	public Object[] getUpdateArgs(Query query, Object row) {
 		StandardPojoInfo pojoInfo = getPojoInfo(row.getClass());
 
-		Object[] args = new Object[pojoInfo.updateSqlArgCount];
+		Object[] args = new Object[pojoInfo.updateSqlArgCount + (pojoInfo.primaryKeyNames.size() - 1)];
 		for (int i = 0; i < pojoInfo.updateSqlArgCount - 1; i++) {
 			args[i] = pojoInfo.getValue(row, pojoInfo.updateColumnNames[i]);
 		}
 		// add the value for the where clause to the end
-		Object pk = pojoInfo.getValue(row, pojoInfo.primaryKeyName);
-		args[pojoInfo.updateSqlArgCount - 1] = pk;
+		for(int i = 0; i < pojoInfo.primaryKeyNames.size(); i++) {
+			Object pk = pojoInfo.getValue(row, pojoInfo.primaryKeyNames.get(i));
+			args[pojoInfo.updateSqlArgCount - (pojoInfo.primaryKeyNames.size() - i)] = pk;
+		}
 		return args;
 	}
 
@@ -99,7 +101,14 @@ public class StandardSqlMaker implements SqlMaker {
 			}
 			buf.append(cols.get(i)).append("=?");
 		}
-		buf.append(" where ").append(pojoInfo.primaryKeyName).append("=?");
+		buf.append(" where ");
+
+		for(int i = 0; i < pojoInfo.primaryKeyNames.size(); i++){
+			if (i > 0) {
+				buf.append(" and ");
+			}
+			buf.append(pojoInfo.primaryKeyNames.get(i)).append("=?");
+		}
 
 		pojoInfo.updateSql = buf.toString();
 	}
@@ -222,9 +231,14 @@ public class StandardSqlMaker implements SqlMaker {
 			}
 		}
 
-		if (pojoInfo.primaryKeyName != null) {
+		if (pojoInfo.primaryKeyNames.size() > 0) {
 			buf.append(", primary key (");
-			buf.append(pojoInfo.primaryKeyName);
+			for(int i = 0; i < pojoInfo.primaryKeyNames.size(); i++){
+				if (i > 0) {
+					buf.append(",");
+				}
+				buf.append(pojoInfo.primaryKeyNames.get(i));
+			}
 			buf.append(")");
 		}
 
@@ -277,17 +291,27 @@ public class StandardSqlMaker implements SqlMaker {
 			}
 		}
 
-		String primaryKeyName = pojoInfo.primaryKeyName;
+		StringBuilder builder = new StringBuilder("delete from ");
+		builder.append(table).append(" where ");
+		for(int i = 0; i < pojoInfo.primaryKeyNames.size(); i++){
+			if (i > 0) {
+				builder.append(" and ");
+			}
+			builder.append(pojoInfo.primaryKeyNames.get(i)).append("=?");
+		}
 
-		return "delete from " + table + " where " + primaryKeyName + "=?";
+		return builder.toString();
 	}
 
 	@Override
 	public Object[] getDeleteArgs(Query query, Object row) {
 		StandardPojoInfo pojoInfo = getPojoInfo(row.getClass());
-		Object primaryKeyValue = pojoInfo.getValue(row, pojoInfo.primaryKeyName);
-		Object[] args = new Object[1];
-		args[0] = primaryKeyValue;
+		Object[] args = new Object[pojoInfo.primaryKeyNames.size()];
+
+		for(int i = 0; i < pojoInfo.primaryKeyNames.size(); i++) {
+			Object primaryKeyValue = pojoInfo.getValue(row, pojoInfo.primaryKeyNames.get(i));
+			args[i] = primaryKeyValue;
+		}
 		return args;
 	}
 
