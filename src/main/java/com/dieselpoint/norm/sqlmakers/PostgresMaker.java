@@ -60,9 +60,14 @@ public class PostgresMaker extends StandardSqlMaker {
 			}
 		}
 		
-		if (pojoInfo.primaryKeyName != null) {
+		if (pojoInfo.primaryKeyNames.size() > 0) {
 			buf.append(", primary key (");
-			buf.append(pojoInfo.primaryKeyName);
+			for(int i = 0; i < pojoInfo.primaryKeyNames.size(); i++){
+				if(i > 0){
+					buf.append(",");
+				}
+				buf.append(pojoInfo.primaryKeyNames.get(i));
+			}
 			buf.append(")");
 		}
 		

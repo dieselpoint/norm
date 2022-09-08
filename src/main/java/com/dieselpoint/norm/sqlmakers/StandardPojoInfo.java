@@ -42,7 +42,7 @@ public class StandardPojoInfo implements PojoInfo {
 	// these are public to make subclassing easier
 	public Map<String, Property> propertyMap = new LinkedHashMap<>();
 	public String table;
-	public String primaryKeyName;
+	public List<String> primaryKeyNames = new ArrayList<>();
 	public String[] generatedColumnNames = new String[0];
 
 	public String insertSql;
@@ -194,7 +194,7 @@ public class StandardPojoInfo implements PojoInfo {
 
 		if (ae.getAnnotation(Id.class) != null) {
 			prop.isPrimaryKey = true;
-			primaryKeyName = prop.name;
+			primaryKeyNames.add(prop.name);
 		}
 
 		if (ae.getAnnotation(GeneratedValue.class) != null) {
