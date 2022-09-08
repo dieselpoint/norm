@@ -62,14 +62,16 @@ public class StandardSqlMaker implements SqlMaker {
 	public Object[] getUpdateArgs(Query query, Object row) {
 		StandardPojoInfo pojoInfo = getPojoInfo(row.getClass());
 
-		Object[] args = new Object[pojoInfo.updateSqlArgCount + (pojoInfo.primaryKeyNames.size() - 1)];
-		for (int i = 0; i < pojoInfo.updateSqlArgCount - 1; i++) {
+		int numKeys = pojoInfo.primaryKeyNames.size();
+
+		Object[] args = new Object[pojoInfo.updateSqlArgCount];
+		for (int i = 0; i < pojoInfo.updateSqlArgCount - numKeys; i++) {
 			args[i] = pojoInfo.getValue(row, pojoInfo.updateColumnNames[i]);
 		}
 		// add the value for the where clause to the end
-		for(int i = 0; i < pojoInfo.primaryKeyNames.size(); i++) {
+		for(int i = 0; i <numKeys; i++) {
 			Object pk = pojoInfo.getValue(row, pojoInfo.primaryKeyNames.get(i));
-			args[pojoInfo.updateSqlArgCount - (pojoInfo.primaryKeyNames.size() - i)] = pk;
+			args[pojoInfo.updateSqlArgCount - (numKeys - i)] = pk;
 		}
 		return args;
 	}
@@ -90,7 +92,7 @@ public class StandardSqlMaker implements SqlMaker {
 			cols.add(prop.name);
 		}
 		pojoInfo.updateColumnNames = cols.toArray(new String[cols.size()]);
-		pojoInfo.updateSqlArgCount = pojoInfo.updateColumnNames.length + 1; // + 1 for the where arg
+		pojoInfo.updateSqlArgCount = pojoInfo.updateColumnNames.length + pojoInfo.primaryKeyNames.size(); // + # of primary keys for the where arg
 
 		StringBuilder buf = new StringBuilder();
 		buf.append("update %s set ");
