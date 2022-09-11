@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -297,6 +298,9 @@ public class StandardPojoInfo implements PojoInfo {
 
 		if (prop.writeMethod != null) {
 			try {
+				if (value instanceof BigInteger) {
+					value = ((BigInteger) value).longValue();
+				}
 				prop.writeMethod.invoke(pojo, value);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				throw new DbException("Could not write value into pojo. Property: " + prop.name + " method: "
@@ -308,6 +312,9 @@ public class StandardPojoInfo implements PojoInfo {
 
 		if (prop.field != null) {
 			try {
+				if (value instanceof BigInteger) {
+					value = ((BigInteger) value).longValue();
+				}
 				prop.field.set(pojo, value);
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				throw new DbException(
