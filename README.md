@@ -239,7 +239,7 @@ Here's the Maven dependency:
 <dependency>
     <groupId>com.dieselpoint</groupId>
     <artifactId>norm</artifactId>
-    <version>0.8.5</version>
+    <version>1.0.5</version>
 </dependency>
 ```  
 
