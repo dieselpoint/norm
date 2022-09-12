@@ -298,8 +298,10 @@ public class StandardPojoInfo implements PojoInfo {
 
 		if (prop.writeMethod != null) {
 			try {
-				if (value instanceof BigInteger) {
-					value = ((BigInteger) value).longValue();
+				if (value instanceof BigInteger && prop.writeMethod.getParameterCount() >= 1) {
+					if (prop.writeMethod.getParameterTypes()[0].equals(Long.TYPE)) {
+						value = ((BigInteger) value).longValue();
+					}
 				}
 				prop.writeMethod.invoke(pojo, value);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -312,7 +314,7 @@ public class StandardPojoInfo implements PojoInfo {
 
 		if (prop.field != null) {
 			try {
-				if (value instanceof BigInteger) {
+				if (value instanceof BigInteger && prop.field.getType().equals(Long.TYPE)) {
 					value = ((BigInteger) value).longValue();
 				}
 				prop.field.set(pojo, value);
