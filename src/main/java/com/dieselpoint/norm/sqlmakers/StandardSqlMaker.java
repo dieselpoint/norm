@@ -19,7 +19,7 @@ public class StandardSqlMaker implements SqlMaker {
 
 	private static ConcurrentHashMap<Class<?>, StandardPojoInfo> map = new ConcurrentHashMap<>();
 
-	public StandardPojoInfo getPojoInfo(Class<?> rowClass) {
+	public synchronized StandardPojoInfo getPojoInfo(Class<?> rowClass) {
 		StandardPojoInfo pi = map.get(rowClass);
 		if (pi == null) {
 			pi = new StandardPojoInfo(rowClass);
@@ -69,7 +69,7 @@ public class StandardSqlMaker implements SqlMaker {
 			args[i] = pojoInfo.getValue(row, pojoInfo.updateColumnNames[i]);
 		}
 		// add the value for the where clause to the end
-		for(int i = 0; i <numKeys; i++) {
+		for (int i = 0; i < numKeys; i++) {
 			Object pk = pojoInfo.getValue(row, pojoInfo.primaryKeyNames.get(i));
 			args[pojoInfo.updateSqlArgCount - (numKeys - i)] = pk;
 		}
@@ -92,7 +92,11 @@ public class StandardSqlMaker implements SqlMaker {
 			cols.add(prop.name);
 		}
 		pojoInfo.updateColumnNames = cols.toArray(new String[cols.size()]);
-		pojoInfo.updateSqlArgCount = pojoInfo.updateColumnNames.length + pojoInfo.primaryKeyNames.size(); // + # of primary keys for the where arg
+		pojoInfo.updateSqlArgCount = pojoInfo.updateColumnNames.length + pojoInfo.primaryKeyNames.size(); // + # of
+																											// primary
+																											// keys for
+																											// the where
+																											// arg
 
 		StringBuilder buf = new StringBuilder();
 		buf.append("update %s set ");
@@ -105,7 +109,7 @@ public class StandardSqlMaker implements SqlMaker {
 		}
 		buf.append(" where ");
 
-		for(int i = 0; i < pojoInfo.primaryKeyNames.size(); i++){
+		for (int i = 0; i < pojoInfo.primaryKeyNames.size(); i++) {
 			if (i > 0) {
 				buf.append(" and ");
 			}
@@ -235,7 +239,7 @@ public class StandardSqlMaker implements SqlMaker {
 
 		if (pojoInfo.primaryKeyNames.size() > 0) {
 			buf.append(", primary key (");
-			for(int i = 0; i < pojoInfo.primaryKeyNames.size(); i++){
+			for (int i = 0; i < pojoInfo.primaryKeyNames.size(); i++) {
 				if (i > 0) {
 					buf.append(",");
 				}
@@ -295,7 +299,7 @@ public class StandardSqlMaker implements SqlMaker {
 
 		StringBuilder builder = new StringBuilder("delete from ");
 		builder.append(table).append(" where ");
-		for(int i = 0; i < pojoInfo.primaryKeyNames.size(); i++){
+		for (int i = 0; i < pojoInfo.primaryKeyNames.size(); i++) {
 			if (i > 0) {
 				builder.append(" and ");
 			}
@@ -310,7 +314,7 @@ public class StandardSqlMaker implements SqlMaker {
 		StandardPojoInfo pojoInfo = getPojoInfo(row.getClass());
 		Object[] args = new Object[pojoInfo.primaryKeyNames.size()];
 
-		for(int i = 0; i < pojoInfo.primaryKeyNames.size(); i++) {
+		for (int i = 0; i < pojoInfo.primaryKeyNames.size(); i++) {
 			Object primaryKeyValue = pojoInfo.getValue(row, pojoInfo.primaryKeyNames.get(i));
 			args[i] = primaryKeyValue;
 		}
