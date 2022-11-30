@@ -211,7 +211,7 @@ public class StandardSqlMaker implements SqlMaker {
 				}
 
 			} else {
-				if (columnAnnot.columnDefinition() == null) {
+				if (columnAnnot.columnDefinition() != null) {
 
 					// let the column def override everything
 					buf.append(columnAnnot.columnDefinition());
