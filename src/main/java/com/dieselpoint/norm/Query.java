@@ -109,6 +109,16 @@ public class Query {
 		}
 	}
 
+	public Long count() {
+		sql = sqlMaker.getSelectCountSql(this, null);
+		return first( Long.class );
+	}
+
+	public Long count(Class<?> clazz) {
+		sql = sqlMaker.getSelectCountSql(this, clazz);
+		return first( Long.class );
+	}
+
 	/**
 	 * Provides the results as a list of Map objects instead of a list of pojos.
 	 */

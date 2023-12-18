@@ -183,6 +183,34 @@ public class StandardSqlMaker implements SqlMaker {
 	}
 
 	@Override
+	public String getSelectCountSql(Query query, Class<?> tableClass) {
+
+		// unlike insert and update, this needs to be done dynamically
+		// and can't be precalculated because of the where and order by
+
+		String table = query.getTable();
+		if (table == null) {
+			if (tableClass != null) {
+				StandardPojoInfo pojoInfo = getPojoInfo(tableClass);
+				table = pojoInfo.table;
+			}
+			else {
+				throw new DbException("You must specify a table name. Use either db.table(\"XXX\").where(...).count(...), or db.where(...).count(Pojoclass.class)" );
+			}
+		}
+		StringBuilder out = new StringBuilder();
+		out.append("select count(*) from ");
+		out.append(table);
+		String where = query.getWhere();
+		if (where != null) {
+			out.append(" where ");
+			out.append(where);
+		}
+		return out.toString();
+	}
+
+
+	@Override
 	public String getCreateTableSql(Class<?> clazz) {
 
 		StringBuilder buf = new StringBuilder();
