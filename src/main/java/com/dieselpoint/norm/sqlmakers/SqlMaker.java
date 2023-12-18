@@ -21,6 +21,7 @@ public interface SqlMaker {
 	public Object[] getUpsertArgs(Query query, Object row);
 
 	public String getSelectSql(Query query, Class<?> rowClass);
+	public String getSelectCountSql(Query query, Class<?> tableClass);
 
 	public String getCreateTableSql(Class<?> clazz);
 
