@@ -492,27 +492,6 @@ public class Query {
 	}
 
 	/**
-	 * Temporary hack. Avoid.
-	 * 
-	 * @deprecated
-	 * @param generatedKeyName
-	 * @return / public Query generatedKeyName(String generatedKeyName) {
-	 *         this.generatedKeyName = generatedKeyName; return this; }
-	 * 
-	 *         public long getGeneratedKeyValue() { return generatedKeyValue; }
-	 */
-
-	/**
-	 * This is a temporary hack to deal with inserting Maps using sql. May go away.
-	 * Marking this deprecated right from the start.
-	 * 
-	 * @deprecated
-	 * @return / public long getGeneratedKey(String colName) { if (generatedKeys !=
-	 *         null) { try { return generatedKeys.getLong(colName); } catch
-	 *         (SQLException e) { throw new DbException(e); } } return -1; }
-	 */
-
-	/**
 	 * Simple, primitive method for creating a table based on a pojo.
 	 */
 	public Query createTable(Class<?> clazz) {

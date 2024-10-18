@@ -5,7 +5,7 @@
 	<groupId>com.dieselpoint</groupId>
 	<artifactId>norm</artifactId>
 	<name>Norm</name>
-	<version>2.0</version>
+	<version>1.2</version>
 	<packaging>jar</packaging>
 
 	<description>An extremely lightweight data access layer over JDBC</description>
@@ -38,7 +38,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<skipTests>true</skipTests>
+		<!-- <skipTests>true</skipTests> -->
 	</properties>
 
 	<!-- Here's the explanation for all this: http://central.sonatype.org/pages/apache-maven.html -->
@@ -103,8 +103,7 @@
 				<version>3.4.1</version>
 				<configuration>
 					<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
-					<additionalparam>-Xdoclint:none</additionalparam>
-					<additionalOptions>-Xdoclint:none</additionalOptions>
+					<doclint>none</doclint>
 				</configuration>
 				<executions>
 					<execution>
