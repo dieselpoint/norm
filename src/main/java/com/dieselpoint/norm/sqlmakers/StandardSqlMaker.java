@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 import com.dieselpoint.norm.DbException;
 import com.dieselpoint.norm.Query;

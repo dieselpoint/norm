@@ -1,6 +1,6 @@
 package com.dieselpoint.norm.sqlmakers;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 public class PostgresMaker extends StandardSqlMaker {
 
