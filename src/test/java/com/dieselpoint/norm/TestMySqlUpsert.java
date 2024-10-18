@@ -5,8 +5,8 @@ import static org.junit.Assert.fail;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Table;
 
 import org.junit.Test;
 

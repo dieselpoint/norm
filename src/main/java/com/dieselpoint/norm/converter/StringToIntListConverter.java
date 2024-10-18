@@ -3,8 +3,8 @@ package com.dieselpoint.norm.converter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter
 public class StringToIntListConverter implements AttributeConverter<List<Integer>, String> {

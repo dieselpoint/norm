@@ -3,9 +3,9 @@ package com.dieselpoint.norm.sqlmakers;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Column;
-import javax.persistence.EnumType;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
 
 import com.dieselpoint.norm.serialize.DbSerializable;
 

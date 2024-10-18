@@ -4,8 +4,8 @@ import com.dieselpoint.norm.sqlmakers.MySqlMaker;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
