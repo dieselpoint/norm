@@ -7,24 +7,26 @@ package com.dieselpoint.norm;
  */
 public class DbException extends RuntimeException {
 	
-	private String sql;
-	
-	public DbException() {}
+	private final String sql;
 	
 	public DbException(String msg) {
 		super(msg);
+        sql = null;
 	}
 
 	public DbException(Throwable t) {
 		super(t);
+        sql = null;
 	}
 
-	public DbException(String msg, Throwable t) {
-		super(msg, t);
+	public DbException(Throwable t, String sql) {
+		super(t);
+        this.sql = sql;
 	}
-	
-	public void setSql(String sql) {
-		this.sql = sql;
+
+    public DbException(String msg, Throwable t) {
+		super(msg, t);
+        sql = null;
 	}
 	
 	public String getSql() {
