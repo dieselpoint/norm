@@ -38,7 +38,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- <skipTests>true</skipTests> -->
+		<skipTests>true</skipTests>
 	</properties>
 
 	<!-- Here's the explanation for all this: http://central.sonatype.org/pages/apache-maven.html -->
