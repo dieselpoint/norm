@@ -10,6 +10,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -319,6 +321,9 @@ public class StandardPojoInfo implements PojoInfo {
 					if (prop.field.getType().equals(Long.TYPE) || prop.field.getType().equals(Long.class)) {
 						value = ((BigInteger) value).longValue();
 					}
+				}
+				if (value instanceof Timestamp && prop.dataType == LocalDateTime.class) {
+					value = ((Timestamp) value).toLocalDateTime();
 				}
 				prop.field.set(pojo, value);
 			} catch (IllegalArgumentException | IllegalAccessException e) {
