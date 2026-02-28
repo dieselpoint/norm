@@ -341,7 +341,7 @@ public class StandardPojoInfo implements PojoInfo {
 	private <T extends Enum<T>> Object getEnumConst(Class<T> enumType, EnumType type, Object value) {
 		String str = value.toString();
 		if (type == EnumType.ORDINAL) {
-			Integer ordinalValue = (Integer) value;
+			int ordinalValue = Integer.parseInt(str);
 			if (ordinalValue < 0 || ordinalValue >= enumType.getEnumConstants().length) {
 				throw new DbException(
 						"Invalid ordinal number " + ordinalValue + " for enum class " + enumType.getCanonicalName());
@@ -356,6 +356,7 @@ public class StandardPojoInfo implements PojoInfo {
 			throw new DbException("Enum value does not exist. value:" + str);
 		}
 	}
+
 
 	@Override
 	public Property getProperty(String name) {
