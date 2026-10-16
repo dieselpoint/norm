@@ -117,7 +117,7 @@ Note that you have to specify the full sql when doing primitives because the sys
 
 ### Annotations
 
-Tell the system what to do with your POJOs by using a few annotations. Norm implements a subset of the `javax.persistence` annotations, including [@Table](http://docs.oracle.com/javaee/7/api/javax/persistence/Table.html), [@Id](http://docs.oracle.com/javaee/7/api/javax/persistence/Id.html), [@GeneratedValue](http://docs.oracle.com/javaee/7/api/javax/persistence/GeneratedValue.html), [@Transient](http://docs.oracle.com/javaee/7/api/javax/persistence/Transient.html), [@Column](http://docs.oracle.com/javaee/7/api/javax/persistence/Column.html) and [@Enumerated](http://docs.oracle.com/javaee/7/api/javax/persistence/Enumerated.html).
+Tell the system what to do with your POJOs by using a few annotations. Norm implements a subset of the `jakarta.persistence` annotations, including [@Table](https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/table), [@Id](https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/id), [@GeneratedValue](https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/generatedvalue), [@Transient](https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/transient), [@Column](https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/column) and [@Enumerated](https://jakarta.ee/specifications/persistence/3.1/apidocs/jakarta.persistence/jakarta/persistence/enumerated).
 
 ```Java
 @Table(name="people")
@@ -143,9 +143,9 @@ public class Person {
 
 `@GeneratedValue` indicates that the field is marked AUTO_INCREMENT and will be generated on the server. This prevents the field from being inserted, and it fills in the value in the POJO after an insert.
 
-`@Transient` tells the system to ignore the field. It doesn't get persisted to the database. (Note that this is `javax.persistence.Transient`, not `java.beans.Transient`. Different annotations.)
+`@Transient` tells the system to ignore the field. It doesn't get persisted to the database. (Note that this is `jakarta.persistence.Transient`, not `java.beans.Transient`. Different annotations.)
 
-`@Column` implements a subset of `javax.persistence.Column`. `Column.name` will attach a property to a database column of a different name. `Column.unique`, `.nullable`, `.length`, `.precision`, and `.scale` apply when you call `Database.createTable()`;
+`@Column` implements a subset of `jakarta.persistence.Column`. `Column.name` will attach a property to a database column of a different name. `Column.unique`, `.nullable`, `.length`, `.precision`, and `.scale` apply when you call `Database.createTable()`;
 
 `@Enumerated` specifies the type of the enumeration to be stored in the database. By default `EnumType.STRING` is used for string representation. One can select `EnumType.ORDINAL` for integer representation.
 
@@ -239,7 +239,7 @@ Here's the Maven dependency:
 <dependency>
     <groupId>com.dieselpoint</groupId>
     <artifactId>norm</artifactId>
-    <version>1.0.5</version>
+    <version>1.2</version>
 </dependency>
 ```  
 
@@ -265,7 +265,7 @@ Internally, Norm uses the [Hikari](http://brettwooldridge.github.io/HikariCP/) c
 If you don't want to use system properties, or your DataSource needs some custom startup parameters, just subclass the [Database](https://github.com/dieselpoint/norm/blob/master/src/main/java/com/dieselpoint/norm/Database.java) class and override the .getDataSource() method. You can supply any DataSource you like.
 
 ### Dependencies
-Norm needs javax.persistence, but that's just for annotations.
+Norm needs `jakarta.persistence` for annotations.
 
 It also has a dependency on HikariCP for connection pooling, but that's entirely optional. If you don't want it, add an `<exclude>`  to the Norm dependency in your project's pom. Then subclass Database and override the getDataSource() method.
 
